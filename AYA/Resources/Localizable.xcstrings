@@ -7221,6 +7221,150 @@
         }
       }
     },
+    "premium.alert.nothing_to_restore.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active HESIA Premium purchase was found for this Apple Account."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu Apple Hesabı için etkin bir HESIA Premium satın alımı bulunamadı."
+          }
+        }
+      }
+    },
+    "premium.alert.nothing_to_restore.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing to Restore"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geri Yüklenecek Satın Alım Yok"
+          }
+        }
+      }
+    },
+    "premium.alert.ok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamam"
+          }
+        }
+      }
+    },
+    "premium.alert.pending.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your purchase is awaiting approval. Premium will unlock automatically when Apple completes it."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın alımın onay bekliyor. Apple işlemi tamamladığında Premium otomatik olarak açılacak."
+          }
+        }
+      }
+    },
+    "premium.alert.pending.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase Pending"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın Alım Beklemede"
+          }
+        }
+      }
+    },
+    "premium.alert.purchase_failed.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The purchase could not be completed. Please try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın alım tamamlanamadı. Lütfen yeniden dene."
+          }
+        }
+      }
+    },
+    "premium.alert.purchase_failed.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase Unavailable"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın Alım Kullanılamıyor"
+          }
+        }
+      }
+    },
+    "premium.alert.restore_failed.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your purchases could not be restored. Please try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın alımların geri yüklenemedi. Lütfen yeniden dene."
+          }
+        }
+      }
+    },
+    "premium.alert.restore_failed.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore Failed"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geri Yükleme Başarısız"
+          }
+        }
+      }
+    },
     "premium.benefit.all_stages" : {
       "localizations" : {
         "en" : {
@@ -7282,6 +7426,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Premium yakında"
+          }
+        }
+      }
+    },
+    "premium.loading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading Premium"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium Yükleniyor"
+          }
+        }
+      }
+    },
+    "premium.payment_note" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payments are securely processed by Apple."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ödemeler Apple tarafından güvenli biçimde işlenir."
           }
         }
       }
@@ -7398,6 +7574,38 @@
         }
       }
     },
+    "premium.privacy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gizlilik"
+          }
+        }
+      }
+    },
+    "premium.product_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium options are temporarily unavailable. Check your connection and try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium seçenekleri geçici olarak kullanılamıyor. Bağlantını kontrol edip yeniden dene."
+          }
+        }
+      }
+    },
     "premium.purchase" : {
       "localizations" : {
         "en" : {
@@ -7414,106 +7622,52 @@
         }
       }
     },
-    "premium.alert.nothing_to_restore.message" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No active HESIA Premium purchase was found for this Apple Account." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bu Apple Hesabı için etkin bir HESIA Premium satın alımı bulunamadı." } }
-      }
-    },
-    "premium.alert.nothing_to_restore.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing to Restore" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geri Yüklenecek Satın Alım Yok" } }
-      }
-    },
-    "premium.alert.ok" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tamam" } }
-      }
-    },
-    "premium.alert.pending.message" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your purchase is awaiting approval. Premium will unlock automatically when Apple completes it." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın alımın onay bekliyor. Apple işlemi tamamladığında Premium otomatik olarak açılacak." } }
-      }
-    },
-    "premium.alert.pending.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Purchase Pending" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın Alım Beklemede" } }
-      }
-    },
-    "premium.alert.purchase_failed.message" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The purchase could not be completed. Please try again." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın alım tamamlanamadı. Lütfen yeniden dene." } }
-      }
-    },
-    "premium.alert.purchase_failed.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Purchase Unavailable" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın Alım Kullanılamıyor" } }
-      }
-    },
-    "premium.alert.restore_failed.message" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your purchases could not be restored. Please try again." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın alımların geri yüklenemedi. Lütfen yeniden dene." } }
-      }
-    },
-    "premium.alert.restore_failed.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restore Failed" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geri Yükleme Başarısız" } }
-      }
-    },
-    "premium.loading" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Loading Premium" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium Yükleniyor" } }
-      }
-    },
-    "premium.payment_note" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Payments are securely processed by Apple." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ödemeler Apple tarafından güvenli biçimde işlenir." } }
-      }
-    },
-    "premium.privacy" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Privacy" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gizlilik" } }
-      }
-    },
-    "premium.product_unavailable" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Premium options are temporarily unavailable. Check your connection and try again." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium seçenekleri geçici olarak kullanılamıyor. Bağlantını kontrol edip yeniden dene." } }
-      }
-    },
     "premium.restore" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restore" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geri Yükle" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geri Yükle"
+          }
+        }
       }
     },
     "premium.retry" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Try Again" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yeniden Dene" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Dene"
+          }
+        }
       }
     },
     "premium.subscription.disclosure" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The monthly plan renews automatically unless canceled at least 24 hours before the end of the current period." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aylık plan, mevcut dönem bitmeden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir." } }
-      }
-    },
-    "premium.terms" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Terms" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Koşullar" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The monthly plan renews automatically unless canceled at least 24 hours before the end of the current period."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aylık plan, mevcut dönem bitmeden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir."
+          }
+        }
       }
     },
     "premium.subtitle" : {
@@ -7532,18 +7686,18 @@
         }
       }
     },
-    "premium.test_note" : {
+    "premium.terms" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For testing only. No real payment is taken."
+            "value" : "Terms"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yalnızca test içindir. Gerçek bir ödeme alınmaz."
+            "value" : "Koşullar"
           }
         }
       }
@@ -7563,10 +7717,6 @@
           }
         }
       }
-    },
-    "Privacy" : {
-      "comment" : "A link to the privacy policy.",
-      "isCommentAutoGenerated" : true
     },
     "reminder.description" : {
       "localizations" : {
@@ -7729,10 +7879,6 @@
           }
         }
       }
-    },
-    "Restore" : {
-      "comment" : "A button that restores a user's premium access.",
-      "isCommentAutoGenerated" : true
     },
     "settings.appearance.dark" : {
       "localizations" : {
@@ -8134,10 +8280,6 @@
           }
         }
       }
-    },
-    "Terms" : {
-      "comment" : "The label for the \"Terms\" button in the premium paywall.",
-      "isCommentAutoGenerated" : true
     },
     "welcome.brand" : {
       "localizations" : {
