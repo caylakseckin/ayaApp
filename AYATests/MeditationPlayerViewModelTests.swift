@@ -1,0 +1,141 @@
+import SwiftUI
+import XCTest
+@testable import HESIA
+
+final class MeditationPlayerViewModelTests: XCTestCase {
+    @MainActor
+    func testPlayerStartsPausedAtBeginning() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation)
+
+        XCTAssertFalse(viewModel.isPlaying)
+        XCTAssertEqual(viewModel.currentTime, 0)
+        XCTAssertEqual(viewModel.duration, 480)
+        XCTAssertFalse(viewModel.playbackEnded)
+    }
+
+    @MainActor
+    func testSeekingAndSkippingClampToDuration() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation)
+
+        viewModel.seek(to: 478)
+        viewModel.skipForward()
+
+        XCTAssertEqual(viewModel.currentTime, 480)
+        XCTAssertTrue(viewModel.playbackEnded)
+        XCTAssertFalse(viewModel.isPlaying)
+
+        viewModel.skipBackward()
+
+        XCTAssertEqual(viewModel.currentTime, 475)
+        XCTAssertFalse(viewModel.playbackEnded)
+    }
+
+    @MainActor
+    func testBothPlaybackControlsCanShareToggleState() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation)
+
+        viewModel.togglePlayback()
+        XCTAssertTrue(viewModel.isPlaying)
+
+        viewModel.togglePlayback()
+        XCTAssertFalse(viewModel.isPlaying)
+    }
+
+    @MainActor
+    func testStopResetsPlayback() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation)
+        viewModel.seek(to: 133)
+        viewModel.play()
+
+        viewModel.stop()
+
+        XCTAssertFalse(viewModel.isPlaying)
+        XCTAssertEqual(viewModel.currentTime, 0)
+        XCTAssertFalse(viewModel.playbackEnded)
+    }
+
+    func testClockFormatting() {
+        XCTAssertEqual(MeditationTimeFormatter.clock(0), "00:00")
+        XCTAssertEqual(MeditationTimeFormatter.clock(133), "02:13")
+        XCTAssertEqual(MeditationTimeFormatter.clock(480), "08:00")
+    }
+
+    func testCycleMeditationUsesRemoteContentForSupportedDays() {
+        let meditation = DailyMeditationProvider().meditation(
+            for: .menstrual,
+            phaseDay: 1,
+            cycleDay: 1
+        )
+
+        XCTAssertEqual(meditation.remoteAudioSource?.cycleDay, 1)
+        XCTAssertEqual(
+            meditation.remoteAudioSource?.metadataURL.absoluteString,
+            "https://hesia.app/content/menstrual_cycle/day_01/metadata.json"
+        )
+    }
+
+    func testCycleMeditationFallsBackLocallyOutsideRemoteDayRange() {
+        let meditation = DailyMeditationProvider().meditation(
+            for: .luteal,
+            phaseDay: 1,
+            cycleDay: 36
+        )
+
+        XCTAssertNil(meditation.remoteAudioSource)
+        XCTAssertNotNil(meditation.audioResourceName)
+    }
+
+    @MainActor
+    func testDailyMeditationsLoadBundledDemoAudio() {
+        for phase in CyclePhase.allCases {
+            let meditation = DailyMeditationProvider().meditation(for: phase, phaseDay: 1)
+            let viewModel = MeditationPlayerViewModel(meditation: meditation)
+
+            XCTAssertNotNil(meditation.audioResourceName)
+            XCTAssertTrue(viewModel.isAudioLoaded, "Audio failed to load for \(phase.rawValue)")
+            XCTAssertEqual(
+                viewModel.duration,
+                TimeInterval(meditation.durationMinutes * 60),
+                accuracy: 0.2
+            )
+            viewModel.stop()
+        }
+    }
+
+    @MainActor
+    func testAutoPlayStartsPlaybackOnceWhenRequested() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation, autoPlay: true)
+
+        // Not playing until the view asks (mirrors .onAppear).
+        XCTAssertFalse(viewModel.isPlaying)
+
+        viewModel.autoPlayIfReady()
+        XCTAssertTrue(viewModel.isPlaying)
+
+        // Idempotent: a second trigger must not restart or crash.
+        viewModel.autoPlayIfReady()
+        XCTAssertTrue(viewModel.isPlaying)
+    }
+
+    @MainActor
+    func testAutoPlayDoesNothingWhenNotRequested() {
+        let viewModel = MeditationPlayerViewModel(meditation: meditation)
+
+        viewModel.autoPlayIfReady()
+
+        XCTAssertFalse(viewModel.isPlaying)
+    }
+
+    private var meditation: DailyMeditation {
+        DailyMeditation(
+            id: "test-meditation",
+            titleLocalizationKey: "meditation.daily.luteal.title",
+            descriptionLocalizationKey: "meditation.daily.luteal.description",
+            phase: .luteal,
+            phaseDay: 6,
+            durationMinutes: 8,
+            voiceLocalizationKey: "meditation.voice.yaren",
+            audioResourceName: nil
+        )
+    }
+}

@@ -1,0 +1,79 @@
+{
+  "identifier" : "HESIA Premium",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "25.00",
+      "familyShareable" : false,
+      "internalID" : "hesia-premium-lifetime",
+      "localizations" : [
+        {
+          "description" : "Unlock every HESIA life stage with one purchase.",
+          "displayName" : "HESIA Premium Lifetime",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Tek satın alımla HESIA'nın tüm yaşam dönemlerini aç.",
+          "displayName" : "HESIA Premium Ömür Boyu",
+          "locale" : "tr_TR"
+        }
+      ],
+      "productID" : "com.ayameditation.app.premium.lifetime",
+      "referenceName" : "HESIA Premium Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : ""
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "hesia-premium-subscription-group",
+      "localizations" : [
+
+      ],
+      "name" : "HESIA Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "5.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "hesia-premium-monthly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly access to every HESIA life stage.",
+              "displayName" : "HESIA Premium Monthly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "HESIA'nın tüm yaşam dönemlerine aylık erişim.",
+              "displayName" : "HESIA Premium Aylık",
+              "locale" : "tr_TR"
+            }
+          ],
+          "productID" : "com.ayameditation.app.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "HESIA Premium Monthly",
+          "subscriptionGroupID" : "hesia-premium-subscription-group",
+          "type" : "RecurringSubscription",
+          "winBackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

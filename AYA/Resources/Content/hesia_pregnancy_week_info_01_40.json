@@ -1,0 +1,566 @@
+{
+  "schema_version": 1,
+  "content_version": "2026-08-10-draft-1",
+  "app": "HESIA",
+  "module": "pregnancy_week_info",
+  "status": "draft_requires_clinical_review",
+  "editorial_notes": {
+    "tr": "Metinler kısa, non-diagnostic ve kullanıcıya kesin belirti yaşayacağını söylemeyecek şekilde yazılmıştır. Yayına alınmadan önce kadın doğum uzmanı tarafından haftalık doğruluk kontrolü yapılmalıdır.",
+    "en": "Copy is intentionally brief, non-diagnostic and avoids implying that every user will experience the same symptoms. Week-by-week clinical review by an obstetric professional is required before release."
+  },
+  "disclaimer": {
+    "tr": "Bu içerik genel bilgilendirme amaçlıdır ve profesyonel sağlık değerlendirmesinin yerini tutmaz.",
+    "en": "This content is for general information and does not replace professional healthcare advice."
+  },
+  "section_titles": {
+    "tr": {
+      "baby": "Bebeğinde neler oluyor?",
+      "body": "Bedeninde neler oluyor?",
+      "experience": "Bu seni nasıl etkileyebilir?"
+    },
+    "en": {
+      "baby": "Your baby",
+      "body": "Your body",
+      "experience": "How this may feel"
+    }
+  },
+  "sources": [
+    {
+      "weeks": "1-3",
+      "source": "East Kent Hospitals NHS Foundation Trust — Pregnancy timeline",
+      "url": "https://www.ekhuft.nhs.uk/services/during-your-pregnancy/pregnancy-timeline/"
+    },
+    {
+      "weeks": "4-8",
+      "source": "NHS Best Start in Life — Week-by-week guide to pregnancy",
+      "url": "https://www.nhs.uk/best-start-in-life/pregnancy/week-by-week-guide-to-pregnancy/"
+    },
+    {
+      "weeks": "9-40",
+      "source": "NHS 111 Wales — Pregnancy Week by Week (adapted from NHS content)",
+      "url": "https://111.wales.nhs.uk/livewell/pregnancy/WeekByWeek/"
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "tr": {
+        "baby": "Gebelik haftaları son adetinin ilk gününden itibaren sayılır. Bu nedenle 1. haftada henüz bir embriyo yoktur; bedenin yeni bir döngünün başlangıcındadır.",
+        "body": "Bu hafta adet kanaman devam ediyor olabilir. Hormon seviyeleri yeni döngü için değişmeye başlar ve yumurtalıklarda yeni bir yumurta gelişmeye hazırlanır.",
+        "experience": "Adet dönemine özgü kramp, yorgunluk, hassasiyet veya duygu değişimleri yaşayabilirsin. Bunların şiddeti kişiden kişiye değişir."
+      },
+      "en": {
+        "baby": "Pregnancy is dated from the first day of your last period. That means there is not yet an embryo in week 1; your body is at the beginning of a new cycle.",
+        "body": "You may still be having your period. Hormone levels are beginning to shift for the new cycle, while an egg starts preparing to develop in an ovary.",
+        "experience": "You may notice period-related cramps, tiredness, tenderness or mood changes. The intensity can vary widely from person to person."
+      }
+    },
+    {
+      "week": 2,
+      "tr": {
+        "baby": "Bu haftada da çoğu kişide henüz gebelik oluşmamıştır. Döngünün uzunluğuna bağlı olarak yumurtlama yaklaşır ve döllenme için uygun dönem başlar.",
+        "body": "Östrojen yükselirken rahim iç tabakası yeniden kalınlaşır. Yumurtlama yaklaştıkça vajinal akıntının yapısı değişebilir.",
+        "experience": "Enerjinde, cinsel isteğinde veya beden farkındalığında küçük değişimler hissedebilirsin; bazı kişiler ise belirgin bir fark hissetmez."
+      },
+      "en": {
+        "baby": "For most people, pregnancy has still not begun biologically in week 2. Depending on cycle length, ovulation is approaching and the fertile window is opening.",
+        "body": "As estrogen rises, the lining of the uterus builds again. Cervical fluid may also change as ovulation gets closer.",
+        "experience": "You may notice subtle shifts in energy, libido or body awareness, while others feel no clear difference at all."
+      }
+    },
+    {
+      "week": 3,
+      "tr": {
+        "baby": "Yumurtlama ve döllenme bu dönemde gerçekleşebilir. Döllenmiş yumurta hızla bölünür ve rahme doğru ilerler; haftanın sonuna doğru rahim duvarına tutunmaya başlayabilir.",
+        "body": "Henüz dışarıdan fark edilen bir değişiklik olmayabilir. Bedenin, olası gebeliği desteklemek için hormonal olarak değişmeye başlar.",
+        "experience": "Çoğu kişi bu aşamada hiçbir şey hissetmez. Bazı kişiler hafif kramp veya lekelenme fark edebilir, ancak bunlar gebeliğe özgü belirtiler değildir."
+      },
+      "en": {
+        "baby": "Ovulation and fertilisation may happen around this time. The fertilised egg divides rapidly as it travels toward the uterus and may begin implanting near the end of the week.",
+        "body": "There may be no visible change yet. Hormonal changes are beginning as your body prepares to support a possible pregnancy.",
+        "experience": "Most people do not feel anything specific at this stage. Some may notice mild cramping or spotting, but these are not unique to pregnancy."
+      }
+    },
+    {
+      "week": 4,
+      "tr": {
+        "baby": "Embriyo yaklaşık bir haşhaş tohumu büyüklüğündedir. Amniyotik kese ve yolk kesesi erken desteği sağlarken plasentayı oluşturacak dokular gelişmeye başlar.",
+        "body": "Gebelik hormonu hCG yükselmeye başlar. Adetin gecikebilir; göğüs hassasiyeti, yorgunluk, bulantı veya daha sık idrara çıkma gibi erken belirtiler görülebilir.",
+        "experience": "Bir şeylerin değiştiğini hissedebilir ya da hiçbir belirti yaşamayabilirsin. Erken gebelik deneyimi kişiden kişiye oldukça farklıdır."
+      },
+      "en": {
+        "baby": "The embryo is about the size of a poppy seed. The amniotic and yolk sacs provide early support while tissues that will form the placenta begin developing.",
+        "body": "The pregnancy hormone hCG is rising. Your period may be late, and early symptoms such as breast tenderness, tiredness, nausea or more frequent urination can appear.",
+        "experience": "You may feel that something is changing, or you may have no symptoms at all. Early pregnancy varies greatly from person to person."
+      }
+    },
+    {
+      "week": 5,
+      "tr": {
+        "baby": "Beyin ve omuriliğin temeli hızla gelişirken küçük kalp de oluşmaya başlar. Plasenta ve göbek kordonunu oluşturacak yapılar gelişimini sürdürür.",
+        "body": "Hormon değişimleri daha belirgin hale gelebilir. Adet gecikmesi, yorgunluk, bulantı, koku hassasiyeti ve göğüslerde hassasiyet sık görülebilir.",
+        "experience": "Gün içinde enerjin hızla değişebilir. Yeni kokulara veya yiyeceklere karşı daha hassas olman günlük rutini beklediğinden fazla etkileyebilir."
+      },
+      "en": {
+        "baby": "The foundations of the brain and spinal cord are developing rapidly, while the tiny heart is beginning to form. Structures that will become the placenta and umbilical cord continue developing.",
+        "body": "Hormonal changes may become more noticeable. A missed period, tiredness, nausea, stronger sense of smell and breast tenderness are common possibilities.",
+        "experience": "Your energy may shift quickly through the day. New sensitivities to smells or foods can affect your routine more than you expected."
+      }
+    },
+    {
+      "week": 6,
+      "tr": {
+        "baby": "Kol ve bacak tomurcukları oluşmaya başlar; beyin, karaciğer ve kas-iskelet sistemi hızla gelişir. Embriyo hâlâ çok küçüktür ancak değişim çok hızlıdır.",
+        "body": "Bulantı ve yorgunluk bu dönemde belirginleşebilir. Göğüs hassasiyeti, sık idrara çıkma, baş ağrısı veya duygu değişimleri de görülebilir.",
+        "experience": "Özellikle bulantı ve bitkinlik günün temposunu düşürebilir. Daha fazla dinlenme ihtiyacı duyman olağandır."
+      },
+      "en": {
+        "baby": "Arm and leg buds are starting to form, while the brain, liver and musculoskeletal system develop rapidly. The embryo is still tiny, but changing quickly.",
+        "body": "Nausea and tiredness can become more noticeable. Breast tenderness, frequent urination, headaches or mood changes may also occur.",
+        "experience": "Nausea and exhaustion can slow your usual pace. Needing more rest than normal can be a very real part of this stage."
+      }
+    },
+    {
+      "week": 7,
+      "tr": {
+        "baby": "Beyin ve omurilik hızla gelişir; yüzün erken yapıları ve göz kapakları oluşmaya başlar. Kol ve bacak tomurcuklarında kıkırdak gelişimi sürer.",
+        "body": "Kan hacmin artmaya başlar ve rahim büyür. Bulantı, yorgunluk ve duygu değişimleri hâlâ yoğun olabilir.",
+        "experience": "Kendini bir gün iyi, ertesi gün çok yorgun hissetmen mümkün. Susama, koku hassasiyeti ve dalgalanan enerji günlük ritmini etkileyebilir."
+      },
+      "en": {
+        "baby": "The brain and spinal cord are developing quickly, and early facial structures and eyelids are forming. Cartilage is developing in the limb buds.",
+        "body": "Your blood volume is beginning to increase and your uterus is growing. Nausea, tiredness and mood changes may still be strong.",
+        "experience": "You may feel relatively well one day and very tired the next. Thirst, smell sensitivity and changing energy can shape your daily rhythm."
+      }
+    },
+    {
+      "week": 8,
+      "tr": {
+        "baby": "Plasenta rahim duvarına daha güçlü bağlanmak için gelişir. Baş ve uzuvlar belirginleşirken embriyo bu dönemde fetüs olarak adlandırılmaya yaklaşır.",
+        "body": "Şişkinlik ve göğüslerde büyüme fark edilebilir. Gebelik hormonları yüksek olduğu için bulantı, yorgunluk ve duygu değişimleri devam edebilir.",
+        "experience": "Dışarıdan henüz hamile görünmeyebilirsin ama bedeninin yoğun bir değişim içinde olduğunu hissedebilirsin. Bu görünmez değişim bazen yorucu gelebilir."
+      },
+      "en": {
+        "baby": "The placenta is developing stronger connections with the uterine wall. The head and limbs are becoming more defined, and around this stage the embryo transitions toward being called a fetus.",
+        "body": "Bloating and breast enlargement may become noticeable. High pregnancy hormone levels can keep nausea, tiredness and mood changes going.",
+        "experience": "You may not look pregnant yet, while feeling that your body is working intensely. That mismatch between visible and internal change can feel tiring."
+      }
+    },
+    {
+      "week": 9,
+      "tr": {
+        "baby": "Yüz daha belirginleşir; ağız, dil ve küçük tat tomurcukları oluşur. Eller ve ayaklarda parmakların yerleri belirginleşirken iç organlar gelişmeye devam eder.",
+        "body": "Göğüslerin büyüyebilir ve vajinal akıntın artabilir. Hormonların etkisiyle duyguların daha hızlı değişebilir.",
+        "experience": "Fiziksel belirtilerle birlikte duygusal dalgalanmalar da belirgin olabilir. Aynı gün içinde heyecanlı, hassas ve yorgun hissetmen mümkün."
+      },
+      "en": {
+        "baby": "The face is becoming more defined, with the mouth, tongue and tiny taste buds forming. Fingers and toes are taking shape while major internal organs continue developing.",
+        "body": "Your breasts may be larger and vaginal discharge can increase. Hormonal changes may make emotions feel more changeable.",
+        "experience": "Physical symptoms can come with emotional shifts too. It is possible to feel excited, sensitive and tired within the same day."
+      }
+    },
+    {
+      "week": 10,
+      "tr": {
+        "baby": "Kulak kanalları, üst dudak, burun delikleri ve çene kemikleri gelişir. Kalp oluşumunu büyük ölçüde tamamlamıştır ve fetüs küçük hareketler yapar.",
+        "body": "Şişkinlik, kabızlık ve mide-bağırsak değişimleri daha belirgin olabilir. Erken gebelik belirtileri hâlâ devam edebilir.",
+        "experience": "Karnın henüz çok büyümemiş olsa bile sindirim değişimleri kendini daha dolu veya rahatsız hissetmene neden olabilir."
+      },
+      "en": {
+        "baby": "The ear canals, upper lip, nostrils and jawbones are developing. The heart is largely formed, and the fetus is making small movements.",
+        "body": "Bloating, constipation and other digestive changes may become more noticeable. Early pregnancy symptoms can still continue.",
+        "experience": "Even without a visible bump, digestive changes can leave you feeling fuller or more uncomfortable than usual."
+      }
+    },
+    {
+      "week": 11,
+      "tr": {
+        "baby": "Baş hâlâ vücuda göre büyüktür ancak gövde hızla uzar. Parmaklar ve ayak parmakları ayrışır, tırnakların temeli oluşmaya başlar.",
+        "body": "Baş ağrısı, yorgunluk ve hormonal belirtiler devam edebilir. Bedenin artan kan hacmine ve değişen hormon düzeylerine uyum sağlar.",
+        "experience": "İlk trimesterin sonuna yaklaşırken hâlâ yoruluyor olabilirsin. Bazı kişilerde belirtiler hafiflemeye başlarken bazılarında aynı yoğunlukta sürebilir."
+      },
+      "en": {
+        "baby": "The head is still large compared with the body, but the torso is growing quickly. Fingers and toes separate, and early nails begin to form.",
+        "body": "Headaches, tiredness and hormonal symptoms can continue as your body adapts to increased blood volume and changing hormone levels.",
+        "experience": "As the first trimester nears its end, you may still feel drained. Symptoms may begin easing for some people while staying strong for others."
+      }
+    },
+    {
+      "week": 12,
+      "tr": {
+        "baby": "Organların, kasların, uzuvların ve kemiklerin temel yapısı artık oluşmuştur. Bundan sonraki süreçte büyüme ve olgunlaşma ön plana çıkar; bebek hareket eder ancak bunu henüz hissetmezsin.",
+        "body": "Rahim büyüdükçe bağlarda gerilme, hafif kramplar, kabızlık veya şişkinlik görülebilir.",
+        "experience": "İlk trimesterin sonuna gelirken bazı belirtilerin azaldığını fark edebilirsin. Bedenin değişmeye devam ederken enerjinin yavaş yavaş geri gelmesi mümkün."
+      },
+      "en": {
+        "baby": "The basic structures of the organs, muscles, limbs and bones are now in place. Growth and maturation become the main focus; your baby moves, although you cannot feel it yet.",
+        "body": "As the uterus grows, ligament stretching, mild cramps, constipation or bloating may occur.",
+        "experience": "Near the end of the first trimester, you may notice some symptoms easing. Your energy can gradually begin to return while your body keeps changing."
+      }
+    },
+    {
+      "week": 13,
+      "tr": {
+        "baby": "Bebeğin üreme organları gelişmeye devam eder ve vücut daha orantılı hale gelmeye başlar. İkinci trimesterle birlikte büyüme hızlanır.",
+        "body": "Rahim pelvisin üzerinden yukarı doğru büyür ve küçük bir karın belirginleşebilir. Bulantı ve yoğun yorgunluk bazı kişilerde azalmaya başlayabilir.",
+        "experience": "Enerjinin arttığını veya daha 'kendin gibi' hissettiğini fark edebilirsin. Ancak belirtilerin devam etmesi de olağandır."
+      },
+      "en": {
+        "baby": "Your baby's reproductive organs continue developing and the body begins to look more proportionate. Growth accelerates as the second trimester begins.",
+        "body": "The uterus rises out of the pelvis and a small bump may become visible. Nausea and intense tiredness may begin to ease for some people.",
+        "experience": "You may notice more energy or start to feel more like yourself again. It is also normal for earlier symptoms to continue."
+      }
+    },
+    {
+      "week": 14,
+      "tr": {
+        "baby": "Bebek amniyotik sıvıyı yutmaya başlar ve böbrekler çalışarak idrar üretir. Yüz ve vücut ayrıntıları giderek belirginleşir.",
+        "body": "Karnın yavaş yavaş büyürken kilo değişimleri daha fark edilir olabilir. Rahmin yukarı doğru büyümesi alt karında dolgunluk hissi yaratabilir.",
+        "experience": "Bedeninin daha görünür şekilde değişmeye başladığı bir dönem olabilir. Kıyafetlerin farklı oturması gibi küçük şeyler gebeliği daha somut hissettirebilir."
+      },
+      "en": {
+        "baby": "Your baby begins swallowing amniotic fluid and the kidneys start producing urine. Facial and body details are becoming more defined.",
+        "body": "As your bump grows, changes in weight and shape may become more noticeable. The rising uterus can create a fuller feeling in the lower abdomen.",
+        "experience": "Pregnancy may begin to feel more visible now. Small changes, like clothes fitting differently, can make it feel more tangible."
+      }
+    },
+    {
+      "week": 15,
+      "tr": {
+        "baby": "İşitme gelişmeye başlar; bebeğin kalp atışını, sindirim seslerini ve dışarıdan gelen bazı boğuk sesleri algılaması mümkün hale gelir. Gözler de ışığa duyarlılaşır.",
+        "body": "Rahmin ağırlaştıkça bel ağrısı veya bağlarda gerilme olabilir. Vajinal akıntı miktarında artış da gebelikte sık görülür.",
+        "experience": "Bedenindeki ağırlık dağılımının değiştiğini fark etmeye başlayabilirsin. Daha sık pozisyon değiştirme veya dinlenme ihtiyacı hissedebilirsin."
+      },
+      "en": {
+        "baby": "Hearing is beginning to develop, allowing your baby to detect internal sounds and some muffled sounds from outside. The eyes are also becoming sensitive to light.",
+        "body": "As the uterus becomes heavier, backache or ligament stretching can occur. Increased vaginal discharge is also common in pregnancy.",
+        "experience": "You may start noticing changes in how weight is distributed through your body. You might want to change position or rest more often."
+      }
+    },
+    {
+      "week": 16,
+      "tr": {
+        "baby": "Sinir sistemi kas hareketlerini daha iyi destekler; kollar ve bacaklar daha aktif hareket eder. Eller yumruk yapabilir ve yüz kaslarında küçük hareketler oluşabilir.",
+        "body": "Rahim büyümeye devam eder ve bazı kişilerde ilk kez bebeğin hareketlerine benzer hafif hisler başlayabilir.",
+        "experience": "Karnında hafif bir kıpırtı, baloncuk veya kelebek hissi fark edebilirsin; özellikle ilk gebelikte bunu ayırt etmek daha uzun sürebilir."
+      },
+      "en": {
+        "baby": "The nervous system is increasingly supporting muscle movement, so the arms and legs are more active. Hands can form fists and small facial movements appear.",
+        "body": "The uterus keeps growing, and some people may begin noticing the earliest sensations that could be fetal movement.",
+        "experience": "You may feel a faint flutter, bubble or butterfly-like sensation. In a first pregnancy, it can take longer to recognise what those movements are."
+      }
+    },
+    {
+      "week": 17,
+      "tr": {
+        "baby": "Kaşlar ve kirpikler oluşmaya başlar; parmak izleri belirginleşir. Bebek ellerini daha güçlü kavrayabilir ve hareketleri giderek koordineli hale gelir.",
+        "body": "Karın büyürken ağırlık merkezinde küçük değişimler başlar. Bağların gerilmesine bağlı yan karın ağrıları veya bel hassasiyeti oluşabilir.",
+        "experience": "Hareket ederken bedeninin eskisinden farklı tepki verdiğini fark edebilirsin. Ayağa kalkarken veya yön değiştirirken biraz daha yavaş davranmak doğal gelebilir."
+      },
+      "en": {
+        "baby": "Eyebrows and eyelashes begin growing, and fingerprints are forming. Your baby can grip more firmly and movements are becoming increasingly coordinated.",
+        "body": "As your bump grows, your centre of gravity starts to shift. Round-ligament discomfort or back sensitivity may appear.",
+        "experience": "You may notice your body responding differently to movement. Standing up or changing direction a little more slowly can start to feel natural."
+      }
+    },
+    {
+      "week": 18,
+      "tr": {
+        "baby": "Bebek oldukça aktiftir ve dışarıdan gelen yüksek seslere tepki verebilir. Hareketlerini ilk kez hafif bir çırpınma veya yuvarlanma gibi hissetmeye başlayabilirsin.",
+        "body": "Rahmi destekleyen bağlar gerildikçe yan karında kısa süreli ağrılar olabilir. Büyüyen karın duruşunu ve denge hissini değiştirmeye başlayabilir.",
+        "experience": "İlk hareketleri hissetmek heyecan verici olabilir; aynı zamanda değişen bedenine karşı daha dikkatli veya hassas hissetmen de mümkün."
+      },
+      "en": {
+        "baby": "Your baby is very active and may respond to louder sounds from outside. You may begin feeling movement as a soft fluttering or rolling sensation.",
+        "body": "As the ligaments supporting the uterus stretch, brief pains at the sides of the abdomen can occur. Your growing bump may begin changing posture and balance.",
+        "experience": "Feeling the first movements can be exciting, while the changing shape of your body may also make you feel more physically aware or cautious."
+      }
+    },
+    {
+      "week": 19,
+      "tr": {
+        "baby": "Bebek kilo almaya devam eder ve cilt altında henüz çok az yağ bulunur. Hareketleri giderek daha belirgin hale gelir.",
+        "body": "Özellikle ilk gebelikte bebeğin hareketlerini bu haftalarda daha net ayırt etmeye başlayabilirsin. Karın büyüdükçe bel ve pelvis üzerinde yük artar.",
+        "experience": "İçerideki hareketlerin belirginleşmesi gebeliği daha gerçek hissettirebilir. Aynı zamanda uyku pozisyonu veya günlük hareketlerde yeni ayarlamalar gerekebilir."
+      },
+      "en": {
+        "baby": "Your baby continues gaining weight, though there is still relatively little fat under the skin. Movements are becoming stronger and easier to notice.",
+        "body": "Especially in a first pregnancy, you may begin recognising your baby's movements more clearly around this time. A growing bump also increases load on the back and pelvis.",
+        "experience": "More obvious movement can make pregnancy feel more real. You may also find yourself adjusting sleep positions or everyday movements."
+      }
+    },
+    {
+      "week": 20,
+      "tr": {
+        "baby": "Bebeğin cildi vernix adı verilen koruyucu, yağlı bir tabakayla kaplanır. Gelişim devam eder ve gebeliğin yaklaşık yarısına ulaşılır.",
+        "body": "Karnın belirginleşirken ciltte pigment değişiklikleri görülebilir; karın ortasında koyu bir çizgi oluşabilir. Saç dökülmesinin azalması saçları daha dolgun gösterebilir.",
+        "experience": "Gebeliğin yarısına gelmek zihinsel olarak önemli bir eşik gibi hissedilebilir. Bedenindeki değişimler artık daha görünür ve kalıcı hissedebilir."
+      },
+      "en": {
+        "baby": "Your baby's skin is covered by a protective greasy coating called vernix. Development continues as you reach roughly the halfway point of pregnancy.",
+        "body": "As your bump becomes more prominent, skin pigmentation can change and a darker line may appear down the abdomen. Reduced hair shedding may make hair look fuller.",
+        "experience": "Reaching the halfway point can feel like a meaningful milestone. The changes in your body may now feel more visible and established."
+      }
+    },
+    {
+      "week": 21,
+      "tr": {
+        "baby": "Bebek hızla büyür; emme ve nefes alma gibi doğum sonrası yaşam için gerekli becerileri prova eder. Uyku ve uyanıklık düzenleri oluşmaya başlar.",
+        "body": "Karnın büyüdükçe ağırlık merkezin değişir ve eklemler daha gevşek olabilir. Bu nedenle kendini zaman zaman daha dengesiz hissedebilirsin.",
+        "experience": "Yürürken veya merdiven çıkarken daha dikkatli hareket etme ihtiyacı duyabilirsin. Bebeğin aktif olduğu saatlerin kendi dinlenme zamanlarınla çakışması da mümkün."
+      },
+      "en": {
+        "baby": "Your baby is growing quickly and practising skills needed after birth, including sucking and breathing movements. Sleep and wake patterns are beginning to develop.",
+        "body": "As your bump grows, your centre of gravity shifts and joints can be looser. You may occasionally feel less steady on your feet.",
+        "experience": "You may naturally move more carefully when walking or using stairs. Your baby's active periods can also start overlapping with the times you want to rest."
+      }
+    },
+    {
+      "week": 22,
+      "tr": {
+        "baby": "Bebek kendi uyku ve uyanıklık ritmini oluşturmaya devam eder ve hareketleri daha güçlü hale gelir.",
+        "body": "Karın, göğüsler veya uyluklarda çatlaklar belirginleşmeye başlayabilir. Göğüslerden az miktarda kolostrum benzeri sıvı gelmesi de mümkün olabilir.",
+        "experience": "Cilt ve göğüs değişimleri bedenini daha farklı algılamana neden olabilir. Bebeğin gece hareketlenmesi uykunun bölünmesine katkıda bulunabilir."
+      },
+      "en": {
+        "baby": "Your baby continues developing their own sleep-wake rhythm and movements are becoming stronger.",
+        "body": "Stretch marks may begin appearing on the abdomen, breasts or thighs. A small amount of early breast fluid may also appear.",
+        "experience": "Skin and breast changes can alter how you experience your body. If your baby is active at night, sleep may also become more interrupted."
+      }
+    },
+    {
+      "week": 23,
+      "tr": {
+        "baby": "Akciğerler henüz olgun değildir ancak bebek doğum sonrası solunuma hazırlanmak için nefes alma hareketlerini prova eder.",
+        "body": "Büyüyen rahim damarlar ve sindirim sistemi üzerinde daha fazla baskı oluşturabilir. Hemoroid, bel ağrısı, yorgunluk veya uyku sorunları görülebilir.",
+        "experience": "Rahat bir uyku pozisyonu bulmak zorlaşabilir ve gün içinde daha çabuk yorulabilirsin. Bedeninin dinlenme sinyallerini daha sık fark edebilirsin."
+      },
+      "en": {
+        "baby": "The lungs are not mature yet, but your baby practises breathing movements in preparation for life after birth.",
+        "body": "The growing uterus can place more pressure on veins and the digestive system. Haemorrhoids, backache, tiredness or sleep problems can occur.",
+        "experience": "Finding a comfortable sleep position may become harder and you may tire more quickly during the day. Your body's signals to rest can feel more obvious."
+      }
+    },
+    {
+      "week": 24,
+      "tr": {
+        "baby": "Akciğerler ve diğer hayati organlar gelişmeye devam eder. Bu hafta bebeğin dış dünyada yaşama potansiyeli artar, ancak çok erken doğum hâlâ yoğun yenidoğan bakımı gerektirir.",
+        "body": "Rahim büyümeye devam ederken idrar yolları ve vajinal dengede değişimler olabilir. Bazı kişilerde kaşıntı veya enfeksiyon belirtileri ortaya çıkabilir.",
+        "experience": "Gebelik ilerledikçe bebeğin hareketleri ve bedenindeki değişimler daha sürekli bir farkındalık yaratabilir. Rahatlık ihtiyacın gün içinde daha sık değişebilir."
+      },
+      "en": {
+        "baby": "The lungs and other vital organs continue developing. Survival outside the womb becomes more possible around this stage, although very premature birth still requires intensive neonatal care.",
+        "body": "As the uterus grows, changes affecting the urinary tract and vaginal environment can occur. Some people may notice irritation or symptoms of infection.",
+        "experience": "As pregnancy progresses, movement and physical changes can create a more constant awareness of your body. Your comfort needs may shift more often through the day."
+      }
+    },
+    {
+      "week": 25,
+      "tr": {
+        "baby": "Bebek dokunma ve sese daha belirgin tepki verir. Hıçkırıklar ve güçlü hareketler hissedilebilir; böbrekler amniyotik sıvıya idrar üretmeye devam eder.",
+        "body": "El ve ayaklarda hafif şişlik oluşabilir; büyüyen karın bel üzerinde daha fazla yük yaratır.",
+        "experience": "Ayakta uzun kalınca daha ağır veya şiş hissedebilirsin. Bebeğin hıçkırıkları ya da ani hareketleri günlük hayatın tanıdık bir parçası olmaya başlayabilir."
+      },
+      "en": {
+        "baby": "Your baby responds more clearly to touch and sound. Hiccups and stronger movements may be noticeable, while the kidneys continue producing urine into the amniotic fluid.",
+        "body": "Mild swelling of the hands and feet can occur, and your growing bump puts more load on the lower back.",
+        "experience": "You may feel heavier or more swollen after being on your feet. Your baby's hiccups or sudden movements can start becoming a familiar part of the day."
+      }
+    },
+    {
+      "week": 26,
+      "tr": {
+        "baby": "Göz kapakları bu dönemde açılmaya başlar ve bebek kısa süre içinde göz kırpabilir. Sinir sistemi ve duyular gelişmeye devam eder.",
+        "body": "Pelvik taban üzerindeki yük arttıkça öksürme, hapşırma veya zorlanma sırasında idrar kaçırma görülebilir.",
+        "experience": "Bedeninin daha önce otomatik yaptığı şeylere artık daha fazla dikkat ettiğini fark edebilirsin. Pelvik taban ve mesane farkındalığın artabilir."
+      },
+      "en": {
+        "baby": "The eyelids begin to open around this time and blinking soon becomes possible. The nervous system and senses continue maturing.",
+        "body": "As pressure on the pelvic floor increases, small urine leaks can happen with coughing, sneezing or straining.",
+        "experience": "You may find yourself more aware of bodily functions that used to feel automatic. Pelvic-floor and bladder awareness can become more noticeable."
+      }
+    },
+    {
+      "week": 27,
+      "tr": {
+        "baby": "Beyin, akciğerler ve sindirim sistemi oluşmuştur ancak henüz tam olgun değildir. Gelişim ve kilo artışı devam eder.",
+        "body": "Burun kanaması, ciltte gerilme ve çatlaklar gibi değişimler görülebilir. Karnın büyüdükçe uyku ve hareket konforu azalabilir.",
+        "experience": "İkinci trimesterin sonuna yaklaşırken enerjinin yeniden düşmeye başladığını hissedebilirsin. Daha sık mola verme ihtiyacı doğal olabilir."
+      },
+      "en": {
+        "baby": "The brain, lungs and digestive system are formed but not yet fully mature. Development and weight gain continue.",
+        "body": "Nosebleeds, skin stretching and stretch marks may occur. As your bump grows, sleep and movement can become less comfortable.",
+        "experience": "As the second trimester ends, you may notice your energy beginning to dip again. Wanting more frequent breaks can feel increasingly natural."
+      }
+    },
+    {
+      "week": 28,
+      "tr": {
+        "baby": "Bebek yaklaşık üçüncü trimestere geçerken hızla kilo ve yağ kazanmaya başlar. Kalp atışı dışarıdan stetoskopla duyulabilecek kadar güçlü olabilir.",
+        "body": "Mide yanması ve reflü daha sık görülebilir; rahim büyüdükçe mideye ve diyaframa baskı artar.",
+        "experience": "Yemeklerden sonra daha çabuk dolu hissetmek veya yatarken rahat pozisyon bulmak zorlaşabilir. Günlük temponu biraz yavaşlatma ihtiyacı hissedebilirsin."
+      },
+      "en": {
+        "baby": "As the third trimester begins, your baby starts gaining weight and body fat more rapidly. The heartbeat may be strong enough to hear with a stethoscope.",
+        "body": "Heartburn and reflux can become more common as the growing uterus puts more pressure on the stomach and diaphragm.",
+        "experience": "You may feel full more quickly after meals or find it harder to get comfortable in bed. Slowing your usual pace may begin to feel necessary."
+      }
+    },
+    {
+      "week": 29,
+      "tr": {
+        "baby": "Bebek oldukça aktiftir ve artık kendine özgü bir hareket düzeni vardır. Büyüme ve yağ depolama hızlanır.",
+        "body": "Büyüyen rahim diyaframa doğru baskı yaptıkça nefes darlığı hissedebilirsin. Ayak bileklerinde şişlik de sık görülebilir.",
+        "experience": "Kısa yürüyüşler veya merdivenler eskisinden daha yorucu gelebilir. Daha sık durup nefeslenme ihtiyacı hissedebilirsin."
+      },
+      "en": {
+        "baby": "Your baby remains very active and now has an individual pattern of movement. Growth and fat storage continue rapidly.",
+        "body": "As the uterus pushes upward toward the diaphragm, you may feel more breathless. Swollen ankles are also common.",
+        "experience": "Short walks or stairs may feel more demanding than before. You may naturally need to pause and catch your breath more often."
+      }
+    },
+    {
+      "week": 30,
+      "tr": {
+        "baby": "Emme refleksi gelişir ve bebek parmağını emebilir. Cilt altında yağ arttıkça daha dolgun görünür; lanugo ve vernix yavaş yavaş azalmaya başlar.",
+        "body": "Gece bacak krampları, sık idrara çıkma ve rahat uyku pozisyonu bulmakta zorlanma görülebilir.",
+        "experience": "Uykunun daha sık bölünmesi gündüz enerjini etkileyebilir. Dinlenmek için eskisinden daha fazla zamana ihtiyaç duyabilirsin."
+      },
+      "en": {
+        "baby": "The sucking reflex is developing and your baby may suck a thumb or fingers. Increasing fat under the skin makes the body look plumper, while lanugo and vernix begin to reduce.",
+        "body": "Night-time leg cramps, frequent urination and difficulty finding a comfortable sleep position can occur.",
+        "experience": "More interrupted sleep can affect daytime energy. You may need more time for rest than you did earlier in pregnancy."
+      }
+    },
+    {
+      "week": 31,
+      "tr": {
+        "baby": "Akciğerler hızla gelişmeye devam eder, ancak bağımsız solunum için hâlâ olgunlaşmaktadır. Bebek büyümeye ve yağ depolamaya devam eder.",
+        "body": "Karın büyüklüğü nefes, uyku ve hareket konforunu etkileyebilir. Üçüncü trimesterde tansiyon ve şişlik gibi değişimler sağlık kontrollerinde daha yakından izlenir.",
+        "experience": "Bedenin daha ağır hissedebilir ve günlük işlerde daha çabuk yorulabilirsin. Daha planlı dinlenme molaları faydalı gelebilir."
+      },
+      "en": {
+        "baby": "The lungs continue developing rapidly but are still maturing for independent breathing. Your baby keeps growing and storing body fat.",
+        "body": "The size of your bump can affect breathing, sleep and movement comfort. In the third trimester, changes such as blood pressure and swelling are monitored more closely at routine care.",
+        "experience": "Your body may feel heavier and everyday tasks can tire you more quickly. Planned rest breaks may become more useful."
+      }
+    },
+    {
+      "week": 32,
+      "tr": {
+        "baby": "Birçok bebek bu dönemde baş aşağı pozisyona dönmeye başlar, ancak henüz dönmemiş olması olağandır. Amniyotik sıvıyı yutma ve idrar üretme döngüsü devam eder.",
+        "body": "Pelvis ve kasık bölgesindeki yük arttığı için pelvik ağrı veya hareket sırasında rahatsızlık oluşabilir.",
+        "experience": "Yürüyüş hızının değiştiğini, yataktan kalkmanın veya yön değiştirmenin daha fazla çaba istediğini fark edebilirsin."
+      },
+      "en": {
+        "baby": "Many babies begin settling head-down around this stage, although it is still normal not to be in that position yet. Swallowing amniotic fluid and producing urine continue.",
+        "body": "Increasing load through the pelvis and groin can lead to pelvic discomfort or pain with movement.",
+        "experience": "You may notice your walking pace changing, or that getting out of bed and turning takes more effort than before."
+      }
+    },
+    {
+      "week": 33,
+      "tr": {
+        "baby": "Beyin ve sinir sistemi ileri düzeyde gelişmiştir ve bebek büyümeye devam eder. Sinir sistemi vücut işlevlerini giderek daha koordineli şekilde yönetir.",
+        "body": "Mide yanması ve reflü daha sık olabilir; büyüyen bebek mideye daha fazla baskı yapar.",
+        "experience": "Daha küçük öğünlerle daha rahat ettiğini veya yemekten sonra dik kalma ihtiyacı duyduğunu fark edebilirsin. Geceleri rahatlık bulmak zorlaşabilir."
+      },
+      "en": {
+        "baby": "The brain and nervous system are highly developed, and your baby continues growing. The nervous system is coordinating body functions more effectively.",
+        "body": "Heartburn and reflux can become more frequent as the growing baby puts more pressure on the stomach.",
+        "experience": "You may feel more comfortable with smaller meals or staying upright after eating. Finding comfort at night can become harder."
+      }
+    },
+    {
+      "week": 34,
+      "tr": {
+        "baby": "Kemikler sertleşmeye devam eder; kafatası kemikleri ise doğum kanalından geçişe uyum sağlayabilmek için daha yumuşak ve hareketli kalır.",
+        "body": "Büyüyen karın ve hormonlar şişlik, mide yanması, bel ağrısı ve uyku zorluklarını artırabilir.",
+        "experience": "Günlük hareketlerini daha bilinçli planlamak isteyebilirsin. Bedenin artık dinlenme ve pozisyon değiştirme ihtiyacını daha net hissettirebilir."
+      },
+      "en": {
+        "baby": "The bones continue hardening, while the skull bones stay softer and able to move slightly to help with passage through the birth canal.",
+        "body": "A larger bump and hormonal changes can increase swelling, heartburn, backache and sleep difficulties.",
+        "experience": "You may want to plan everyday movement more deliberately. Your body's need for rest and position changes can feel increasingly clear."
+      }
+    },
+    {
+      "week": 35,
+      "tr": {
+        "baby": "Rahimde alan azaldığı için bebek daha kıvrılmış bir pozisyondadır. Hareketlerin türü değişebilir ancak hareket etmeye devam etmesi beklenir.",
+        "body": "Ekstra ağırlık yorgunluğu ve bel ağrısını artırabilir. Uzun süre ayakta kalmak veya yürümek daha yorucu hale gelebilir.",
+        "experience": "Temponu yavaşlatma ihtiyacı çok daha belirgin olabilir. Bebeğin hareketleri tekme yerine daha fazla dönme veya gerilme gibi hissedilebilir."
+      },
+      "en": {
+        "baby": "With less room in the uterus, your baby stays in a more curled position. The type of movement may change, but movement should continue.",
+        "body": "Extra weight can increase tiredness and backache. Standing or walking for long periods may become more demanding.",
+        "experience": "The need to slow down may feel much stronger now. Movements may feel more like rolling or stretching than sharp kicks."
+      }
+    },
+    {
+      "week": 36,
+      "tr": {
+        "baby": "Akciğerler doğum sonrası ilk nefese hazırlanacak kadar gelişmiştir ve sindirim sistemi de ileri düzeyde olgunlaşmıştır.",
+        "body": "Braxton Hicks olarak bilinen düzensiz rahim kasılmalarını daha belirgin hissedebilirsin. Bunlar genellikle düzensizdir ve giderek güçlenmez.",
+        "experience": "Alt karında sıkılaşma hissi seni doğuma daha fazla odaklayabilir. Heyecan, sabırsızlık ve yorgunluğun aynı anda bulunması çok mümkündür."
+      },
+      "en": {
+        "baby": "The lungs are developed enough to prepare for the first breaths after birth, and the digestive system is also well advanced.",
+        "body": "You may notice Braxton Hicks tightenings more clearly. These practice contractions are usually irregular and do not keep becoming stronger.",
+        "experience": "Tightening sensations can make labour feel more present in your mind. Excitement, impatience and tiredness can easily exist together."
+      }
+    },
+    {
+      "week": 37,
+      "tr": {
+        "baby": "Gebelik artık term döneme ulaşmıştır ve bebeğin organları doğuma hazırdır. Sindirim sisteminde doğumdan sonraki ilk dışkıyı oluşturacak mekonyum bulunur.",
+        "body": "Özellikle ilk gebelikte bebeğin başı pelvise doğru inmeye başlayabilir. Bu, üst karında ve nefeste rahatlama sağlarken alt karında basıncı artırabilir.",
+        "experience": "Bir yandan daha rahat nefes alırken diğer yandan pelviste ağırlık, sık idrara çıkma veya yürürken baskı hissedebilirsin."
+      },
+      "en": {
+        "baby": "Pregnancy has reached term and your baby's organs are ready for birth. The digestive system contains meconium, which will become the first stool after birth.",
+        "body": "Especially in a first pregnancy, your baby's head may begin moving lower into the pelvis. This can ease pressure higher up while increasing pressure lower down.",
+        "experience": "You may breathe a little more easily while noticing more pelvic heaviness, frequent urination or pressure when walking."
+      }
+    },
+    {
+      "week": 38,
+      "tr": {
+        "baby": "Bebek doğuma hazırdır ve kilo almaya devam eder. Rahimde alan azaldığı için hareketlerin biçimi değişebilir ancak bebeğin kendi düzeni devam etmelidir.",
+        "body": "Doğum belirtilerine karşı farkındalığın artabilir. Kasılmalar, pelvik basınç ve vajinal akıntıda değişiklikler daha çok dikkatini çekebilir.",
+        "experience": "Her yeni hissin 'doğum başlıyor mu?' sorusunu getirmesi mümkün. Bekleyiş zihinsel olarak yorucu olabileceği gibi heyecan verici de olabilir."
+      },
+      "en": {
+        "baby": "Your baby is ready for birth and continues gaining weight. With less room in the uterus, movements may feel different, but your baby's usual movement pattern should continue.",
+        "body": "You may become more aware of possible signs of labour. Contractions, pelvic pressure and changes in vaginal discharge can attract more attention.",
+        "experience": "Every new sensation may raise the question, 'Is labour starting?' The waiting can feel mentally tiring as well as exciting."
+      }
+    },
+    {
+      "week": 39,
+      "tr": {
+        "baby": "Bebeğin başı pelviste daha aşağı yerleşebilir ve doğum pozisyonuna hazırlanır. Organlar olgunlaşmıştır, son haftalarda büyüme ve yağ depolama sürer.",
+        "body": "Karın daha aşağıda görünebilir. Pelvik basınç, sık idrara çıkma, uyku güçlüğü ve düzensiz kasılmalar belirgin olabilir.",
+        "experience": "Bedenindeki küçük değişimleri daha yakından izliyor olabilirsin. Doğumun ne zaman başlayacağını bilmemek sabırsızlık veya gerginlik yaratabilir."
+      },
+      "en": {
+        "baby": "Your baby's head may settle lower into the pelvis in preparation for birth. The organs are mature, while growth and fat storage continue in these final weeks.",
+        "body": "Your bump may look lower. Pelvic pressure, frequent urination, sleep difficulty and irregular contractions can be more noticeable.",
+        "experience": "You may find yourself monitoring small body changes closely. Not knowing exactly when labour will start can bring impatience or tension."
+      }
+    },
+    {
+      "week": 40,
+      "tr": {
+        "baby": "Bebek tam gelişmiştir ve doğuma hazırdır. Vücudu kaplayan ince lanugo tüylerinin büyük kısmı kaybolmuştur, ancak doğumda küçük bölgelerde kalabilir.",
+        "body": "Tahmini doğum tarihine ulaşmış olsan da doğumun tam bu gün başlamaması olağandır. Pelvik basınç, kasılmalar ve uyku zorlukları devam edebilir.",
+        "experience": "Bekleyiş uzun gelebilir ve aynı anda heyecan, yorgunluk, sabırsızlık veya sakinlik hissedebilirsin. Tahmini doğum tarihi kesin bir son tarih değildir."
+      },
+      "en": {
+        "baby": "Your baby is fully developed and ready for birth. Most of the fine lanugo hair has disappeared, although small patches can remain at birth.",
+        "body": "Reaching your due date does not mean labour must begin that day. Pelvic pressure, contractions and sleep difficulties may continue.",
+        "experience": "The waiting can feel long, and excitement, tiredness, impatience or calm can all coexist. A due date is an estimate, not a deadline."
+      }
+    }
+  ]
+}

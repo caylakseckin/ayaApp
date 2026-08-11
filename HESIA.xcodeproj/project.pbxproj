@@ -1,0 +1,979 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 71;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B00100000000000000000001 /* HESIAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000001 /* HESIAApp.swift */; };
+		B00100000000000000000002 /* AYAColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000002 /* AYAColors.swift */; };
+		B00100000000000000000003 /* AYATypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000003 /* AYATypography.swift */; };
+		B00100000000000000000004 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000004 /* View+Extensions.swift */; };
+		B00100000000000000000005 /* LifeStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000005 /* LifeStage.swift */; };
+		B00100000000000000000006 /* LifeStageTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000006 /* LifeStageTheme.swift */; };
+		B00100000000000000000007 /* LifeStageSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000007 /* LifeStageSelectionViewModel.swift */; };
+		B00100000000000000000008 /* LifeStageCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000008 /* LifeStageCardView.swift */; };
+		B00100000000000000000009 /* LifeStageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000009 /* LifeStageSelectionView.swift */; };
+		B0010000000000000000000A /* CycleMotifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000A /* CycleMotifView.swift */; };
+		B0010000000000000000000B /* PregnancyMotifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000B /* PregnancyMotifView.swift */; };
+		B0010000000000000000000C /* PostpartumMotifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000C /* PostpartumMotifView.swift */; };
+		B0010000000000000000000D /* MotherhoodMotifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000D /* MotherhoodMotifView.swift */; };
+		B0010000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000E /* Assets.xcassets */; };
+		B0010000000000000000000F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000F /* Localizable.xcstrings */; };
+		B00100000000000000000010 /* LifeStageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000010 /* LifeStageTests.swift */; };
+		B00100000000000000000011 /* HESIAUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000011 /* HESIAUITests.swift */; };
+		B00100000000000000000012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F00100000000000000000015 /* XCTest.framework */; };
+		B00100000000000000000013 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F00100000000000000000015 /* XCTest.framework */; };
+		B00100000000000000000014 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000017 /* WelcomeView.swift */; };
+		B00100000000000000000015 /* CycleOnboardingStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000018 /* CycleOnboardingStep.swift */; };
+		B00100000000000000000016 /* CycleOnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000019 /* CycleOnboardingViewModel.swift */; };
+		B00100000000000000000017 /* CycleOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001A /* CycleOnboardingView.swift */; };
+		B00100000000000000000018 /* CycleHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001B /* CycleHomeView.swift */; };
+		B00100000000000000000019 /* CycleOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001C /* CycleOnboardingTests.swift */; };
+		B0010000000000000000001A /* CyclePhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001D /* CyclePhase.swift */; };
+		B0010000000000000000001B /* CycleProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001E /* CycleProfile.swift */; };
+		B0010000000000000000001C /* CycleCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000001F /* CycleCalculator.swift */; };
+		B0010000000000000000001D /* DailyMeditation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000020 /* DailyMeditation.swift */; };
+		B0010000000000000000001E /* CycleCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000021 /* CycleCalendarView.swift */; };
+		B0010000000000000000001F /* MeditationPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000022 /* MeditationPlayerView.swift */; };
+		B00100000000000000000020 /* MeditationPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000023 /* MeditationPlayerViewModel.swift */; };
+		B00100000000000000000021 /* MeditationPlayerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000024 /* MeditationPlayerViewModelTests.swift */; };
+		B00100000000000000000022 /* aya-demo-meditation-7m.m4a in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000025 /* aya-demo-meditation-7m.m4a */; };
+		B00100000000000000000023 /* aya-demo-meditation-8m.m4a in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000026 /* aya-demo-meditation-8m.m4a */; };
+		B00100000000000000000024 /* aya-demo-meditation-9m.m4a in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000027 /* aya-demo-meditation-9m.m4a */; };
+		B00100000000000000000025 /* PregnancyTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000028 /* PregnancyTracker.swift */; };
+		B00100000000000000000026 /* PregnancyContentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000029 /* PregnancyContentProvider.swift */; };
+		B00100000000000000000027 /* PregnancySetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002A /* PregnancySetupViewModel.swift */; };
+		B00100000000000000000028 /* PregnancySetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002B /* PregnancySetupView.swift */; };
+		B00100000000000000000029 /* PregnancyHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002C /* PregnancyHomeView.swift */; };
+		B0010000000000000000002A /* PregnancyCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002D /* PregnancyCalendarView.swift */; };
+		B0010000000000000000002B /* PregnancyTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002E /* PregnancyTrackerTests.swift */; };
+		B0010000000000000000002C /* StageProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000002F /* StageProgressRing.swift */; };
+		B0010000000000000000002D /* LifeStageHorizontalTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000030 /* LifeStageHorizontalTimeline.swift */; };
+		B0010000000000000000002E /* PostpartumTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000031 /* PostpartumTracker.swift */; };
+		B0010000000000000000002F /* PostpartumPersonalizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000032 /* PostpartumPersonalizationViewModel.swift */; };
+		B00100000000000000000030 /* PostpartumMeditationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000033 /* PostpartumMeditationProvider.swift */; };
+		B00100000000000000000031 /* PostpartumPersonalizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000034 /* PostpartumPersonalizationView.swift */; };
+		B00100000000000000000032 /* PostpartumHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000035 /* PostpartumHomeView.swift */; };
+		B00100000000000000000033 /* PostpartumTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000036 /* PostpartumTimelineView.swift */; };
+		B00100000000000000000034 /* PostpartumTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000037 /* PostpartumTrackerTests.swift */; };
+		B00100000000000000000035 /* MotherhoodAgeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000038 /* MotherhoodAgeRange.swift */; };
+		B00100000000000000000036 /* MotherhoodPersonalizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000039 /* MotherhoodPersonalizationViewModel.swift */; };
+		B00100000000000000000037 /* MotherhoodMeditationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003A /* MotherhoodMeditationProvider.swift */; };
+		B00100000000000000000038 /* MotherhoodPersonalizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003B /* MotherhoodPersonalizationView.swift */; };
+		B00100000000000000000039 /* MotherhoodDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003C /* MotherhoodDetailView.swift */; };
+		B0010000000000000000003A /* MotherhoodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003D /* MotherhoodTests.swift */; };
+		B0010000000000000000003B /* OnboardingReturnToThemesButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003E /* OnboardingReturnToThemesButton.swift */; };
+		B0010000000000000000003C /* LifeStageDetailTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003F /* LifeStageDetailTheme.swift */; };
+		B0010000000000000000003D /* ContextualInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000040 /* ContextualInfoSheet.swift */; };
+		B0010000000000000000003E /* CycleInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000041 /* CycleInfoProvider.swift */; };
+		B00100000000000000000040 /* PostpartumInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000043 /* PostpartumInfoProvider.swift */; };
+		B00100000000000000000041 /* MotherhoodInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000044 /* MotherhoodInfoProvider.swift */; };
+		B00100000000000000000042 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000045 /* PremiumPaywallView.swift */; };
+		B00100000000000000000043 /* MeditationReminderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000046 /* MeditationReminderSettings.swift */; };
+		B00100000000000000000044 /* RemoteMeditationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000047 /* RemoteMeditationContent.swift */; };
+		B00100000000000000000045 /* AYASpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000048 /* AYASpacing.swift */; };
+		B00100000000000000000046 /* AYARadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000049 /* AYARadius.swift */; };
+		B00100000000000000000047 /* AYAElevation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004A /* AYAElevation.swift */; };
+		B00100000000000000000048 /* AppPrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004B /* AppPrimaryButton.swift */; };
+		B00100000000000000000049 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004C /* SectionHeader.swift */; };
+		B0010000000000000000004A /* LifeStageContinuationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004D /* LifeStageContinuationCard.swift */; };
+		B0010000000000000000004B /* PregnancyWeekInfoRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004E /* PregnancyWeekInfoRepository.swift */; };
+		B0010000000000000000004C /* PregnancyWeekInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000004F /* PregnancyWeekInfoSheet.swift */; };
+		B0010000000000000000004D /* hesia_pregnancy_week_info_01_40.json in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000050 /* hesia_pregnancy_week_info_01_40.json */; };
+		B0010000000000000000004E /* PregnancyWeekInfoRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000051 /* PregnancyWeekInfoRepositoryTests.swift */; };
+		B0010000000000000000004F /* HesiaIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000052 /* HesiaIcon.swift */; };
+		B00100000000000000000050 /* PhosphorIcons-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000053 /* PhosphorIcons-LICENSE.txt */; };
+		B00100000000000000000051 /* BiometricAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000054 /* BiometricAuthentication.swift */; };
+		B00100000000000000000052 /* BiometricLockSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000055 /* BiometricLockSettings.swift */; };
+		B00100000000000000000053 /* BiometricOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000056 /* BiometricOnboardingView.swift */; };
+		B00100000000000000000054 /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000057 /* BiometricLockView.swift */; };
+		B00100000000000000000055 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000058 /* InfoPlist.xcstrings */; };
+		B00100000000000000000056 /* HESIAOnboardingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000059 /* HESIAOnboardingState.swift */; };
+		B00100000000000000000057 /* HESIATutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005A /* HESIATutorialView.swift */; };
+		B00100000000000000000058 /* HESIAOnboardingStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005B /* HESIAOnboardingStateTests.swift */; };
+		B00100000000000000000059 /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005C /* PremiumStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C00100000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P00100000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T00100000000000000000001;
+			remoteInfo = HESIA;
+		};
+		C00100000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P00100000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T00100000000000000000001;
+			remoteInfo = HESIA;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F00100000000000000000001 /* HESIAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAApp.swift; sourceTree = "<group>"; };
+		F00100000000000000000002 /* AYAColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AYAColors.swift; sourceTree = "<group>"; };
+		F00100000000000000000003 /* AYATypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AYATypography.swift; sourceTree = "<group>"; };
+		F00100000000000000000004 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
+		F00100000000000000000005 /* LifeStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStage.swift; sourceTree = "<group>"; };
+		F00100000000000000000006 /* LifeStageTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageTheme.swift; sourceTree = "<group>"; };
+		F00100000000000000000007 /* LifeStageSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageSelectionViewModel.swift; sourceTree = "<group>"; };
+		F00100000000000000000008 /* LifeStageCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageCardView.swift; sourceTree = "<group>"; };
+		F00100000000000000000009 /* LifeStageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageSelectionView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000A /* CycleMotifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleMotifView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000B /* PregnancyMotifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyMotifView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000C /* PostpartumMotifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumMotifView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000D /* MotherhoodMotifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodMotifView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F0010000000000000000000F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F00100000000000000000010 /* LifeStageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageTests.swift; sourceTree = "<group>"; };
+		F00100000000000000000011 /* HESIAUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAUITests.swift; sourceTree = "<group>"; };
+		F00100000000000000000012 /* HESIA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HESIA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00100000000000000000013 /* HESIATests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HESIATests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00100000000000000000014 /* HESIAUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HESIAUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00100000000000000000015 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		F00100000000000000000016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F00100000000000000000017 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		F00100000000000000000018 /* CycleOnboardingStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleOnboardingStep.swift; sourceTree = "<group>"; };
+		F00100000000000000000019 /* CycleOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleOnboardingViewModel.swift; sourceTree = "<group>"; };
+		F0010000000000000000001A /* CycleOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleOnboardingView.swift; sourceTree = "<group>"; };
+		F0010000000000000000001B /* CycleHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleHomeView.swift; sourceTree = "<group>"; };
+		F0010000000000000000001C /* CycleOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleOnboardingTests.swift; sourceTree = "<group>"; };
+		F0010000000000000000001D /* CyclePhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclePhase.swift; sourceTree = "<group>"; };
+		F0010000000000000000001E /* CycleProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleProfile.swift; sourceTree = "<group>"; };
+		F0010000000000000000001F /* CycleCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCalculator.swift; sourceTree = "<group>"; };
+		F00100000000000000000020 /* DailyMeditation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyMeditation.swift; sourceTree = "<group>"; };
+		F00100000000000000000021 /* CycleCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCalendarView.swift; sourceTree = "<group>"; };
+		F00100000000000000000022 /* MeditationPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationPlayerView.swift; sourceTree = "<group>"; };
+		F00100000000000000000023 /* MeditationPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationPlayerViewModel.swift; sourceTree = "<group>"; };
+		F00100000000000000000024 /* MeditationPlayerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationPlayerViewModelTests.swift; sourceTree = "<group>"; };
+		F00100000000000000000025 /* aya-demo-meditation-7m.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "aya-demo-meditation-7m.m4a"; sourceTree = "<group>"; };
+		F00100000000000000000026 /* aya-demo-meditation-8m.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "aya-demo-meditation-8m.m4a"; sourceTree = "<group>"; };
+		F00100000000000000000027 /* aya-demo-meditation-9m.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "aya-demo-meditation-9m.m4a"; sourceTree = "<group>"; };
+		F00100000000000000000028 /* PregnancyTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyTracker.swift; sourceTree = "<group>"; };
+		F00100000000000000000029 /* PregnancyContentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyContentProvider.swift; sourceTree = "<group>"; };
+		F0010000000000000000002A /* PregnancySetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancySetupViewModel.swift; sourceTree = "<group>"; };
+		F0010000000000000000002B /* PregnancySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancySetupView.swift; sourceTree = "<group>"; };
+		F0010000000000000000002C /* PregnancyHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyHomeView.swift; sourceTree = "<group>"; };
+		F0010000000000000000002D /* PregnancyCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyCalendarView.swift; sourceTree = "<group>"; };
+		F0010000000000000000002E /* PregnancyTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyTrackerTests.swift; sourceTree = "<group>"; };
+		F0010000000000000000002F /* StageProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageProgressRing.swift; sourceTree = "<group>"; };
+		F00100000000000000000030 /* LifeStageHorizontalTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageHorizontalTimeline.swift; sourceTree = "<group>"; };
+		F00100000000000000000031 /* PostpartumTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumTracker.swift; sourceTree = "<group>"; };
+		F00100000000000000000032 /* PostpartumPersonalizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumPersonalizationViewModel.swift; sourceTree = "<group>"; };
+		F00100000000000000000033 /* PostpartumMeditationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumMeditationProvider.swift; sourceTree = "<group>"; };
+		F00100000000000000000034 /* PostpartumPersonalizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumPersonalizationView.swift; sourceTree = "<group>"; };
+		F00100000000000000000035 /* PostpartumHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumHomeView.swift; sourceTree = "<group>"; };
+		F00100000000000000000036 /* PostpartumTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumTimelineView.swift; sourceTree = "<group>"; };
+		F00100000000000000000037 /* PostpartumTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumTrackerTests.swift; sourceTree = "<group>"; };
+		F00100000000000000000038 /* MotherhoodAgeRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodAgeRange.swift; sourceTree = "<group>"; };
+		F00100000000000000000039 /* MotherhoodPersonalizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodPersonalizationViewModel.swift; sourceTree = "<group>"; };
+		F0010000000000000000003A /* MotherhoodMeditationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodMeditationProvider.swift; sourceTree = "<group>"; };
+		F0010000000000000000003B /* MotherhoodPersonalizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodPersonalizationView.swift; sourceTree = "<group>"; };
+		F0010000000000000000003C /* MotherhoodDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodDetailView.swift; sourceTree = "<group>"; };
+		F0010000000000000000003D /* MotherhoodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodTests.swift; sourceTree = "<group>"; };
+		F0010000000000000000003E /* OnboardingReturnToThemesButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingReturnToThemesButton.swift; sourceTree = "<group>"; };
+		F0010000000000000000003F /* LifeStageDetailTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageDetailTheme.swift; sourceTree = "<group>"; };
+		F00100000000000000000040 /* ContextualInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualInfoSheet.swift; sourceTree = "<group>"; };
+		F00100000000000000000041 /* CycleInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleInfoProvider.swift; sourceTree = "<group>"; };
+		F00100000000000000000043 /* PostpartumInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumInfoProvider.swift; sourceTree = "<group>"; };
+		F00100000000000000000044 /* MotherhoodInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodInfoProvider.swift; sourceTree = "<group>"; };
+		F00100000000000000000045 /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
+		F00100000000000000000046 /* MeditationReminderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationReminderSettings.swift; sourceTree = "<group>"; };
+		F00100000000000000000047 /* RemoteMeditationContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMeditationContent.swift; sourceTree = "<group>"; };
+		F00100000000000000000048 /* AYASpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AYASpacing.swift; sourceTree = "<group>"; };
+		F00100000000000000000049 /* AYARadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AYARadius.swift; sourceTree = "<group>"; };
+		F0010000000000000000004A /* AYAElevation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AYAElevation.swift; sourceTree = "<group>"; };
+		F0010000000000000000004B /* AppPrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPrimaryButton.swift; sourceTree = "<group>"; };
+		F0010000000000000000004C /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		F0010000000000000000004D /* LifeStageContinuationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageContinuationCard.swift; sourceTree = "<group>"; };
+		F0010000000000000000004E /* PregnancyWeekInfoRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyWeekInfoRepository.swift; sourceTree = "<group>"; };
+		F0010000000000000000004F /* PregnancyWeekInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyWeekInfoSheet.swift; sourceTree = "<group>"; };
+		F00100000000000000000050 /* hesia_pregnancy_week_info_01_40.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hesia_pregnancy_week_info_01_40.json; sourceTree = "<group>"; };
+		F00100000000000000000051 /* PregnancyWeekInfoRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyWeekInfoRepositoryTests.swift; sourceTree = "<group>"; };
+		F00100000000000000000052 /* HesiaIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HesiaIcon.swift; sourceTree = "<group>"; };
+		F00100000000000000000053 /* PhosphorIcons-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "PhosphorIcons-LICENSE.txt"; sourceTree = "<group>"; };
+		F00100000000000000000054 /* BiometricAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthentication.swift; sourceTree = "<group>"; };
+		F00100000000000000000055 /* BiometricLockSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockSettings.swift; sourceTree = "<group>"; };
+		F00100000000000000000056 /* BiometricOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricOnboardingView.swift; sourceTree = "<group>"; };
+		F00100000000000000000057 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
+		F00100000000000000000058 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		F00100000000000000000059 /* HESIAOnboardingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAOnboardingState.swift; sourceTree = "<group>"; };
+		F0010000000000000000005A /* HESIATutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIATutorialView.swift; sourceTree = "<group>"; };
+		F0010000000000000000005B /* HESIAOnboardingStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAOnboardingStateTests.swift; sourceTree = "<group>"; };
+		F0010000000000000000005C /* PremiumStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
+		F0010000000000000000005D /* HESIA.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = HESIA.storekit; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		PH0010000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100000000000000000012 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100000000000000000013 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G00100000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				G00100000000000000000002 /* HESIA */,
+				G00100000000000000000009 /* HESIATests */,
+				G0010000000000000000000A /* HESIAUITests */,
+				G0010000000000000000000B /* Frameworks */,
+				G00100000000000000000008 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		G00100000000000000000002 /* HESIA */ = {
+			isa = PBXGroup;
+			children = (
+				G00100000000000000000003 /* App */,
+				G00100000000000000000004 /* Features */,
+				G00100000000000000000007 /* DesignSystem */,
+				G0010000000000000000000C /* Resources */,
+			);
+			name = HESIA;
+			path = AYA;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000001 /* HESIAApp.swift */,
+				F00100000000000000000059 /* HESIAOnboardingState.swift */,
+				F0010000000000000000005A /* HESIATutorialView.swift */,
+				F00100000000000000000017 /* WelcomeView.swift */,
+				F00100000000000000000056 /* BiometricOnboardingView.swift */,
+				F00100000000000000000057 /* BiometricLockView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000004 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				G00100000000000000000005 /* LifeStageSelection */,
+				G0010000000000000000000D /* Cycle */,
+				G00100000000000000000010 /* Pregnancy */,
+				G00100000000000000000011 /* Postpartum */,
+				G00100000000000000000012 /* Shared */,
+				G00100000000000000000013 /* Motherhood */,
+				G0010000000000000000000E /* Meditation */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000005 /* LifeStageSelection */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000009 /* LifeStageSelectionView.swift */,
+				F00100000000000000000007 /* LifeStageSelectionViewModel.swift */,
+				F00100000000000000000008 /* LifeStageCardView.swift */,
+				F00100000000000000000005 /* LifeStage.swift */,
+				F00100000000000000000006 /* LifeStageTheme.swift */,
+				F00100000000000000000045 /* PremiumPaywallView.swift */,
+				F0010000000000000000005C /* PremiumStore.swift */,
+				G00100000000000000000006 /* StageMotifs */,
+			);
+			path = LifeStageSelection;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000006 /* StageMotifs */ = {
+			isa = PBXGroup;
+			children = (
+				F0010000000000000000000A /* CycleMotifView.swift */,
+				F0010000000000000000000B /* PregnancyMotifView.swift */,
+				F0010000000000000000000C /* PostpartumMotifView.swift */,
+				F0010000000000000000000D /* MotherhoodMotifView.swift */,
+			);
+			path = StageMotifs;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000007 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000002 /* AYAColors.swift */,
+				F00100000000000000000003 /* AYATypography.swift */,
+				F00100000000000000000004 /* View+Extensions.swift */,
+				F0010000000000000000003F /* LifeStageDetailTheme.swift */,
+				F00100000000000000000048 /* AYASpacing.swift */,
+				F00100000000000000000049 /* AYARadius.swift */,
+				F0010000000000000000004A /* AYAElevation.swift */,
+				F0010000000000000000004B /* AppPrimaryButton.swift */,
+				F0010000000000000000004C /* SectionHeader.swift */,
+				F00100000000000000000052 /* HesiaIcon.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000008 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000012 /* HESIA.app */,
+				F00100000000000000000013 /* HESIATests.xctest */,
+				F00100000000000000000014 /* HESIAUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000009 /* HESIATests */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000010 /* LifeStageTests.swift */,
+				F0010000000000000000001C /* CycleOnboardingTests.swift */,
+				F00100000000000000000024 /* MeditationPlayerViewModelTests.swift */,
+				F0010000000000000000002E /* PregnancyTrackerTests.swift */,
+				F00100000000000000000037 /* PostpartumTrackerTests.swift */,
+				F0010000000000000000003D /* MotherhoodTests.swift */,
+				F00100000000000000000051 /* PregnancyWeekInfoRepositoryTests.swift */,
+				F0010000000000000000005B /* HESIAOnboardingStateTests.swift */,
+			);
+			name = HESIATests;
+			path = AYATests;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000A /* HESIAUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000011 /* HESIAUITests.swift */,
+			);
+			name = HESIAUITests;
+			path = AYAUITests;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000015 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F0010000000000000000000E /* Assets.xcassets */,
+				F0010000000000000000000F /* Localizable.xcstrings */,
+				F00100000000000000000058 /* InfoPlist.xcstrings */,
+				F0010000000000000000005D /* HESIA.storekit */,
+				F00100000000000000000016 /* Info.plist */,
+				G0010000000000000000000F /* Audio */,
+				G00100000000000000000016 /* Content */,
+				F00100000000000000000053 /* PhosphorIcons-LICENSE.txt */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000D /* Cycle */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000018 /* CycleOnboardingStep.swift */,
+				F00100000000000000000019 /* CycleOnboardingViewModel.swift */,
+				F0010000000000000000001A /* CycleOnboardingView.swift */,
+				F0010000000000000000001B /* CycleHomeView.swift */,
+				F0010000000000000000001D /* CyclePhase.swift */,
+				F0010000000000000000001E /* CycleProfile.swift */,
+				F0010000000000000000001F /* CycleCalculator.swift */,
+				F00100000000000000000020 /* DailyMeditation.swift */,
+				F00100000000000000000021 /* CycleCalendarView.swift */,
+				F00100000000000000000041 /* CycleInfoProvider.swift */,
+			);
+			path = Cycle;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000E /* Meditation */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000022 /* MeditationPlayerView.swift */,
+				F00100000000000000000023 /* MeditationPlayerViewModel.swift */,
+				F00100000000000000000047 /* RemoteMeditationContent.swift */,
+			);
+			path = Meditation;
+			sourceTree = "<group>";
+		};
+		G0010000000000000000000F /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000025 /* aya-demo-meditation-7m.m4a */,
+				F00100000000000000000026 /* aya-demo-meditation-8m.m4a */,
+				F00100000000000000000027 /* aya-demo-meditation-9m.m4a */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000010 /* Pregnancy */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000028 /* PregnancyTracker.swift */,
+				F00100000000000000000029 /* PregnancyContentProvider.swift */,
+				F0010000000000000000002A /* PregnancySetupViewModel.swift */,
+				F0010000000000000000002B /* PregnancySetupView.swift */,
+				F0010000000000000000002C /* PregnancyHomeView.swift */,
+				F0010000000000000000002D /* PregnancyCalendarView.swift */,
+				F0010000000000000000004E /* PregnancyWeekInfoRepository.swift */,
+				F0010000000000000000004F /* PregnancyWeekInfoSheet.swift */,
+			);
+			path = Pregnancy;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000011 /* Postpartum */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000031 /* PostpartumTracker.swift */,
+				F00100000000000000000032 /* PostpartumPersonalizationViewModel.swift */,
+				F00100000000000000000033 /* PostpartumMeditationProvider.swift */,
+				F00100000000000000000034 /* PostpartumPersonalizationView.swift */,
+				F00100000000000000000035 /* PostpartumHomeView.swift */,
+				F00100000000000000000036 /* PostpartumTimelineView.swift */,
+				F00100000000000000000043 /* PostpartumInfoProvider.swift */,
+			);
+			path = Postpartum;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000012 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F0010000000000000000002F /* StageProgressRing.swift */,
+				F00100000000000000000030 /* LifeStageHorizontalTimeline.swift */,
+				F0010000000000000000003E /* OnboardingReturnToThemesButton.swift */,
+				F00100000000000000000040 /* ContextualInfoSheet.swift */,
+				F00100000000000000000046 /* MeditationReminderSettings.swift */,
+				F0010000000000000000004D /* LifeStageContinuationCard.swift */,
+				F00100000000000000000054 /* BiometricAuthentication.swift */,
+				F00100000000000000000055 /* BiometricLockSettings.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000013 /* Motherhood */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000038 /* MotherhoodAgeRange.swift */,
+				F00100000000000000000039 /* MotherhoodPersonalizationViewModel.swift */,
+				F0010000000000000000003A /* MotherhoodMeditationProvider.swift */,
+				F0010000000000000000003B /* MotherhoodPersonalizationView.swift */,
+				F0010000000000000000003C /* MotherhoodDetailView.swift */,
+				F00100000000000000000044 /* MotherhoodInfoProvider.swift */,
+			);
+			path = Motherhood;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000016 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000050 /* hesia_pregnancy_week_info_01_40.json */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T00100000000000000000001 /* HESIA */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL00100000000000000000002 /* Build configuration list for PBXNativeTarget "HESIA" */;
+			buildPhases = (
+				PH0010000000000000000001 /* Sources */,
+				PH0010000000000000000002 /* Frameworks */,
+				PH0010000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HESIA;
+			productName = HESIA;
+			productReference = F00100000000000000000012 /* HESIA.app */;
+			productType = "com.apple.product-type.application";
+		};
+		T00100000000000000000002 /* HESIATests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL00100000000000000000003 /* Build configuration list for PBXNativeTarget "HESIATests" */;
+			buildPhases = (
+				PH0010000000000000000004 /* Sources */,
+				PH0010000000000000000005 /* Frameworks */,
+				PH0010000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D00100000000000000000001 /* PBXTargetDependency */,
+			);
+			name = HESIATests;
+			productName = HESIATests;
+			productReference = F00100000000000000000013 /* HESIATests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		T00100000000000000000003 /* HESIAUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL00100000000000000000004 /* Build configuration list for PBXNativeTarget "HESIAUITests" */;
+			buildPhases = (
+				PH0010000000000000000007 /* Sources */,
+				PH0010000000000000000008 /* Frameworks */,
+				PH0010000000000000000009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D00100000000000000000002 /* PBXTargetDependency */,
+			);
+			name = HESIAUITests;
+			productName = HESIAUITests;
+			productReference = F00100000000000000000014 /* HESIAUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P00100000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					T00100000000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					T00100000000000000000002 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = T00100000000000000000001;
+					};
+					T00100000000000000000003 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = T00100000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = CL00100000000000000000001 /* Build configuration list for PBXProject "HESIA" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				tr,
+				Base,
+			);
+			mainGroup = G00100000000000000000001;
+			productRefGroup = G00100000000000000000008 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				T00100000000000000000001 /* HESIA */,
+				T00100000000000000000002 /* HESIATests */,
+				T00100000000000000000003 /* HESIAUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		PH0010000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0010000000000000000000E /* Assets.xcassets in Resources */,
+				B0010000000000000000000F /* Localizable.xcstrings in Resources */,
+				B00100000000000000000055 /* InfoPlist.xcstrings in Resources */,
+				B00100000000000000000022 /* aya-demo-meditation-7m.m4a in Resources */,
+				B00100000000000000000023 /* aya-demo-meditation-8m.m4a in Resources */,
+				B00100000000000000000024 /* aya-demo-meditation-9m.m4a in Resources */,
+				B0010000000000000000004D /* hesia_pregnancy_week_info_01_40.json in Resources */,
+				B00100000000000000000050 /* PhosphorIcons-LICENSE.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		PH0010000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100000000000000000001 /* HESIAApp.swift in Sources */,
+				B00100000000000000000056 /* HESIAOnboardingState.swift in Sources */,
+				B00100000000000000000057 /* HESIATutorialView.swift in Sources */,
+				B00100000000000000000014 /* WelcomeView.swift in Sources */,
+				B00100000000000000000053 /* BiometricOnboardingView.swift in Sources */,
+				B00100000000000000000054 /* BiometricLockView.swift in Sources */,
+				B00100000000000000000002 /* AYAColors.swift in Sources */,
+				B00100000000000000000003 /* AYATypography.swift in Sources */,
+				B00100000000000000000004 /* View+Extensions.swift in Sources */,
+				B00100000000000000000005 /* LifeStage.swift in Sources */,
+				B00100000000000000000006 /* LifeStageTheme.swift in Sources */,
+				B00100000000000000000007 /* LifeStageSelectionViewModel.swift in Sources */,
+				B00100000000000000000008 /* LifeStageCardView.swift in Sources */,
+				B00100000000000000000009 /* LifeStageSelectionView.swift in Sources */,
+				B0010000000000000000000A /* CycleMotifView.swift in Sources */,
+				B0010000000000000000000B /* PregnancyMotifView.swift in Sources */,
+				B0010000000000000000000C /* PostpartumMotifView.swift in Sources */,
+				B0010000000000000000000D /* MotherhoodMotifView.swift in Sources */,
+				B00100000000000000000015 /* CycleOnboardingStep.swift in Sources */,
+				B00100000000000000000016 /* CycleOnboardingViewModel.swift in Sources */,
+				B00100000000000000000017 /* CycleOnboardingView.swift in Sources */,
+				B00100000000000000000018 /* CycleHomeView.swift in Sources */,
+				B0010000000000000000001A /* CyclePhase.swift in Sources */,
+				B0010000000000000000001B /* CycleProfile.swift in Sources */,
+				B0010000000000000000001C /* CycleCalculator.swift in Sources */,
+				B0010000000000000000001D /* DailyMeditation.swift in Sources */,
+				B0010000000000000000001E /* CycleCalendarView.swift in Sources */,
+				B0010000000000000000001F /* MeditationPlayerView.swift in Sources */,
+				B00100000000000000000020 /* MeditationPlayerViewModel.swift in Sources */,
+				B00100000000000000000025 /* PregnancyTracker.swift in Sources */,
+				B00100000000000000000026 /* PregnancyContentProvider.swift in Sources */,
+				B00100000000000000000027 /* PregnancySetupViewModel.swift in Sources */,
+				B00100000000000000000028 /* PregnancySetupView.swift in Sources */,
+				B00100000000000000000029 /* PregnancyHomeView.swift in Sources */,
+				B0010000000000000000002A /* PregnancyCalendarView.swift in Sources */,
+				B0010000000000000000002C /* StageProgressRing.swift in Sources */,
+				B0010000000000000000002D /* LifeStageHorizontalTimeline.swift in Sources */,
+				B0010000000000000000002E /* PostpartumTracker.swift in Sources */,
+				B0010000000000000000002F /* PostpartumPersonalizationViewModel.swift in Sources */,
+				B00100000000000000000030 /* PostpartumMeditationProvider.swift in Sources */,
+				B00100000000000000000031 /* PostpartumPersonalizationView.swift in Sources */,
+				B00100000000000000000032 /* PostpartumHomeView.swift in Sources */,
+				B00100000000000000000033 /* PostpartumTimelineView.swift in Sources */,
+				B00100000000000000000035 /* MotherhoodAgeRange.swift in Sources */,
+				B00100000000000000000036 /* MotherhoodPersonalizationViewModel.swift in Sources */,
+				B00100000000000000000037 /* MotherhoodMeditationProvider.swift in Sources */,
+				B00100000000000000000038 /* MotherhoodPersonalizationView.swift in Sources */,
+				B00100000000000000000039 /* MotherhoodDetailView.swift in Sources */,
+				B0010000000000000000003B /* OnboardingReturnToThemesButton.swift in Sources */,
+				B0010000000000000000003C /* LifeStageDetailTheme.swift in Sources */,
+				B0010000000000000000003D /* ContextualInfoSheet.swift in Sources */,
+				B0010000000000000000003E /* CycleInfoProvider.swift in Sources */,
+				B0010000000000000000004B /* PregnancyWeekInfoRepository.swift in Sources */,
+				B0010000000000000000004C /* PregnancyWeekInfoSheet.swift in Sources */,
+				B00100000000000000000040 /* PostpartumInfoProvider.swift in Sources */,
+				B00100000000000000000041 /* MotherhoodInfoProvider.swift in Sources */,
+				B00100000000000000000042 /* PremiumPaywallView.swift in Sources */,
+				B00100000000000000000059 /* PremiumStore.swift in Sources */,
+				B00100000000000000000043 /* MeditationReminderSettings.swift in Sources */,
+				B00100000000000000000044 /* RemoteMeditationContent.swift in Sources */,
+				B00100000000000000000045 /* AYASpacing.swift in Sources */,
+				B00100000000000000000046 /* AYARadius.swift in Sources */,
+				B00100000000000000000047 /* AYAElevation.swift in Sources */,
+				B00100000000000000000048 /* AppPrimaryButton.swift in Sources */,
+				B00100000000000000000049 /* SectionHeader.swift in Sources */,
+				B0010000000000000000004A /* LifeStageContinuationCard.swift in Sources */,
+				B0010000000000000000004F /* HesiaIcon.swift in Sources */,
+				B00100000000000000000051 /* BiometricAuthentication.swift in Sources */,
+				B00100000000000000000052 /* BiometricLockSettings.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100000000000000000010 /* LifeStageTests.swift in Sources */,
+				B00100000000000000000019 /* CycleOnboardingTests.swift in Sources */,
+				B00100000000000000000021 /* MeditationPlayerViewModelTests.swift in Sources */,
+				B0010000000000000000002B /* PregnancyTrackerTests.swift in Sources */,
+				B00100000000000000000034 /* PostpartumTrackerTests.swift in Sources */,
+				B0010000000000000000003A /* MotherhoodTests.swift in Sources */,
+				B0010000000000000000004E /* PregnancyWeekInfoRepositoryTests.swift in Sources */,
+				B00100000000000000000058 /* HESIAOnboardingStateTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		PH0010000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100000000000000000011 /* HESIAUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D00100000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T00100000000000000000001 /* HESIA */;
+			targetProxy = C00100000000000000000001 /* PBXContainerItemProxy */;
+		};
+		D00100000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T00100000000000000000001 /* HESIA */;
+			targetProxy = C00100000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		BC00100000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BC00100000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BC00100000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AYA/Preview Content\"";
+				DEVELOPMENT_TEAM = V32M5559HG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AYA/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app;
+				PRODUCT_MODULE_NAME = HESIA;
+				PRODUCT_NAME = HESIA;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BC00100000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AYA/Preview Content\"";
+				DEVELOPMENT_TEAM = V32M5559HG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AYA/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app;
+				PRODUCT_MODULE_NAME = HESIA;
+				PRODUCT_NAME = HESIA;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		BC00100000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V32M5559HG;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HESIA.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HESIA";
+			};
+			name = Debug;
+		};
+		BC00100000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V32M5559HG;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HESIA.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HESIA";
+			};
+			name = Release;
+		};
+		BC00100000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = HESIA;
+			};
+			name = Debug;
+		};
+		BC00100000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = HESIA;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CL00100000000000000000001 /* Build configuration list for PBXProject "HESIA" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC00100000000000000000001 /* Debug */,
+				BC00100000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CL00100000000000000000002 /* Build configuration list for PBXNativeTarget "HESIA" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC00100000000000000000003 /* Debug */,
+				BC00100000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CL00100000000000000000003 /* Build configuration list for PBXNativeTarget "HESIATests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC00100000000000000000005 /* Debug */,
+				BC00100000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CL00100000000000000000004 /* Build configuration list for PBXNativeTarget "HESIAUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC00100000000000000000007 /* Debug */,
+				BC00100000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = P00100000000000000000001 /* Project object */;
+}
