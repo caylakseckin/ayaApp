@@ -9,6 +9,7 @@ struct CycleHomeView: View {
     @AppStorage(CyclePersistenceKeys.averageLength) private var averageLength = 0
     @AppStorage(CyclePersistenceKeys.averagePeriodDuration) private var averagePeriodDuration = 0
     @AppStorage(CyclePersistenceKeys.onboardingCompleted) private var isOnboardingCompleted = false
+    @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isOfflineListeningEnabled = false
 
     @State private var isSettingsPresented = false
     @State private var isEditingCycle = false
@@ -20,6 +21,7 @@ struct CycleHomeView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.scenePhase) private var scenePhase
 
     private let calculator = CycleCalculator()
     private let meditationProvider = DailyMeditationProvider()
@@ -126,6 +128,14 @@ struct CycleHomeView: View {
         .scrollIndicators(.hidden)
         .task(id: meditation.id) {
             await loadRemoteMetadata(for: meditation)
+        }
+        .task(id: offlinePackageTaskID(calculation: calculation, profile: profile)) {
+            syncOfflinePackage(calculation: calculation, profile: profile)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            let refreshedCalculation = calculator.calculate(profile: profile)
+            syncOfflinePackage(calculation: refreshedCalculation, profile: profile)
         }
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
@@ -234,6 +244,30 @@ struct CycleHomeView: View {
             guard !Task.isCancelled else { return }
             remoteMeditationMetadata = nil
         }
+    }
+
+    private func offlinePackageTaskID(
+        calculation: CycleCalculation,
+        profile: CycleProfile
+    ) -> String {
+        [
+            isOfflineListeningEnabled ? "enabled" : "disabled",
+            String(calculation.currentCycleDay),
+            String(profile.averageCycleLength),
+            selectedLanguage.rawValue
+        ].joined(separator: "-")
+    }
+
+    private func syncOfflinePackage(
+        calculation: CycleCalculation,
+        profile: CycleProfile
+    ) {
+        guard isOfflineListeningEnabled else { return }
+        OfflineMeditationManager.shared.syncCyclePackage(
+            currentDay: calculation.currentCycleDay,
+            cycleLength: profile.averageCycleLength,
+            language: selectedLanguage
+        )
     }
 }
 

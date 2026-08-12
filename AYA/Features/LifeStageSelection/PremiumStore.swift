@@ -23,12 +23,39 @@ enum PremiumRestoreOutcome: Equatable {
     case failed
 }
 
+struct PremiumMonthlySubscription: Equatable {
+    let renewalDate: Date?
+    let willAutoRenew: Bool?
+}
+
+enum PremiumAccessPolicy {
+    static func hasAccess(
+        to stage: LifeStage,
+        entitlementsResolved: Bool,
+        hasPremiumAccess: Bool
+    ) -> Bool {
+        !stage.isPremium || (entitlementsResolved && hasPremiumAccess)
+    }
+
+    static func requiresThemeSelection(
+        for activeStage: LifeStage?,
+        entitlementsResolved: Bool,
+        hasPremiumAccess: Bool
+    ) -> Bool {
+        guard let activeStage else { return true }
+        guard activeStage.isPremium else { return false }
+        return entitlementsResolved && !hasPremiumAccess
+    }
+}
+
 @MainActor
 final class PremiumStore: ObservableObject {
     static let shared = PremiumStore()
 
     @Published private(set) var products: [PremiumPlan: Product] = [:]
     @Published private(set) var hasPremiumAccess = false
+    @Published private(set) var hasLifetimeAccess = false
+    @Published private(set) var monthlySubscription: PremiumMonthlySubscription?
     @Published private(set) var hasResolvedEntitlements = false
     @Published private(set) var hasLoadedProducts = false
     @Published private(set) var isLoadingProducts = false
@@ -36,6 +63,7 @@ final class PremiumStore: ObservableObject {
     @Published private(set) var isRestoring = false
 
     private var transactionUpdatesTask: Task<Void, Never>?
+    private var entitlementExpirationTask: Task<Void, Never>?
 
     private init() {
         transactionUpdatesTask = listenForTransactionUpdates()
@@ -47,6 +75,7 @@ final class PremiumStore: ObservableObject {
 
     deinit {
         transactionUpdatesTask?.cancel()
+        entitlementExpirationTask?.cancel()
     }
 
     func product(for plan: PremiumPlan) -> Product? {
@@ -81,8 +110,13 @@ final class PremiumStore: ObservableObject {
         }
     }
 
-    func refreshEntitlements() async {
+    func refreshEntitlements(showLoadingState: Bool = false) async {
+        if showLoadingState {
+            hasResolvedEntitlements = false
+        }
+
         var entitledProductIDs = Set<String>()
+        var monthlyTransaction: StoreKit.Transaction?
 
         for await result in StoreKit.Transaction.currentEntitlements {
             do {
@@ -90,14 +124,20 @@ final class PremiumStore: ObservableObject {
                 guard transaction.revocationDate == nil else { continue }
                 if PremiumProductIdentifiers.all.contains(transaction.productID) {
                     entitledProductIDs.insert(transaction.productID)
+                    if transaction.productID == PremiumProductIdentifiers.monthly {
+                        monthlyTransaction = transaction
+                    }
                 }
             } catch {
                 log("Ignoring an unverified entitlement: \(error)")
             }
         }
 
+        hasLifetimeAccess = entitledProductIDs.contains(PremiumProductIdentifiers.lifetime)
+        monthlySubscription = await subscriptionDetails(for: monthlyTransaction)
         hasPremiumAccess = !entitledProductIDs.isEmpty
         hasResolvedEntitlements = true
+        scheduleEntitlementRefresh(at: monthlySubscription?.renewalDate)
     }
 
     func purchase(_ plan: PremiumPlan) async -> PremiumPurchaseOutcome {
@@ -176,6 +216,47 @@ final class PremiumStore: ObservableObject {
             return value
         case .unverified(_, let error):
             throw error
+        }
+    }
+
+    private func subscriptionDetails(
+        for transaction: StoreKit.Transaction?
+    ) async -> PremiumMonthlySubscription? {
+        guard let transaction else { return nil }
+
+        var renewalDate = transaction.expirationDate
+        var willAutoRenew: Bool?
+
+        if
+            let status = await transaction.subscriptionStatus,
+            case .verified(let renewalInfo) = status.renewalInfo
+        {
+            renewalDate = renewalInfo.renewalDate ?? renewalDate
+            willAutoRenew = renewalInfo.willAutoRenew
+        }
+
+        return PremiumMonthlySubscription(
+            renewalDate: renewalDate,
+            willAutoRenew: willAutoRenew
+        )
+    }
+
+    private func scheduleEntitlementRefresh(at date: Date?) {
+        entitlementExpirationTask?.cancel()
+        entitlementExpirationTask = nil
+
+        guard let date, date > Date() else { return }
+
+        let delay = date.timeIntervalSinceNow + 2
+        entitlementExpirationTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(delay))
+            } catch {
+                return
+            }
+
+            guard let self else { return }
+            await self.refreshEntitlements()
         }
     }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 enum HESIAMotion {
     static let screenDuration = 0.30
@@ -50,6 +51,133 @@ extension View {
             HESIAMotion.animation(reduceMotion: reduceMotion, duration: duration),
             value: value
         )
+    }
+
+    func hesiaInteractivePopGesture() -> some View {
+        background {
+            HESIAInteractivePopGestureInstaller()
+                .frame(width: 0, height: 0)
+                .accessibilityHidden(true)
+        }
+    }
+
+    /// Provides the familiar leading-edge back gesture for a screen that is the
+    /// root of its navigation stack and therefore cannot use UIKit's pop gesture.
+    func hesiaRootEdgeBack(action: @escaping () -> Void) -> some View {
+        modifier(HESIARootEdgeBackModifier(action: action))
+    }
+}
+
+private struct HESIARootEdgeBackModifier: ViewModifier {
+    let action: () -> Void
+
+    func body(content: Content) -> some View {
+        content.simultaneousGesture(
+            DragGesture(minimumDistance: 12, coordinateSpace: .global)
+                .onEnded { value in
+                    let beganAtLeadingEdge = value.startLocation.x <= 24
+                    let movedRight = value.translation.width >= 72
+                    let isPrimarilyHorizontal = abs(value.translation.width)
+                        > abs(value.translation.height)
+                    let hasForwardMomentum = value.predictedEndTranslation.width >= 120
+
+                    guard
+                        beganAtLeadingEdge,
+                        isPrimarilyHorizontal,
+                        movedRight || hasForwardMomentum
+                    else { return }
+
+                    action()
+                }
+        )
+    }
+}
+
+private struct HESIAInteractivePopGestureInstaller: UIViewControllerRepresentable {
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIViewController(context: Context) -> ResolverViewController {
+        let controller = ResolverViewController()
+        controller.resolve = { navigationController in
+            context.coordinator.install(on: navigationController)
+        }
+        return controller
+    }
+
+    func updateUIViewController(_ controller: ResolverViewController, context: Context) {
+        controller.resolve = { navigationController in
+            context.coordinator.install(on: navigationController)
+        }
+        controller.resolveNavigationController()
+    }
+
+    final class ResolverViewController: UIViewController {
+        var resolve: ((UINavigationController?) -> Void)?
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            resolveNavigationController()
+        }
+
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            resolveNavigationController()
+        }
+
+        override func didMove(toParent parent: UIViewController?) {
+            super.didMove(toParent: parent)
+            resolveNavigationController()
+        }
+
+        func resolveNavigationController() {
+            guard isViewLoaded, view.window != nil else { return }
+            resolve?(
+                navigationController
+                    ?? parent?.navigationController
+                    ?? findNavigationController(in: view.window?.rootViewController)
+            )
+        }
+
+        private func findNavigationController(
+            in controller: UIViewController?
+        ) -> UINavigationController? {
+            guard let controller else { return nil }
+            if let navigationController = controller as? UINavigationController {
+                return navigationController
+            }
+            if let presented = findNavigationController(in: controller.presentedViewController) {
+                return presented
+            }
+            for child in controller.children.reversed() {
+                if let navigationController = findNavigationController(in: child) {
+                    return navigationController
+                }
+            }
+            return nil
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        private weak var navigationController: UINavigationController?
+
+        func install(on navigationController: UINavigationController?) {
+            guard
+                let navigationController,
+                let gesture = navigationController.interactivePopGestureRecognizer
+            else { return }
+
+            self.navigationController = navigationController
+            gesture.delegate = self
+            gesture.isEnabled = true
+        }
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let navigationController else { return false }
+            return navigationController.viewControllers.count > 1
+                && navigationController.transitionCoordinator == nil
+        }
     }
 }
 

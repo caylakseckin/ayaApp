@@ -3,6 +3,52 @@ import XCTest
 @testable import HESIA
 
 final class MeditationPlayerViewModelTests: XCTestCase {
+    func testPlayerDismissalRequiresDeliberateDownwardDrag() {
+        XCTAssertFalse(
+            MeditationPlayerDismissalPolicy.shouldDismiss(
+                translationWidth: 8,
+                translationHeight: 175,
+                predictedTranslationHeight: 190,
+                viewportHeight: 852
+            )
+        )
+        XCTAssertTrue(
+            MeditationPlayerDismissalPolicy.shouldDismiss(
+                translationWidth: 12,
+                translationHeight: 210,
+                predictedTranslationHeight: 225,
+                viewportHeight: 852
+            )
+        )
+        XCTAssertTrue(
+            MeditationPlayerDismissalPolicy.shouldDismiss(
+                translationWidth: 10,
+                translationHeight: 115,
+                predictedTranslationHeight: 320,
+                viewportHeight: 852
+            )
+        )
+    }
+
+    func testPlayerDismissalRejectsHorizontalAndUpwardDrags() {
+        XCTAssertFalse(
+            MeditationPlayerDismissalPolicy.shouldDismiss(
+                translationWidth: 190,
+                translationHeight: 160,
+                predictedTranslationHeight: 220,
+                viewportHeight: 852
+            )
+        )
+        XCTAssertFalse(
+            MeditationPlayerDismissalPolicy.shouldDismiss(
+                translationWidth: 0,
+                translationHeight: -180,
+                predictedTranslationHeight: -240,
+                viewportHeight: 852
+            )
+        )
+    }
+
     @MainActor
     func testPlayerStartsPausedAtBeginning() {
         let viewModel = MeditationPlayerViewModel(meditation: meditation)

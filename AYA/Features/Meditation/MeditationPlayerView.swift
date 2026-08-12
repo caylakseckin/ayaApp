@@ -11,6 +11,7 @@ struct MeditationPlayerView: View {
 
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
     @StateObject private var viewModel: MeditationPlayerViewModel
+    @State private var isScrollAtTop = true
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -38,6 +39,8 @@ struct MeditationPlayerView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
+                    scrollPositionReader
+
                     if presentation == .standard {
                         topControls
                     }
@@ -73,6 +76,12 @@ struct MeditationPlayerView: View {
                 .frame(minHeight: geometry.size.height, alignment: .top)
             }
             .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.always)
+            .coordinateSpace(name: MeditationPlayerScrollCoordinateSpace.name)
+            .onPreferenceChange(MeditationPlayerScrollTopPreferenceKey.self) { minY in
+                isScrollAtTop = minY >= -1
+            }
+            .simultaneousGesture(dismissGesture(viewportHeight: geometry.size.height))
         }
         .background(playerBackground)
         .navigationBarBackButtonHidden(true)
@@ -95,6 +104,36 @@ struct MeditationPlayerView: View {
                 viewModel.stop()
             }
         }
+    }
+
+    private var scrollPositionReader: some View {
+        GeometryReader { proxy in
+            Color.clear.preference(
+                key: MeditationPlayerScrollTopPreferenceKey.self,
+                value: proxy.frame(in: .named(MeditationPlayerScrollCoordinateSpace.name)).minY
+            )
+        }
+        .frame(height: 0)
+        .accessibilityHidden(true)
+    }
+
+    private func dismissGesture(viewportHeight: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 12, coordinateSpace: .global)
+            .onEnded { value in
+                guard
+                    presentation == .standard,
+                    isScrollAtTop,
+                    MeditationPlayerDismissalPolicy.shouldDismiss(
+                        translationWidth: value.translation.width,
+                        translationHeight: value.translation.height,
+                        predictedTranslationHeight: value.predictedEndTranslation.height,
+                        viewportHeight: viewportHeight
+                    )
+                else { return }
+
+                viewModel.stop()
+                dismiss()
+            }
     }
 
     private var playerBackground: some View {
@@ -421,6 +460,39 @@ struct MeditationPlayerView: View {
         return (totalSeconds / 60, totalSeconds % 60)
     }
 
+}
+
+enum MeditationPlayerDismissalPolicy {
+    static func shouldDismiss(
+        translationWidth: CGFloat,
+        translationHeight: CGFloat,
+        predictedTranslationHeight: CGFloat,
+        viewportHeight: CGFloat
+    ) -> Bool {
+        guard translationHeight > 0, translationHeight > abs(translationWidth) else {
+            return false
+        }
+
+        let deliberateDistance = max(170, min(viewportHeight * 0.24, 220))
+        let fastFlickMinimumDistance: CGFloat = 110
+        let fastFlickPrediction = deliberateDistance * 1.50
+
+        return translationHeight >= deliberateDistance
+            || (translationHeight >= fastFlickMinimumDistance
+                && predictedTranslationHeight >= fastFlickPrediction)
+    }
+}
+
+private enum MeditationPlayerScrollCoordinateSpace {
+    static let name = "meditation.player.scroll"
+}
+
+private struct MeditationPlayerScrollTopPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
 }
 
 private struct MeditationAmbientRings: View {

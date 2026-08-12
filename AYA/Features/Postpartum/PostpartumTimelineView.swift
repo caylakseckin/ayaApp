@@ -37,6 +37,7 @@ struct PostpartumTimelineView: View {
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .hesiaInteractivePopGesture()
     }
 
     private var calculation: PostpartumCalculation {

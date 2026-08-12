@@ -58,6 +58,7 @@ struct CycleCalendarView: View {
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .hesiaInteractivePopGesture()
         .task {
             guard presentation == .tutorialPreview, !reduceMotion else { return }
             try? await Task.sleep(for: .milliseconds(1_050))

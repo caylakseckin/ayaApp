@@ -95,6 +95,8 @@
 		B00100000000000000000057 /* HESIATutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005A /* HESIATutorialView.swift */; };
 		B00100000000000000000058 /* HESIAOnboardingStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005B /* HESIAOnboardingStateTests.swift */; };
 		B00100000000000000000059 /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005C /* PremiumStore.swift */; };
+		B0010000000000000000005A /* OfflineMeditationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005E /* OfflineMeditationSettings.swift */; };
+		B0010000000000000000005B /* OfflineMeditationOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005F /* OfflineMeditationOnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -207,6 +209,8 @@
 		F0010000000000000000005B /* HESIAOnboardingStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAOnboardingStateTests.swift; sourceTree = "<group>"; };
 		F0010000000000000000005C /* PremiumStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		F0010000000000000000005D /* HESIA.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = HESIA.storekit; sourceTree = "<group>"; };
+		F0010000000000000000005E /* OfflineMeditationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineMeditationSettings.swift; sourceTree = "<group>"; };
+		F0010000000000000000005F /* OfflineMeditationOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineMeditationOnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -267,6 +271,7 @@
 				F0010000000000000000005A /* HESIATutorialView.swift */,
 				F00100000000000000000017 /* WelcomeView.swift */,
 				F00100000000000000000056 /* BiometricOnboardingView.swift */,
+				F0010000000000000000005F /* OfflineMeditationOnboardingView.swift */,
 				F00100000000000000000057 /* BiometricLockView.swift */,
 			);
 			path = App;
@@ -461,6 +466,7 @@
 				F0010000000000000000003E /* OnboardingReturnToThemesButton.swift */,
 				F00100000000000000000040 /* ContextualInfoSheet.swift */,
 				F00100000000000000000046 /* MeditationReminderSettings.swift */,
+				F0010000000000000000005E /* OfflineMeditationSettings.swift */,
 				F0010000000000000000004D /* LifeStageContinuationCard.swift */,
 				F00100000000000000000054 /* BiometricAuthentication.swift */,
 				F00100000000000000000055 /* BiometricLockSettings.swift */,
@@ -631,6 +637,7 @@
 				B00100000000000000000057 /* HESIATutorialView.swift in Sources */,
 				B00100000000000000000014 /* WelcomeView.swift in Sources */,
 				B00100000000000000000053 /* BiometricOnboardingView.swift in Sources */,
+				B0010000000000000000005B /* OfflineMeditationOnboardingView.swift in Sources */,
 				B00100000000000000000054 /* BiometricLockView.swift in Sources */,
 				B00100000000000000000002 /* AYAColors.swift in Sources */,
 				B00100000000000000000003 /* AYATypography.swift in Sources */,
@@ -685,6 +692,7 @@
 				B00100000000000000000042 /* PremiumPaywallView.swift in Sources */,
 				B00100000000000000000059 /* PremiumStore.swift in Sources */,
 				B00100000000000000000043 /* MeditationReminderSettings.swift in Sources */,
+				B0010000000000000000005A /* OfflineMeditationSettings.swift in Sources */,
 				B00100000000000000000044 /* RemoteMeditationContent.swift in Sources */,
 				B00100000000000000000045 /* AYASpacing.swift in Sources */,
 				B00100000000000000000046 /* AYARadius.swift in Sources */,

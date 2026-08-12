@@ -22,6 +22,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     private let remoteAudioSource: RemoteMeditationAudioSource?
     private let language: AppLanguage
     private var audioPreparationTask: Task<Void, Never>?
+    private var temporaryRemoteAudioURL: URL?
     private var shouldAutoPlay = false
     private var hasStartedAutoPlay = false
     private var progressTimer: Timer?
@@ -174,6 +175,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
         playbackEnded = false
         clearNowPlayingInfo()
         removeRemoteCommands()
+        removeTemporaryRemoteAudio()
 
         try? AVAudioSession.sharedInstance().setActive(
             false,
@@ -238,16 +240,22 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
         nowPlayingArtist = remoteNarrator ?? nowPlayingArtist
 
         do {
-            let audioURL = try await RemoteMeditationContentLoader.loadAudio(
+            let audioFile = try await RemoteMeditationContentLoader.loadAudio(
                 metadata: metadata,
                 source: source,
                 language: language
             )
             guard !Task.isCancelled else {
+                if audioFile.storage == .temporary {
+                    try? FileManager.default.removeItem(at: audioFile.url)
+                }
                 isLoadingAudio = false
                 return
             }
-            isAudioUnavailable = !prepareAudio(at: audioURL)
+            if audioFile.storage == .temporary {
+                temporaryRemoteAudioURL = audioFile.url
+            }
+            isAudioUnavailable = !prepareAudio(at: audioFile.url)
         } catch {
             guard !Task.isCancelled else {
                 isLoadingAudio = false
@@ -264,6 +272,13 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
         }
 
         autoPlayIfReady()
+    }
+
+    private func removeTemporaryRemoteAudio() {
+        guard let temporaryRemoteAudioURL else { return }
+        audioPlayer = nil
+        try? FileManager.default.removeItem(at: temporaryRemoteAudioURL)
+        self.temporaryRemoteAudioURL = nil
     }
 
     private func bundledAudioURL(for resourceName: String) -> URL? {

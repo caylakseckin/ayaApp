@@ -1,6 +1,25 @@
 import XCTest
 
 final class HESIAUITests: XCTestCase {
+    func testThemeRootLeadingEdgeSwipeReturnsToThemeSelection() {
+        let app = XCUIApplication()
+        app.launchArguments += [
+            "-onboarding.completed", "YES",
+            "-life_stage.active", "cycle",
+            "-app.language", "en"
+        ]
+        app.launch()
+
+        let cycleCard = app.buttons["life_stage.card.cycle"]
+        XCTAssertFalse(cycleCard.exists)
+
+        let leadingEdge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.52))
+        let destination = app.coordinate(withNormalizedOffset: CGVector(dx: 0.72, dy: 0.52))
+        leadingEdge.press(forDuration: 0.05, thenDragTo: destination)
+
+        XCTAssertTrue(cycleCard.waitForExistence(timeout: 3))
+    }
+
     func testAppLaunches() {
         let app = XCUIApplication()
         app.launchArguments += ["-premium.isUnlockedForTesting", "YES"]
@@ -124,6 +143,11 @@ final class HESIAUITests: XCTestCase {
         }
 
         let skipFaceID = app.buttons["biometric.onboarding.skip.button"]
+        let skipOffline = app.buttons["offline.onboarding.skip.button"]
+        if skipOffline.waitForExistence(timeout: 1) {
+            skipOffline.tap()
+        }
+
         if skipFaceID.waitForExistence(timeout: 1) {
             skipFaceID.tap()
         }

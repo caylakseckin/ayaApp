@@ -50,7 +50,17 @@ struct RemoteMeditationMetadata: Decodable, Equatable {
 
 struct LoadedRemoteMeditation {
     let metadata: RemoteMeditationMetadata
-    let audioURL: URL
+    let audioFile: LoadedRemoteAudioFile
+}
+
+struct LoadedRemoteAudioFile {
+    enum Storage {
+        case offline
+        case temporary
+    }
+
+    let url: URL
+    let storage: Storage
 }
 
 enum RemoteMeditationContentLoader {
@@ -65,13 +75,13 @@ enum RemoteMeditationContentLoader {
         session: URLSession = .shared
     ) async throws -> LoadedRemoteMeditation {
         let metadata = try await loadMetadata(source: source, session: session)
-        let audioURL = try await loadAudio(
+        let audioFile = try await loadAudio(
             metadata: metadata,
             source: source,
             language: language,
             session: session
         )
-        return LoadedRemoteMeditation(metadata: metadata, audioURL: audioURL)
+        return LoadedRemoteMeditation(metadata: metadata, audioFile: audioFile)
     }
 
     static func loadAudio(
@@ -79,40 +89,39 @@ enum RemoteMeditationContentLoader {
         source: RemoteMeditationAudioSource,
         language: AppLanguage,
         session: URLSession = .shared
-    ) async throws -> URL {
+    ) async throws -> LoadedRemoteAudioFile {
         guard let audioFileName = metadata.audioFileName(for: language) else {
             throw LoadingError.missingLocalizedAudio
         }
 
-        let audioURL = source.directoryURL.appendingPathComponent(audioFileName)
-        if let cachedURL = cachedAudioURL(
+        if let offlineURL = await OfflineMeditationStore.shared.audioURL(
             source: source,
             language: language,
             fileName: audioFileName
-        ), FileManager.default.fileExists(atPath: cachedURL.path) {
-            return cachedURL
+        ) {
+            return LoadedRemoteAudioFile(url: offlineURL, storage: .offline)
         }
 
+        let audioURL = source.directoryURL.appendingPathComponent(audioFileName)
         let (temporaryURL, audioResponse) = try await session.download(from: audioURL)
         try validate(audioResponse)
 
-        guard let destinationURL = cachedAudioURL(
-            source: source,
-            language: language,
-            fileName: audioFileName
-        ) else {
-            return temporaryURL
-        }
-
         let fileManager = FileManager.default
+        let playbackDirectory = fileManager.temporaryDirectory.appendingPathComponent(
+            "HESIA/Playback",
+            isDirectory: true
+        )
         try fileManager.createDirectory(
-            at: destinationURL.deletingLastPathComponent(),
+            at: playbackDirectory,
             withIntermediateDirectories: true
         )
-        try? fileManager.removeItem(at: destinationURL)
+        let fileExtension = (audioFileName as NSString).pathExtension
+        let destinationURL = playbackDirectory.appendingPathComponent(
+            "\(UUID().uuidString).\(fileExtension)"
+        )
         try fileManager.moveItem(at: temporaryURL, to: destinationURL)
 
-        return destinationURL
+        return LoadedRemoteAudioFile(url: destinationURL, storage: .temporary)
     }
 
     static func loadMetadata(
@@ -136,26 +145,9 @@ enum RemoteMeditationContentLoader {
         }
     }
 
-    private static func cachedAudioURL(
-        source: RemoteMeditationAudioSource,
-        language: AppLanguage,
-        fileName: String
-    ) -> URL? {
-        guard let cachesDirectory = FileManager.default.urls(
-            for: .cachesDirectory,
-            in: .userDomainMask
-        ).first else { return nil }
-
-        let cacheDirectory = cachesDirectory.appendingPathComponent(
-            "HESIA/Meditations",
-            isDirectory: true
-        )
-        let cacheName = "cycle-\(source.cycleDay)-\(language.contentLanguageCode)-\(fileName)"
-        return cacheDirectory.appendingPathComponent(cacheName)
-    }
 }
 
-private extension AppLanguage {
+extension AppLanguage {
     var contentLanguageCode: String {
         switch self {
         case .turkish:

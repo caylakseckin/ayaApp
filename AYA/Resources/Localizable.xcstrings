@@ -281,6 +281,102 @@
         }
       }
     },
+    "onboarding.offline.benefit.cleanup.description" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "After the new day is ready, the oldest download is removed automatically." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yeni gün hazır olduğunda en eski indirme otomatik olarak silinir." } }
+      }
+    },
+    "onboarding.offline.benefit.cleanup.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Storage stays tidy" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Alan düzenli kalır" } }
+      }
+    },
+    "onboarding.offline.benefit.three_days.description" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "HESIA keeps at most three available daily meditations on this iPhone." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "HESIA, mevcut günlük meditasyonlardan en fazla üçünü bu iPhone’da tutar." } }
+      }
+    },
+    "onboarding.offline.benefit.three_days.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Three days, ready" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üç gün yanında" } }
+      }
+    },
+    "onboarding.offline.description" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download today’s meditation and the next two when available, so you can listen without an internet connection." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bugünün ve sonraki iki günün meditasyonlarını hazır olduklarında indir; internet olmadan da dinle." } }
+      }
+    },
+    "onboarding.offline.enable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Offline Listening" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı Dinlemeyi Aç" } }
+      }
+    },
+    "onboarding.offline.skip" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not now" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Şimdi değil" } }
+      }
+    },
+    "onboarding.offline.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep your meditations with you" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Meditasyonların yanında olsun" } }
+      }
+    },
+    "settings.offline.description" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep today and the next two available days offline" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bugünü ve sonraki iki mevcut günü çevrimdışı tut" } }
+      }
+    },
+    "settings.offline.downloading" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preparing your three-day offline set…" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üç günlük çevrimdışı içerik hazırlanıyor…" } }
+      }
+    },
+    "settings.offline.enabled" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New daily meditations download when available" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yeni günlük meditasyonlar hazır olduğunda indirilir" } }
+      }
+    },
+    "settings.offline.failed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline preparation could not finish right now" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı hazırlık şu anda tamamlanamadı" } }
+      }
+    },
+    "settings.offline.partial" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Available audio is offline; some days are not published yet" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mevcut sesler çevrimdışı hazır; bazı günler henüz yayınlanmadı" } }
+      }
+    },
+    "settings.offline.ready" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your available offline meditations are ready" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mevcut çevrimdışı meditasyonların hazır" } }
+      }
+    },
+    "settings.offline.section" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı" } }
+      }
+    },
+    "settings.offline.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline meditations" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı meditasyonlar" } }
+      }
+    },
     "common.close" : {
       "localizations" : {
         "en" : {
@@ -8068,6 +8164,122 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Doğum tarihini güncelle"
+          }
+        }
+      }
+    },
+    "settings.premium.lifetime" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lifetime access"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ömür boyu erişim"
+          }
+        }
+      }
+    },
+    "settings.premium.manage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Subscription"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aboneliği Yönet"
+          }
+        }
+      }
+    },
+    "settings.premium.monthly.active" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly subscription active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aylık abonelik aktif"
+          }
+        }
+      }
+    },
+    "settings.premium.monthly.expires" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active until %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ tarihine kadar aktif"
+          }
+        }
+      }
+    },
+    "settings.premium.monthly.renews" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renews on %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ tarihinde yenilenir"
+          }
+        }
+      }
+    },
+    "settings.premium.section" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium"
+          }
+        }
+      }
+    },
+    "settings.premium.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HESIA Premium"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HESIA Premium"
           }
         }
       }

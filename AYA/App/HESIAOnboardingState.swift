@@ -4,11 +4,13 @@ enum HESIAOnboardingPersistenceKeys {
     static let completed = "onboarding.completed"
     static let welcomeCompleted = "onboarding.welcomeCompleted"
     static let tutorialCompleted = "onboarding.tutorialCompleted"
+    static let offlineSetupCompleted = "onboarding.offlineSetupCompleted"
 }
 
 enum HESIAOnboardingRoute: Equatable {
     case welcome
     case tutorial
+    case offline
     case biometric
     case app
 }
@@ -17,7 +19,8 @@ struct HESIAOnboardingRouteResolver {
     func route(
         hasCompletedOnboarding: Bool,
         hasCompletedWelcome: Bool,
-        hasCompletedTutorial: Bool
+        hasCompletedTutorial: Bool,
+        hasCompletedOfflineSetup: Bool
     ) -> HESIAOnboardingRoute {
         // Backward compatibility: users who completed the previous onboarding
         // must never be sent back into a newly introduced first-run step.
@@ -29,6 +32,9 @@ struct HESIAOnboardingRouteResolver {
         }
         if !hasCompletedTutorial {
             return .tutorial
+        }
+        if !hasCompletedOfflineSetup {
+            return .offline
         }
         return .biometric
     }

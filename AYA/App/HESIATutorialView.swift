@@ -285,24 +285,36 @@ private struct TutorialPrivacyCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(alignment: .top, spacing: AYASpacing.lg) {
-            Image(systemName: "lock.shield")
-                .font(.system(size: 25, weight: .regular))
-                .foregroundStyle(AYAColors.accent)
-                .frame(width: 48, height: 48)
-                .background(AYAColors.accentSoft, in: Circle())
-                .accessibilityHidden(true)
-
+        VStack(alignment: .leading, spacing: AYASpacing.lg) {
             VStack(alignment: .leading, spacing: AYASpacing.sm) {
-                Text("onboarding.tutorial.privacy.title")
-                    .ayaTypography(.sectionTitle)
-                    .foregroundStyle(AYAColors.textPrimary)
+                HStack(spacing: AYASpacing.sm) {
+                    HesiaIcon.lock.view(size: 17)
+                        .foregroundStyle(AYAColors.accent)
+                        .accessibilityHidden(true)
+
+                    Text("onboarding.tutorial.privacy.title")
+                        .ayaTypography(.sectionTitle)
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 Text("onboarding.tutorial.privacy.description")
                     .ayaTypography(.body)
                     .foregroundStyle(AYAColors.textSecondary)
                     .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Rectangle()
+                .fill(AYAColors.separator)
+                .frame(height: 1)
+                .accessibilityHidden(true)
+
+            HStack(alignment: .top, spacing: AYASpacing.sm) {
+                HesiaIcon.info.view(size: 15)
+                    .foregroundStyle(AYAColors.textTertiary)
+                    .frame(width: 18, height: 18)
+                    .accessibilityHidden(true)
 
                 Text("onboarding.tutorial.privacy.network_note")
                     .ayaTypography(.metadata)
@@ -320,7 +332,6 @@ private struct TutorialPrivacyCard: View {
             RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
                 .stroke(AYAColors.separator, lineWidth: 1)
         }
-        .ayaElevation(.card)
         .opacity(isVisible ? 1 : 0)
         .offset(y: reduceMotion ? 0 : (isVisible ? 0 : AYASpacing.sm))
         .onAppear {

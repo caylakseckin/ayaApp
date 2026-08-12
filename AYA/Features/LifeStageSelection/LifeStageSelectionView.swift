@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct LifeStageSelectionView: View {
     @StateObject private var viewModel: LifeStageSelectionViewModel
@@ -35,6 +36,7 @@ struct LifeStageSelectionView: View {
                 }
                 .toolbar(.hidden, for: .navigationBar)
         }
+        .hesiaInteractivePopGesture()
     }
 
     private var selectionContent: some View {
@@ -79,7 +81,19 @@ struct LifeStageSelectionView: View {
     }
 
     private func select(_ stage: LifeStage) {
-        if stage.isPremium, !premiumStore.hasPremiumAccess {
+        if stage.isPremium, !premiumStore.hasResolvedEntitlements {
+            Task {
+                await premiumStore.refreshEntitlements()
+                select(stage)
+            }
+            return
+        }
+
+        if !PremiumAccessPolicy.hasAccess(
+            to: stage,
+            entitlementsResolved: premiumStore.hasResolvedEntitlements,
+            hasPremiumAccess: premiumStore.hasPremiumAccess
+        ) {
             premiumStage = stage
             return
         }
@@ -400,6 +414,8 @@ struct SettingsPanel: View {
 
     @State private var isLanguageExpanded = false
     @State private var isTutorialPresented = false
+    @State private var isManageSubscriptionsPresented = false
+    @ObservedObject private var premiumStore = PremiumStore.shared
     @AppStorage("app.appearance") private var appearanceRawValue = AppAppearance.system.rawValue
     @FocusState private var isNameFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -455,10 +471,14 @@ struct SettingsPanel: View {
                         {
                             motherhoodSettingsButton(range: motherhoodRange, action: editMotherhood)
                         }
+                        if premiumStore.hasPremiumAccess {
+                            premiumSection
+                        }
                         profileSection
                         languageSection
                         appearanceSection
                         BiometricLockSettings()
+                        OfflineMeditationSettings()
                         MeditationReminderSettings(presentation: .settings)
                         supportSection
                     }
@@ -479,6 +499,106 @@ struct SettingsPanel: View {
                 isTutorialPresented = false
             }
         }
+        .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
+        .task {
+            await premiumStore.refreshEntitlements()
+        }
+    }
+
+    private var premiumSection: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            Text("settings.premium.section")
+                .font(AYATypography.ui(size: 13, weight: .medium))
+                .foregroundStyle(AYAColors.textSecondary)
+                .textCase(.uppercase)
+                .padding(.horizontal, 4)
+
+            VStack(spacing: 0) {
+                HStack(spacing: AYASpacing.md) {
+                    HesiaIcon.lock.view(size: 18)
+                        .foregroundStyle(AYAColors.accent)
+                        .frame(width: 22)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("settings.premium.title")
+                            .font(AYATypography.ui(size: 15, weight: .medium))
+                            .foregroundStyle(AYAColors.textPrimary)
+
+                        Text(verbatim: premiumStatusText)
+                            .font(AYATypography.ui(size: 12))
+                            .foregroundStyle(AYAColors.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: AYASpacing.sm)
+
+                    HesiaIcon.check.view(size: 17)
+                        .foregroundStyle(AYAColors.accent)
+                        .accessibilityHidden(true)
+                }
+                .padding(.horizontal, AYASpacing.lg)
+                .padding(.vertical, AYASpacing.md)
+
+                if premiumStore.monthlySubscription != nil {
+                    divider
+
+                    Button {
+                        isManageSubscriptionsPresented = true
+                    } label: {
+                        HStack(spacing: AYASpacing.md) {
+                            Text("settings.premium.manage")
+                            Spacer()
+                            HesiaIcon.caretRight.view(size: 13)
+                                .foregroundStyle(AYAColors.textSecondary)
+                        }
+                        .font(AYATypography.ui(size: 14, weight: .medium))
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .padding(.horizontal, AYASpacing.lg)
+                        .frame(minHeight: 50)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("settings.premium.manage.button")
+                }
+            }
+            .background(
+                AYAColors.cardSurface,
+                in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+                    .stroke(AYAColors.divider, lineWidth: 1)
+            }
+        }
+    }
+
+    private var premiumStatusText: String {
+        if premiumStore.hasLifetimeAccess {
+            return localizedString("settings.premium.lifetime")
+        }
+
+        guard let subscription = premiumStore.monthlySubscription else {
+            return localizedString("settings.premium.monthly.active")
+        }
+
+        guard let renewalDate = subscription.renewalDate else {
+            return localizedString("settings.premium.monthly.active")
+        }
+
+        let language = AppLanguage(rawValue: languageCode) ?? .system
+        let date = renewalDate.formatted(
+            Date.FormatStyle(date: .long, time: .omitted).locale(language.locale)
+        )
+        let key = subscription.willAutoRenew == false
+            ? "settings.premium.monthly.expires"
+            : "settings.premium.monthly.renews"
+        let format = language.localizedString(forKey: key)
+        return String(format: format, locale: language.locale, date)
+    }
+
+    private func localizedString(_ key: String) -> String {
+        let language = AppLanguage(rawValue: languageCode) ?? .system
+        return language.localizedString(forKey: key)
     }
 
     private var howHesiaWorksButton: some View {

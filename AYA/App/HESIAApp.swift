@@ -107,6 +107,7 @@ struct HESIAApp: App {
     @StateObject private var premiumStore = PremiumStore.shared
     @AppStorage("app.language") private var languageCode = AppLanguage.defaultExplicitLanguage.rawValue
     @AppStorage("app.appearance") private var appearanceRawValue = AppAppearance.system.rawValue
+    @Environment(\.scenePhase) private var scenePhase
 
     private var selectedLocale: Locale {
         AppLanguage(rawValue: languageCode)?.locale ?? .autoupdatingCurrent
@@ -131,6 +132,12 @@ struct HESIAApp: App {
                 .environment(\.locale, selectedLocale)
                 .tint(AYAColors.primary)
                 .preferredColorScheme(selectedAppearance.colorScheme)
+                .onChange(of: scenePhase) { _, newPhase in
+                    guard newPhase == .active else { return }
+                    Task {
+                        await premiumStore.refreshEntitlements(showLoadingState: true)
+                    }
+                }
         }
     }
 }
@@ -139,6 +146,7 @@ private struct HESIALaunchRootView: View {
     @AppStorage(HESIAOnboardingPersistenceKeys.completed) private var hasCompletedOnboarding = false
     @AppStorage(HESIAOnboardingPersistenceKeys.welcomeCompleted) private var hasCompletedWelcome = false
     @AppStorage(HESIAOnboardingPersistenceKeys.tutorialCompleted) private var hasCompletedTutorial = false
+    @AppStorage(HESIAOnboardingPersistenceKeys.offlineSetupCompleted) private var hasCompletedOfflineSetup = false
     @State private var authenticatedDuringOnboarding = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -148,7 +156,8 @@ private struct HESIALaunchRootView: View {
         routeResolver.route(
             hasCompletedOnboarding: hasCompletedOnboarding,
             hasCompletedWelcome: hasCompletedWelcome,
-            hasCompletedTutorial: hasCompletedTutorial
+            hasCompletedTutorial: hasCompletedTutorial,
+            hasCompletedOfflineSetup: hasCompletedOfflineSetup
         )
     }
 
@@ -165,6 +174,12 @@ private struct HESIALaunchRootView: View {
                 BiometricOnboardingView { authenticated in
                     authenticatedDuringOnboarding = authenticated
                     hasCompletedOnboarding = true
+                }
+                .hesiaScreenTransition(reduceMotion: reduceMotion)
+
+            case .offline:
+                OfflineMeditationOnboardingView {
+                    hasCompletedOfflineSetup = true
                 }
                 .hesiaScreenTransition(reduceMotion: reduceMotion)
 
@@ -200,10 +215,20 @@ private struct AuthenticatedRootView: View {
 
     private var showsThemeSelection: Bool {
         isChoosingTheme
-            || activeStage == nil
-            || (activeStage?.isPremium == true
-                && premiumStore.hasResolvedEntitlements
-                && !premiumStore.hasPremiumAccess)
+            || PremiumAccessPolicy.requiresThemeSelection(
+                for: activeStage,
+                entitlementsResolved: premiumStore.hasResolvedEntitlements,
+                hasPremiumAccess: premiumStore.hasPremiumAccess
+            )
+    }
+
+    private var themeSelectionInitialStage: LifeStage {
+        guard let activeStage else { return .cycle }
+        return PremiumAccessPolicy.hasAccess(
+            to: activeStage,
+            entitlementsResolved: premiumStore.hasResolvedEntitlements,
+            hasPremiumAccess: premiumStore.hasPremiumAccess
+        ) ? activeStage : .cycle
     }
 
     private var routeAnimationValue: String {
@@ -220,7 +245,7 @@ private struct AuthenticatedRootView: View {
                     .accessibilityLabel("premium.loading")
                     .hesiaScreenTransition(reduceMotion: reduceMotion)
             } else if showsThemeSelection {
-                LifeStageSelectionView(initialSelection: activeStage ?? .cycle) { stage in
+                LifeStageSelectionView(initialSelection: themeSelectionInitialStage) { stage in
                     activeStageRawValue = stage.rawValue
                     isChoosingTheme = false
                 }
@@ -245,17 +270,20 @@ private struct ActiveLifeStageView: View {
 
     var body: some View {
         NavigationStack {
-            if stage == .cycle {
-                CycleDestinationView(showThemes: showThemes)
-            } else if stage == .pregnancy {
-                PregnancyDestinationView(showThemes: showThemes)
-            } else if stage == .postpartum {
-                PostpartumDestinationView(showThemes: showThemes)
-            } else if stage == .motherhood03 {
-                MotherhoodDestinationView(showThemes: showThemes)
-            } else {
-                LifeStagePlaceholderView(stage: stage, showThemesAction: showThemes)
+            Group {
+                if stage == .cycle {
+                    CycleDestinationView(showThemes: showThemes)
+                } else if stage == .pregnancy {
+                    PregnancyDestinationView(showThemes: showThemes)
+                } else if stage == .postpartum {
+                    PostpartumDestinationView(showThemes: showThemes)
+                } else if stage == .motherhood03 {
+                    MotherhoodDestinationView(showThemes: showThemes)
+                } else {
+                    LifeStagePlaceholderView(stage: stage, showThemesAction: showThemes)
+                }
             }
+            .hesiaRootEdgeBack(action: showThemes)
         }
     }
 }

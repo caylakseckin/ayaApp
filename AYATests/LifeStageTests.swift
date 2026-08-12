@@ -72,4 +72,58 @@ final class LifeStageTests: XCTestCase {
         XCTAssertEqual(PremiumPlan(productIdentifier: PremiumProductIdentifiers.monthly), .monthly)
         XCTAssertNil(PremiumPlan(productIdentifier: "unknown.product"))
     }
+
+    func testFreeStageDoesNotRequirePremiumEntitlement() {
+        XCTAssertTrue(
+            PremiumAccessPolicy.hasAccess(
+                to: .cycle,
+                entitlementsResolved: true,
+                hasPremiumAccess: false
+            )
+        )
+    }
+
+    func testPremiumStageLocksAfterEntitlementsResolveWithoutAccess() {
+        XCTAssertFalse(
+            PremiumAccessPolicy.hasAccess(
+                to: .pregnancy,
+                entitlementsResolved: true,
+                hasPremiumAccess: false
+            )
+        )
+        XCTAssertTrue(
+            PremiumAccessPolicy.requiresThemeSelection(
+                for: .pregnancy,
+                entitlementsResolved: true,
+                hasPremiumAccess: false
+            )
+        )
+    }
+
+    func testPremiumStageRemainsAvailableWhileAppleReportsEntitlement() {
+        XCTAssertTrue(
+            PremiumAccessPolicy.hasAccess(
+                to: .postpartum,
+                entitlementsResolved: true,
+                hasPremiumAccess: true
+            )
+        )
+        XCTAssertFalse(
+            PremiumAccessPolicy.requiresThemeSelection(
+                for: .motherhood03,
+                entitlementsResolved: true,
+                hasPremiumAccess: true
+            )
+        )
+    }
+
+    func testUnresolvedPremiumEntitlementWaitsInsteadOfRedirecting() {
+        XCTAssertFalse(
+            PremiumAccessPolicy.requiresThemeSelection(
+                for: .pregnancy,
+                entitlementsResolved: false,
+                hasPremiumAccess: false
+            )
+        )
+    }
 }
