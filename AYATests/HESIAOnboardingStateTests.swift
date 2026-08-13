@@ -78,6 +78,38 @@ final class HESIAOnboardingStateTests: XCTestCase {
         )
     }
 
+    func testPregnancyOfflinePackageContainsOnlyCurrentWeek() {
+        XCTAssertEqual(
+            OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 18),
+            [18]
+        )
+        XCTAssertTrue(OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 43).isEmpty)
+    }
+
+    func testBiometricAutomaticUnlockRunsOnlyOncePerLock() {
+        XCTAssertTrue(
+            BiometricAutomaticUnlockPolicy.shouldAttempt(
+                isLocked: true,
+                isAuthenticating: false,
+                hasAttempted: false
+            )
+        )
+        XCTAssertFalse(
+            BiometricAutomaticUnlockPolicy.shouldAttempt(
+                isLocked: true,
+                isAuthenticating: false,
+                hasAttempted: true
+            )
+        )
+        XCTAssertFalse(
+            BiometricAutomaticUnlockPolicy.shouldAttempt(
+                isLocked: true,
+                isAuthenticating: true,
+                hasAttempted: false
+            )
+        )
+    }
+
     func testReplayDoesNotCompleteFirstLaunch() {
         XCTAssertFalse(HESIATutorialPresentationContext.replayFromSettings.completesFirstLaunch)
         XCTAssertTrue(HESIATutorialPresentationContext.firstLaunch.completesFirstLaunch)

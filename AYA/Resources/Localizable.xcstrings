@@ -2895,13 +2895,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Short, gentle pauses while you recover"
+            "value" : "Make space for yourself as you change alongside your baby"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toparlanma sürecinde kısa ve nazik molalar"
+            "value" : "Bebeğinle birlikte değişirken kendine de alan aç"
           }
         }
       }
@@ -3288,6 +3288,38 @@
         }
       }
     },
+    "meditation.player.continues.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the card to return to the player"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oynatıcıya dönmek için karta dokun"
+          }
+        }
+      }
+    },
+    "meditation.player.continues.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your meditation is still playing"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditasyon çalmaya devam ediyor"
+          }
+        }
+      }
+    },
     "meditation.player.duration_minutes" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3349,6 +3381,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Meditasyon yükleniyor"
+          }
+        }
+      }
+    },
+    "meditation.player.open" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open meditation player"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditasyon oynatıcısını aç"
+          }
+        }
+      }
+    },
+    "meditation.player.open_playing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditation is playing. Open player"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditasyon çalıyor. Oynatıcıyı aç"
           }
         }
       }
@@ -4841,13 +4905,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA offers a daily meditation and helpful insights shaped around your current stage."
+            "value" : "HESIA offers a daily meditation and brief insights shaped around your current stage."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA bulunduğun döneme göre günlük meditasyonunu ve yardımcı bilgileri sunar."
+            "value" : "HESIA, bulunduğun döneme göre her gün bir meditasyon ve sana eşlik eden kısa bilgiler sunar."
           }
         }
       }
@@ -4857,13 +4921,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You don’t have to decide what to listen to."
+            "value" : "A meditation for each day."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ne dinleyeceğini düşünmene gerek yok."
+            "value" : "Her gün sana uygun bir meditasyon."
           }
         }
       }
@@ -5033,13 +5097,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Change your theme, name, language and other preferences from Settings."
+            "value" : "Update your name, language, theme and other preferences whenever you like."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tema, ad, dil ve diğer ayarlarını buradan değiştirebilirsin."
+            "value" : "Adını, dilini, tema seçimini ve diğer tercihlerini dilediğin zaman güncelleyebilirsin."
           }
         }
       }
@@ -5049,13 +5113,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Everything is here."
+            "value" : "An experience shaped around you."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Her şey burada."
+            "value" : "Deneyim sana göre şekillenir."
           }
         }
       }
@@ -5081,13 +5145,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "As your life stage changes, HESIA changes with you. You can choose another theme later in Settings."
+            "value" : "Choose the experience that fits your current life stage, and update it whenever your needs change."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hayatındaki dönem değiştikçe HESIA da seninle değişir. Temanı daha sonra Ayarlar’dan değiştirebilirsin."
+            "value" : "Yaşamındaki döneme uygun deneyimi seçebilir, ihtiyaçların değiştiğinde seçimini yenileyebilirsin."
           }
         }
       }
@@ -5097,13 +5161,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "First, choose where you are."
+            "value" : "HESIA changes with you."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Önce bulunduğun dönemi seçersin."
+            "value" : "HESIA seninle değişir."
           }
         }
       }
@@ -5113,13 +5177,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calendars and timelines help you understand your place within your current stage."
+            "value" : "Simple calendars and timelines help you understand where you are within your current stage."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Takvim ve zaman çizelgesi bulunduğun dönemdeki konumunu anlamana yardımcı olur."
+            "value" : "Takvim ve zaman çizelgeleri, bulunduğun dönemde nerede olduğunu ve ilerleyişini anlamanı kolaylaştırır."
           }
         }
       }
@@ -5129,13 +5193,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "See where you are at a glance."
+            "value" : "See your journey at a glance."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bulunduğun noktayı kolayca takip et."
+            "value" : "Sürecini bir bakışta gör."
           }
         }
       }

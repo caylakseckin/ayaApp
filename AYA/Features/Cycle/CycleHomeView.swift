@@ -14,7 +14,9 @@ struct CycleHomeView: View {
     @State private var isSettingsPresented = false
     @State private var isEditingCycle = false
     @State private var isCalendarPresented = false
-    @State private var selectedMeditation: DailyMeditation?
+    @State private var playbackSession: MeditationPlaybackSession?
+    @State private var isPlayerPresented = false
+    @State private var isPlaybackContinuationToastPresented = false
     @State private var infoContent: ContextualInfoContent?
     @State private var remoteMeditationMetadata: RemoteMeditationMetadata?
 
@@ -49,11 +51,20 @@ struct CycleHomeView: View {
                 CycleCalendarView(profile: profile)
             }
         }
-        .fullScreenCover(item: $selectedMeditation) { meditation in
-            HESIAMeditationTransitionContainer {
-                MeditationPlayerView(meditation: meditation, autoPlay: true)
+        .fullScreenCover(
+            isPresented: $isPlayerPresented,
+            onDismiss: handlePlayerDismissed
+        ) {
+            if let playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
                     .environment(\.locale, locale)
                     .tint(AYAColors.primary)
+                }
             }
         }
         .fullScreenCover(isPresented: $isEditingCycle) {
@@ -69,6 +80,9 @@ struct CycleHomeView: View {
             ContextualInfoSheet(content: content)
                 .environment(\.locale, locale)
         }
+        .meditationPlaybackContinuationToast(
+            isPresented: $isPlaybackContinuationToastPresented
+        )
     }
 
     private var profile: CycleProfile? {
@@ -103,9 +117,10 @@ struct CycleHomeView: View {
 
                     DailyMeditationCard(
                         meditation: meditation,
-                        remoteMetadata: remoteMeditationMetadata
+                        remoteMetadata: remoteMeditationMetadata,
+                        playbackViewModel: playbackViewModel(for: meditation)
                     ) {
-                        selectedMeditation = meditation
+                        startMeditation(meditation)
                     }
                 }
 
@@ -218,6 +233,7 @@ struct CycleHomeView: View {
 
     private func showThemes() {
         isSettingsPresented = false
+        stopPlaybackSession()
         if let showThemesAction {
             showThemesAction()
         } else {
@@ -228,6 +244,32 @@ struct CycleHomeView: View {
     private func editCycle() {
         isSettingsPresented = false
         isEditingCycle = true
+    }
+
+    private func startMeditation(_ meditation: DailyMeditation) {
+        isPlaybackContinuationToastPresented = false
+        if playbackSession?.meditation.id != meditation.id {
+            playbackSession?.viewModel.stop()
+            playbackSession = MeditationPlaybackSession(
+                meditation: meditation,
+                language: selectedLanguage
+            )
+        }
+        isPlayerPresented = true
+    }
+
+    private func handlePlayerDismissed() {
+        isPlaybackContinuationToastPresented = playbackSession?.viewModel.isPlaying == true
+    }
+
+    private func playbackViewModel(for meditation: DailyMeditation) -> MeditationPlayerViewModel? {
+        guard playbackSession?.meditation.id == meditation.id else { return nil }
+        return playbackSession?.viewModel
+    }
+
+    private func stopPlaybackSession() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
     }
 
     private func loadRemoteMetadata(for meditation: DailyMeditation) async {
@@ -397,22 +439,28 @@ struct CycleSummaryView: View {
 struct DailyMeditationCard: View {
     let meditation: DailyMeditation
     let remoteMetadata: RemoteMeditationMetadata?
+    let playbackViewModel: MeditationPlayerViewModel?
     let infoAccessibilityLabel: String?
     let infoAction: (() -> Void)?
     let start: () -> Void
 
     @Environment(\.locale) private var locale
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
+    @State private var excludedTapFrames: [CGRect] = []
+
+    private let coordinateSpaceName = "dailyMeditationCard"
 
     init(
         meditation: DailyMeditation,
         remoteMetadata: RemoteMeditationMetadata? = nil,
+        playbackViewModel: MeditationPlayerViewModel? = nil,
         infoAccessibilityLabel: String? = nil,
         infoAction: (() -> Void)? = nil,
         start: @escaping () -> Void
     ) {
         self.meditation = meditation
         self.remoteMetadata = remoteMetadata
+        self.playbackViewModel = playbackViewModel
         self.infoAccessibilityLabel = infoAccessibilityLabel
         self.infoAction = infoAction
         self.start = start
@@ -432,6 +480,9 @@ struct DailyMeditationCard: View {
                         accessibilityLabel: infoAccessibilityLabel,
                         action: infoAction
                     )
+                    .background {
+                        interactiveControlFrameReader
+                    }
                 }
             }
 
@@ -466,21 +517,25 @@ struct DailyMeditationCard: View {
 
                 Spacer(minLength: AYASpacing.md)
 
-                Button(action: start) {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(AYAColors.onAccent)
-                        .frame(width: 54, height: 54)
-                        .background(AYAColors.emphasis, in: Circle())
-                }
-                .buttonStyle(.plain)
+                playbackControl
                 .accessibilityIdentifier("cycle.home.meditation.start")
-                .accessibilityLabel("meditation.start")
                 .offset(x: -6, y: -6)
+                .background {
+                    interactiveControlFrameReader
+                }
             }
             .padding(.top, AYASpacing.xl)
         }
         .padding(AYASpacing.lg)
+        .contentShape(RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
+        .coordinateSpace(name: coordinateSpaceName)
+        .onPreferenceChange(DailyMeditationInteractiveControlFramesKey.self) {
+            excludedTapFrames = $0
+        }
+        .onTapGesture(coordinateSpace: .named(coordinateSpaceName)) { location in
+            guard !excludedTapFrames.contains(where: { $0.contains(location) }) else { return }
+            start()
+        }
         .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
@@ -519,6 +574,33 @@ struct DailyMeditationCard: View {
         AppLanguage(rawValue: languageCode) ?? .system
     }
 
+    @ViewBuilder
+    private var playbackControl: some View {
+        if let playbackViewModel {
+            ActiveMeditationCardButton(
+                viewModel: playbackViewModel,
+                action: start
+            )
+        } else {
+            Button(action: start) {
+                MeditationCardPlayIcon()
+                    .frame(width: 54, height: 54)
+                    .background(AYAColors.emphasis, in: Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("meditation.start")
+        }
+    }
+
+    private var interactiveControlFrameReader: some View {
+        GeometryReader { proxy in
+            Color.clear.preference(
+                key: DailyMeditationInteractiveControlFramesKey.self,
+                value: [proxy.frame(in: .named(coordinateSpaceName))]
+            )
+        }
+    }
+
     private func metadata(icon: HesiaIcon, text: String) -> some View {
         HStack(spacing: 5) {
             icon.view(size: 14)
@@ -526,6 +608,55 @@ struct DailyMeditationCard: View {
         }
         .ayaTypography(.homeMetadata)
         .foregroundStyle(AYAColors.textTertiary)
+    }
+}
+
+private struct DailyMeditationInteractiveControlFramesKey: PreferenceKey {
+    static var defaultValue: [CGRect] = []
+
+    static func reduce(value: inout [CGRect], nextValue: () -> [CGRect]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+private struct ActiveMeditationCardButton: View {
+    @ObservedObject var viewModel: MeditationPlayerViewModel
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Group {
+                if viewModel.isLoadingAudio {
+                    ProgressView()
+                        .tint(AYAColors.onAccent)
+                } else if viewModel.isPlaying {
+                    PlaybackWaveformIndicator(isPlaying: true)
+                } else {
+                    MeditationCardPlayIcon()
+                }
+            }
+            .frame(width: 54, height: 54)
+            .background(AYAColors.emphasis, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: LocalizedStringKey {
+        if viewModel.isLoadingAudio {
+            return "meditation.player.loading"
+        }
+        return viewModel.isPlaying
+            ? "meditation.player.open_playing"
+            : "meditation.player.open"
+    }
+}
+
+private struct MeditationCardPlayIcon: View {
+    var body: some View {
+        Image(systemName: "play.fill")
+            .font(.system(size: 20, weight: .semibold))
+            .foregroundStyle(AYAColors.onAccent)
     }
 }
 

@@ -5,9 +5,126 @@ enum MeditationPlayerPresentation {
     case tutorialPreview
 }
 
+@MainActor
+final class MeditationPlaybackSession {
+    let meditation: DailyMeditation
+    let viewModel: MeditationPlayerViewModel
+
+    init(meditation: DailyMeditation, language: AppLanguage) {
+        self.meditation = meditation
+        viewModel = MeditationPlayerViewModel(
+            meditation: meditation,
+            language: language,
+            autoPlay: true
+        )
+    }
+}
+
+struct PlaybackWaveformIndicator: View {
+    let isPlaying: Bool
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private let restingHeights: [CGFloat] = [9, 13, 10]
+    private let amplitudes: [CGFloat] = [1.5, 2, 1.5]
+    private let phaseOffsets: [Double] = [0, 1.8, 3.6]
+
+    var body: some View {
+        TimelineView(
+            .animation(
+                minimumInterval: 1.0 / 30.0,
+                paused: !isPlaying || reduceMotion
+            )
+        ) { context in
+            HStack(spacing: 3) {
+                ForEach(restingHeights.indices, id: \.self) { index in
+                    Capsule()
+                        .fill(AYAColors.onAccent)
+                        .frame(width: 2, height: barHeight(at: index, date: context.date))
+                }
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private func barHeight(at index: Int, date: Date) -> CGFloat {
+        guard isPlaying, !reduceMotion else { return restingHeights[index] }
+
+        let phase = date.timeIntervalSinceReferenceDate * 1.25 + phaseOffsets[index]
+        return restingHeights[index] + CGFloat(sin(phase)) * amplitudes[index]
+    }
+}
+
+struct MeditationPlaybackContinuationToastModifier: ViewModifier {
+    @Binding var isPresented: Bool
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(alignment: .bottom) {
+                if isPresented {
+                    HStack(spacing: AYASpacing.md) {
+                        PlaybackWaveformIndicator(isPlaying: true)
+                            .frame(width: 36, height: 36)
+                            .background(AYAColors.emphasis, in: Circle())
+
+                        VStack(alignment: .leading, spacing: AYASpacing.xxs) {
+                            Text("meditation.player.continues.title")
+                                .ayaTypography(.homeCTA)
+                                .foregroundStyle(AYAColors.textPrimary)
+
+                            Text("meditation.player.continues.message")
+                                .ayaTypography(.homeSupporting)
+                                .foregroundStyle(AYAColors.textSecondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.horizontal, AYASpacing.lg)
+                    .padding(.vertical, AYASpacing.md)
+                    .background(
+                        AYAColors.surfaceElevated,
+                        in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+                            .stroke(AYAColors.border, lineWidth: 1)
+                    }
+                    .ayaElevation(.raised)
+                    .padding(.horizontal, AYASpacing.xl)
+                    .padding(.bottom, AYASpacing.lg)
+                    .transition(
+                        reduceMotion
+                            ? .opacity
+                            : .move(edge: .bottom).combined(with: .opacity)
+                    )
+                    .accessibilityElement(children: .combine)
+                    .allowsHitTesting(false)
+                }
+            }
+            .animation(
+                reduceMotion ? nil : .easeOut(duration: 0.22),
+                value: isPresented
+            )
+            .task(id: isPresented) {
+                guard isPresented else { return }
+                try? await Task.sleep(nanoseconds: 3_500_000_000)
+                guard !Task.isCancelled else { return }
+                isPresented = false
+            }
+    }
+}
+
+extension View {
+    func meditationPlaybackContinuationToast(isPresented: Binding<Bool>) -> some View {
+        modifier(MeditationPlaybackContinuationToastModifier(isPresented: isPresented))
+    }
+}
+
 struct MeditationPlayerView: View {
     let meditation: DailyMeditation
     let presentation: MeditationPlayerPresentation
+    private let stopsPlaybackOnDismiss: Bool
 
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
     @StateObject private var viewModel: MeditationPlayerViewModel
@@ -19,15 +136,18 @@ struct MeditationPlayerView: View {
     init(
         meditation: DailyMeditation,
         autoPlay: Bool = false,
-        presentation: MeditationPlayerPresentation = .standard
+        presentation: MeditationPlayerPresentation = .standard,
+        playbackViewModel: MeditationPlayerViewModel? = nil,
+        stopsPlaybackOnDismiss: Bool = true
     ) {
         self.meditation = meditation
         self.presentation = presentation
+        self.stopsPlaybackOnDismiss = stopsPlaybackOnDismiss
         let storedLanguageCode = UserDefaults.standard.string(forKey: "app.language")
         let language = AppLanguage(rawValue: storedLanguageCode ?? "")
             ?? AppLanguage.defaultExplicitLanguage
         _viewModel = StateObject(
-            wrappedValue: MeditationPlayerViewModel(
+            wrappedValue: playbackViewModel ?? MeditationPlayerViewModel(
                 meditation: meditation,
                 language: language,
                 autoPlay: autoPlay
@@ -36,52 +156,54 @@ struct MeditationPlayerView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
-                    scrollPositionReader
-
-                    if presentation == .standard {
-                        topControls
-                    }
-
-                    meditationHeader
-                        .padding(.top, presentation == .standard ? AYASpacing.xxl : AYASpacing.lg)
-
-                    Spacer(minLength: presentation == .standard ? AYASpacing.xxl : AYASpacing.sm)
-
-                    if viewModel.isAudioUnavailable {
-                        audioUnavailableState
-                    } else {
-                        focalPlaybackControl
+        BiometricProtectedContent {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        scrollPositionReader
 
                         if presentation == .standard {
-                            Spacer(minLength: AYASpacing.lg)
-
-                            transportControls
-                                .padding(.top, AYASpacing.sm)
-
-                            Spacer(minLength: AYASpacing.xl)
-
-                            progressControls
+                            topControls
                         }
-                    }
 
-                    Spacer(minLength: presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
+                        meditationHeader
+                            .padding(.top, presentation == .standard ? AYASpacing.xxl : AYASpacing.lg)
+
+                        Spacer(minLength: presentation == .standard ? AYASpacing.xxl : AYASpacing.sm)
+
+                        if viewModel.isAudioUnavailable {
+                            audioUnavailableState
+                        } else {
+                            focalPlaybackControl
+
+                            if presentation == .standard {
+                                Spacer(minLength: AYASpacing.lg)
+
+                                transportControls
+                                    .padding(.top, AYASpacing.sm)
+
+                                Spacer(minLength: AYASpacing.xl)
+
+                                progressControls
+                            }
+                        }
+
+                        Spacer(minLength: presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
+                    }
+                    .padding(.horizontal, presentation == .standard ? AYASpacing.xl : AYASpacing.lg)
+                    .padding(.top, presentation == .standard ? AYASpacing.sm : 0)
+                    .padding(.bottom, presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: geometry.size.height, alignment: .top)
                 }
-                .padding(.horizontal, presentation == .standard ? AYASpacing.xl : AYASpacing.lg)
-                .padding(.top, presentation == .standard ? AYASpacing.sm : 0)
-                .padding(.bottom, presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: geometry.size.height, alignment: .top)
+                .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.always)
+                .coordinateSpace(name: MeditationPlayerScrollCoordinateSpace.name)
+                .onPreferenceChange(MeditationPlayerScrollTopPreferenceKey.self) { minY in
+                    isScrollAtTop = minY >= -1
+                }
+                .simultaneousGesture(dismissGesture(viewportHeight: geometry.size.height))
             }
-            .scrollIndicators(.hidden)
-            .scrollBounceBehavior(.always)
-            .coordinateSpace(name: MeditationPlayerScrollCoordinateSpace.name)
-            .onPreferenceChange(MeditationPlayerScrollTopPreferenceKey.self) { minY in
-                isScrollAtTop = minY >= -1
-            }
-            .simultaneousGesture(dismissGesture(viewportHeight: geometry.size.height))
         }
         .background(playerBackground)
         .navigationBarBackButtonHidden(true)
@@ -100,7 +222,7 @@ struct MeditationPlayerView: View {
             }
         }
         .onDisappear {
-            if presentation == .standard {
+            if presentation == .standard, stopsPlaybackOnDismiss {
                 viewModel.stop()
             }
         }
@@ -131,8 +253,7 @@ struct MeditationPlayerView: View {
                     )
                 else { return }
 
-                viewModel.stop()
-                dismiss()
+                dismissPlayer()
             }
     }
 
@@ -155,8 +276,7 @@ struct MeditationPlayerView: View {
     private var topControls: some View {
         HStack {
             Button {
-                viewModel.stop()
-                dismiss()
+                dismissPlayer()
             } label: {
                 HesiaIcon.caretDown.view(size: 19)
                     .foregroundStyle(AYAColors.textPrimary)
@@ -170,6 +290,13 @@ struct MeditationPlayerView: View {
 
             Spacer()
         }
+    }
+
+    private func dismissPlayer() {
+        if stopsPlaybackOnDismiss {
+            viewModel.stop()
+        }
+        dismiss()
     }
 
     private var meditationHeader: some View {

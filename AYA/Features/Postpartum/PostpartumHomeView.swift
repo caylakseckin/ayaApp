@@ -12,7 +12,9 @@ struct PostpartumHomeView: View {
     @State private var isSettingsPresented = false
     @State private var isEditingBirthDate = false
     @State private var isTimelinePresented = false
-    @State private var selectedMeditation: DailyMeditation?
+    @State private var playbackSession: MeditationPlaybackSession?
+    @State private var isPlayerPresented = false
+    @State private var isPlaybackContinuationToastPresented = false
     @State private var infoContent: ContextualInfoContent?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -45,11 +47,20 @@ struct PostpartumHomeView: View {
                 PostpartumTimelineView(profile: profile)
             }
         }
-        .fullScreenCover(item: $selectedMeditation) { meditation in
-            HESIAMeditationTransitionContainer {
-                MeditationPlayerView(meditation: meditation, autoPlay: true)
+        .fullScreenCover(
+            isPresented: $isPlayerPresented,
+            onDismiss: handlePlayerDismissed
+        ) {
+            if let playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
                     .environment(\.locale, locale)
                     .tint(AYAColors.primary)
+                }
             }
         }
         .fullScreenCover(isPresented: $isEditingBirthDate) {
@@ -65,6 +76,9 @@ struct PostpartumHomeView: View {
             ContextualInfoSheet(content: content)
                 .environment(\.locale, locale)
         }
+        .meditationPlaybackContinuationToast(
+            isPresented: $isPlaybackContinuationToastPresented
+        )
     }
 
     private var profile: PostpartumProfile? {
@@ -93,8 +107,11 @@ struct PostpartumHomeView: View {
                         .foregroundStyle(AYAColors.textPrimary)
                         .accessibilityAddTraits(.isHeader)
 
-                    DailyMeditationCard(meditation: meditation) {
-                        selectedMeditation = meditation
+                    DailyMeditationCard(
+                        meditation: meditation,
+                        playbackViewModel: playbackViewModel(for: meditation)
+                    ) {
+                        startMeditation(meditation)
                     }
                 }
 
@@ -166,6 +183,32 @@ struct PostpartumHomeView: View {
         AppLanguage(rawValue: languageCode) ?? .system
     }
 
+    private func startMeditation(_ meditation: DailyMeditation) {
+        isPlaybackContinuationToastPresented = false
+        if playbackSession?.meditation.id != meditation.id {
+            playbackSession?.viewModel.stop()
+            playbackSession = MeditationPlaybackSession(
+                meditation: meditation,
+                language: selectedLanguage
+            )
+        }
+        isPlayerPresented = true
+    }
+
+    private func handlePlayerDismissed() {
+        isPlaybackContinuationToastPresented = playbackSession?.viewModel.isPlaying == true
+    }
+
+    private func playbackViewModel(for meditation: DailyMeditation) -> MeditationPlayerViewModel? {
+        guard playbackSession?.meditation.id == meditation.id else { return nil }
+        return playbackSession?.viewModel
+    }
+
+    private func stopPlaybackSession() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
+    }
+
     private var greetingText: String {
         let format = selectedLanguage.localizedString(forKey: greetingLocalizationKey)
         return String(format: format, locale: locale, userName)
@@ -198,6 +241,7 @@ struct PostpartumHomeView: View {
 
     private func showThemes() {
         isSettingsPresented = false
+        stopPlaybackSession()
         if let showThemesAction { showThemesAction() } else { dismiss() }
     }
 
@@ -207,6 +251,7 @@ struct PostpartumHomeView: View {
     }
 
     private func continueToMotherhood() {
+        stopPlaybackSession()
         activeStageRawValue = LifeStage.motherhood03.rawValue
     }
 }

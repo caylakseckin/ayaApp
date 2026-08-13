@@ -28,7 +28,7 @@ final class HESIAUITests: XCTestCase {
         XCTAssertTrue(app.buttons["life_stage.card.cycle"].waitForExistence(timeout: 3))
     }
 
-    func testSettingsPanelAndLanguageAccordionOpen() {
+    func testSettingsPanelHidesLanguageWhileTurkishOnly() {
         let app = XCUIApplication()
         app.launchArguments += ["-premium.isUnlockedForTesting", "YES"]
         app.launch()
@@ -43,14 +43,13 @@ final class HESIAUITests: XCTestCase {
         settingsButton.tap()
 
         let languageButton = app.buttons["settings.language.button"]
-        XCTAssertTrue(languageButton.waitForExistence(timeout: 2))
+        XCTAssertFalse(languageButton.exists)
         let closeButton = app.buttons.matching(
             NSPredicate(format: "label == %@ OR label == %@", "Close", "Kapat")
         ).firstMatch
         XCTAssertTrue(closeButton.waitForExistence(timeout: 2))
         XCTAssertTrue(closeButton.isHittable, "Close frame: \(closeButton.frame), exists: \(closeButton.exists)")
-        languageButton.tap()
-        XCTAssertTrue(app.buttons["settings.language.en"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.buttons["settings.language.en"].exists)
     }
 
     func testProfileInitialHidesWhileSettingsAreOpenAndNameCanChange() {

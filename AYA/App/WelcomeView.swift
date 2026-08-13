@@ -45,9 +45,7 @@ struct WelcomeView: View {
         }
         .onAppear {
             name = storedName
-            if AppLanguage(rawValue: languageCode) == .system {
-                languageCode = AppLanguage.defaultExplicitLanguage.rawValue
-            }
+            languageCode = AppLanguage.resolved(from: languageCode).rawValue
         }
     }
 
@@ -116,14 +114,16 @@ struct WelcomeView: View {
                     .accessibilityIdentifier("welcome.name.field")
             }
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("welcome.language.prompt")
-                    .ayaTypography(.body)
-                    .foregroundStyle(AYAColors.textPrimary)
+            if HESIAFeatureFlags.supportsMultipleLanguages {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("welcome.language.prompt")
+                        .ayaTypography(.body)
+                        .foregroundStyle(AYAColors.textPrimary)
 
-                HStack(spacing: 10) {
-                    languageButton(.turkish)
-                    languageButton(.english)
+                    HStack(spacing: 10) {
+                        languageButton(.turkish)
+                        languageButton(.english)
+                    }
                 }
             }
 

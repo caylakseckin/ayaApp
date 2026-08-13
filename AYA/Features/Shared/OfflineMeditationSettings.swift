@@ -15,6 +15,12 @@ enum OfflineMeditationPackagePlanner {
             ((max(currentDay, 1) - 1 + offset) % cycleLength) + 1
         }
     }
+
+    static func pregnancyWeeks(currentWeek: Int) -> [Int] {
+        RemoteMeditationAudioSource.supportedPregnancyWeeks.contains(currentWeek)
+            ? [currentWeek]
+            : []
+    }
 }
 
 enum OfflineMeditationDownloadState: Equatable {
@@ -66,6 +72,29 @@ final class OfflineMeditationManager: ObservableObject {
         }
     }
 
+    func syncPregnancyPackage(week: Int, language: AppLanguage) {
+        guard let week = OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: week).first else {
+            state = .idle
+            return
+        }
+
+        syncTask?.cancel()
+        state = .downloading
+        syncTask = Task { [weak self] in
+            let result = await OfflineMeditationStore.shared.syncPregnancyPackage(
+                week: week,
+                language: language
+            )
+            guard !Task.isCancelled else { return }
+
+            if result.availableCount == result.requestedCount {
+                self?.state = .ready(result.availableCount)
+            } else {
+                self?.state = .failed
+            }
+        }
+    }
+
     func removeDownloads() {
         syncTask?.cancel()
         syncTask = nil
@@ -85,13 +114,20 @@ actor OfflineMeditationStore {
     }
 
     private struct Entry: Codable, Hashable {
-        let cycleDay: Int
+        let cycleDay: Int?
+        let pregnancyWeek: Int?
         let languageCode: String
         let audioFileName: String
         let storedFileName: String
 
         var key: String {
-            "cycle-\(cycleDay)-\(languageCode)-\(audioFileName)"
+            if let cycleDay {
+                return "cycle-\(cycleDay)-\(languageCode)-\(audioFileName)"
+            }
+            if let pregnancyWeek {
+                return "pregnancy-\(pregnancyWeek)-\(languageCode)-\(audioFileName)"
+            }
+            return "invalid-\(languageCode)-\(audioFileName)"
         }
     }
 
@@ -123,11 +159,22 @@ actor OfflineMeditationStore {
         language: AppLanguage,
         fileName: String
     ) -> URL? {
-        let key = entryKey(
-            cycleDay: source.cycleDay,
-            languageCode: languageCode(for: language),
-            audioFileName: fileName
-        )
+        let languageCode = languageCode(for: language)
+        let key: String
+        switch source.context {
+        case let .cycle(day):
+            key = cycleEntryKey(
+                day: day,
+                languageCode: languageCode,
+                audioFileName: fileName
+            )
+        case let .pregnancy(week):
+            key = pregnancyEntryKey(
+                week: week,
+                languageCode: languageCode,
+                audioFileName: fileName
+            )
+        }
         guard let entry = loadManifest().first(where: { $0.key == key }) else { return nil }
         let url = directoryURL.appendingPathComponent(entry.storedFileName)
         return fileManager.fileExists(atPath: url.path) ? url : nil
@@ -159,8 +206,8 @@ actor OfflineMeditationStore {
                 )
                 guard let audioFileName = metadata.audioFileName(for: language) else { continue }
                 let languageCode = languageCode(for: language)
-                let key = entryKey(
-                    cycleDay: day,
+                let key = cycleEntryKey(
+                    day: day,
                     languageCode: languageCode,
                     audioFileName: audioFileName
                 )
@@ -184,6 +231,7 @@ actor OfflineMeditationStore {
 
                 let entry = Entry(
                     cycleDay: day,
+                    pregnancyWeek: nil,
                     languageCode: languageCode,
                     audioFileName: audioFileName,
                     storedFileName: storedFileName
@@ -206,13 +254,15 @@ actor OfflineMeditationStore {
                     && availableKeys.contains(entry.key)
             }
             if currentIsAvailable {
-                let obsoleteEntries = manifest.filter { !desiredKeys.contains($0.key) }
+                let obsoleteEntries = manifest.filter {
+                    $0.cycleDay != nil && !desiredKeys.contains($0.key)
+                }
                 obsoleteEntries.forEach { entry in
                     try? fileManager.removeItem(
                         at: directoryURL.appendingPathComponent(entry.storedFileName)
                     )
                 }
-                manifest.removeAll { !desiredKeys.contains($0.key) }
+                manifest.removeAll { $0.cycleDay != nil && !desiredKeys.contains($0.key) }
                 saveManifest(manifest)
             }
         }
@@ -221,6 +271,68 @@ actor OfflineMeditationStore {
             availableCount: availableKeys.count,
             requestedCount: requestedDays.count
         )
+    }
+
+    func syncPregnancyPackage(week: Int, language: AppLanguage) async -> SyncResult {
+        guard RemoteMeditationAudioSource.supportedPregnancyWeeks.contains(week) else {
+            return SyncResult(availableCount: 0, requestedCount: 0)
+        }
+
+        let source = RemoteMeditationAudioSource(
+            pregnancyWeek: week,
+            fallbackResourceName: "aya-demo-meditation-9m.m4a"
+        )
+        try? prepareDirectory()
+        var manifest = loadManifest()
+
+        do {
+            let metadata = try await RemoteMeditationContentLoader.loadMetadata(
+                source: source,
+                session: session
+            )
+            guard let audioFileName = metadata.audioFileName(for: language) else {
+                return SyncResult(availableCount: 0, requestedCount: 1)
+            }
+
+            let languageCode = languageCode(for: language)
+            let key = pregnancyEntryKey(
+                week: week,
+                languageCode: languageCode,
+                audioFileName: audioFileName
+            )
+
+            if let existing = manifest.first(where: { $0.key == key }) {
+                let existingURL = directoryURL.appendingPathComponent(existing.storedFileName)
+                if fileManager.fileExists(atPath: existingURL.path) {
+                    removeObsoletePregnancyEntries(keeping: key, from: &manifest)
+                    return SyncResult(availableCount: 1, requestedCount: 1)
+                }
+            }
+
+            let remoteURL = source.directoryURL.appendingPathComponent(audioFileName)
+            let (temporaryURL, response) = try await session.download(from: remoteURL)
+            try validate(response)
+
+            let storedFileName = "pregnancy-\(week)-\(languageCode)-\(UUID().uuidString).\((audioFileName as NSString).pathExtension)"
+            let destinationURL = directoryURL.appendingPathComponent(storedFileName)
+            try fileManager.moveItem(at: temporaryURL, to: destinationURL)
+
+            manifest.removeAll { $0.key == key }
+            manifest.append(
+                Entry(
+                    cycleDay: nil,
+                    pregnancyWeek: week,
+                    languageCode: languageCode,
+                    audioFileName: audioFileName,
+                    storedFileName: storedFileName
+                )
+            )
+            saveManifest(manifest)
+            removeObsoletePregnancyEntries(keeping: key, from: &manifest)
+            return SyncResult(availableCount: 1, requestedCount: 1)
+        } catch {
+            return SyncResult(availableCount: 0, requestedCount: 1)
+        }
     }
 
     func removeAll() {
@@ -258,8 +370,23 @@ actor OfflineMeditationStore {
         try? data.write(to: manifestURL, options: .atomic)
     }
 
-    private func entryKey(cycleDay: Int, languageCode: String, audioFileName: String) -> String {
-        "cycle-\(cycleDay)-\(languageCode)-\(audioFileName)"
+    private func removeObsoletePregnancyEntries(keeping key: String, from manifest: inout [Entry]) {
+        let obsoleteEntries = manifest.filter {
+            $0.pregnancyWeek != nil && $0.key != key
+        }
+        obsoleteEntries.forEach { entry in
+            try? fileManager.removeItem(at: directoryURL.appendingPathComponent(entry.storedFileName))
+        }
+        manifest.removeAll { $0.pregnancyWeek != nil && $0.key != key }
+        saveManifest(manifest)
+    }
+
+    private func cycleEntryKey(day: Int, languageCode: String, audioFileName: String) -> String {
+        "cycle-\(day)-\(languageCode)-\(audioFileName)"
+    }
+
+    private func pregnancyEntryKey(week: Int, languageCode: String, audioFileName: String) -> String {
+        "pregnancy-\(week)-\(languageCode)-\(audioFileName)"
     }
 
     private func languageCode(for language: AppLanguage) -> String {

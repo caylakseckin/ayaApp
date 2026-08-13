@@ -1,5 +1,11 @@
 import SwiftUI
 
+enum HESIAFeatureFlags {
+    /// Keep English resources and code paths complete while the first release is Turkish-only.
+    /// Set to `true` to restore language selection throughout the app.
+    static let supportsMultipleLanguages = false
+}
+
 enum AppLanguage: String, CaseIterable, Identifiable {
     case system
     case turkish = "tr"
@@ -8,16 +14,27 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     static var selectableCases: [AppLanguage] {
-        [.turkish, .english]
+        HESIAFeatureFlags.supportsMultipleLanguages
+            ? [.turkish, .english]
+            : [.turkish]
     }
 
     static var defaultExplicitLanguage: AppLanguage {
-        Locale.preferredLanguages.first?.hasPrefix("tr") == true ? .turkish : .english
+        guard HESIAFeatureFlags.supportsMultipleLanguages else { return .turkish }
+        return Locale.preferredLanguages.first?.hasPrefix("tr") == true ? .turkish : .english
+    }
+
+    static func resolved(from rawValue: String?) -> AppLanguage {
+        guard HESIAFeatureFlags.supportsMultipleLanguages else { return .turkish }
+        guard let language = rawValue.flatMap(AppLanguage.init(rawValue:)) else {
+            return defaultExplicitLanguage
+        }
+        return language == .system ? defaultExplicitLanguage : language
     }
 
     var locale: Locale {
         switch self {
-        case .system: .autoupdatingCurrent
+        case .system: AppLanguage.defaultExplicitLanguage.locale
         case .turkish: Locale(identifier: "tr")
         case .english: Locale(identifier: "en")
         }
@@ -55,7 +72,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .english:
             localizationCode = "en"
         case .system:
-            localizationCode = Locale.preferredLanguages.first?.hasPrefix("tr") == true ? "tr" : "en"
+            localizationCode = AppLanguage.defaultExplicitLanguage.rawValue
         }
 
         guard
@@ -110,7 +127,7 @@ struct HESIAApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     private var selectedLocale: Locale {
-        AppLanguage(rawValue: languageCode)?.locale ?? .autoupdatingCurrent
+        AppLanguage.resolved(from: languageCode).locale
     }
 
     private var selectedAppearance: AppAppearance {
@@ -119,7 +136,9 @@ struct HESIAApp: App {
 
     init() {
         let defaults = UserDefaults.standard
-        if defaults.string(forKey: "app.language") == nil
+        if !HESIAFeatureFlags.supportsMultipleLanguages {
+            defaults.set(AppLanguage.turkish.rawValue, forKey: "app.language")
+        } else if defaults.string(forKey: "app.language") == nil
             || defaults.string(forKey: "app.language") == AppLanguage.system.rawValue {
             defaults.set(AppLanguage.defaultExplicitLanguage.rawValue, forKey: "app.language")
         }
@@ -135,7 +154,7 @@ struct HESIAApp: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     guard newPhase == .active else { return }
                     Task {
-                        await premiumStore.refreshEntitlements(showLoadingState: true)
+                        await premiumStore.refreshEntitlements()
                     }
                 }
         }

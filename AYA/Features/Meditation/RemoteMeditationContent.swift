@@ -2,13 +2,45 @@ import Foundation
 
 struct RemoteMeditationAudioSource: Equatable {
     static let supportedCycleDays = 1...35
+    static let supportedPregnancyWeeks = 1...42
 
-    let cycleDay: Int
+    enum Context: Equatable {
+        case cycle(day: Int)
+        case pregnancy(week: Int)
+    }
+
+    let context: Context
     let fallbackResourceName: String
 
+    init(cycleDay: Int, fallbackResourceName: String) {
+        context = .cycle(day: cycleDay)
+        self.fallbackResourceName = fallbackResourceName
+    }
+
+    init(pregnancyWeek: Int, fallbackResourceName: String) {
+        context = .pregnancy(week: pregnancyWeek)
+        self.fallbackResourceName = fallbackResourceName
+    }
+
+    var cycleDay: Int? {
+        guard case let .cycle(day) = context else { return nil }
+        return day
+    }
+
+    var pregnancyWeek: Int? {
+        guard case let .pregnancy(week) = context else { return nil }
+        return week
+    }
+
     var directoryURL: URL {
-        let dayDirectory = String(format: "day_%02d", cycleDay)
-        return URL(string: "https://hesia.app/content/menstrual_cycle/\(dayDirectory)/")!
+        switch context {
+        case let .cycle(day):
+            let directory = String(format: "day_%02d", day)
+            return URL(string: "https://hesia.app/content/menstrual_cycle/\(directory)/")!
+        case let .pregnancy(week):
+            let directory = String(format: "week_%02d", week)
+            return URL(string: "https://hesia.app/content/pregnancy/\(directory)/")!
+        }
     }
 
     var metadataURL: URL {
@@ -18,7 +50,8 @@ struct RemoteMeditationAudioSource: Equatable {
 
 struct RemoteMeditationMetadata: Decodable, Equatable {
     let id: String
-    let day: Int
+    let day: Int?
+    let week: Int?
     let audio: [String: String]
     let title: [String: String]
     let description: [String: String]
@@ -28,6 +61,7 @@ struct RemoteMeditationMetadata: Decodable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id
         case day
+        case week
         case audio
         case title
         case description
@@ -132,7 +166,13 @@ enum RemoteMeditationContentLoader {
         try validate(metadataResponse)
 
         let metadata = try JSONDecoder().decode(RemoteMeditationMetadata.self, from: metadataData)
-        guard metadata.day == source.cycleDay else { throw LoadingError.invalidResponse }
+        let hasMatchingContext = switch source.context {
+        case let .cycle(day):
+            metadata.day == day
+        case let .pregnancy(week):
+            metadata.week == week
+        }
+        guard hasMatchingContext else { throw LoadingError.invalidResponse }
         return metadata
     }
 

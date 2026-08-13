@@ -73,6 +73,79 @@ final class LifeStageTests: XCTestCase {
         XCTAssertNil(PremiumPlan(productIdentifier: "unknown.product"))
     }
 
+    func testVerifiedLifetimePurchaseGrantsAccessWithoutExpiration() {
+        XCTAssertTrue(
+            PremiumAccessPolicy.isActiveEntitlement(
+                productID: PremiumProductIdentifiers.lifetime,
+                revocationDate: nil,
+                expirationDate: nil
+            )
+        )
+    }
+
+    func testExpiredOrRevokedPurchaseDoesNotGrantAccess() {
+        let now = Date(timeIntervalSince1970: 1_000)
+
+        XCTAssertFalse(
+            PremiumAccessPolicy.isActiveEntitlement(
+                productID: PremiumProductIdentifiers.monthly,
+                revocationDate: nil,
+                expirationDate: Date(timeIntervalSince1970: 999),
+                now: now
+            )
+        )
+        XCTAssertFalse(
+            PremiumAccessPolicy.isActiveEntitlement(
+                productID: PremiumProductIdentifiers.lifetime,
+                revocationDate: now,
+                expirationDate: nil,
+                now: now
+            )
+        )
+    }
+
+    func testUnknownProductDoesNotGrantPremiumAccess() {
+        XCTAssertFalse(
+            PremiumAccessPolicy.isActiveEntitlement(
+                productID: "unknown.product",
+                revocationDate: nil,
+                expirationDate: nil
+            )
+        )
+    }
+
+    func testVerifiedSessionPurchaseSurvivesTemporarilyEmptyStoreRefresh() {
+        let effectiveProductIDs = PremiumAccessPolicy.effectiveProductIDs(
+            storeProductIDs: [],
+            sessionEntitlements: [
+                PremiumEntitlementRecord(
+                    productID: PremiumProductIdentifiers.lifetime,
+                    revocationDate: nil,
+                    expirationDate: nil
+                )
+            ]
+        )
+
+        XCTAssertEqual(effectiveProductIDs, [PremiumProductIdentifiers.lifetime])
+    }
+
+    func testExpiredSessionPurchaseDoesNotSurviveStoreRefresh() {
+        let now = Date(timeIntervalSince1970: 1_000)
+        let effectiveProductIDs = PremiumAccessPolicy.effectiveProductIDs(
+            storeProductIDs: [],
+            sessionEntitlements: [
+                PremiumEntitlementRecord(
+                    productID: PremiumProductIdentifiers.monthly,
+                    revocationDate: nil,
+                    expirationDate: Date(timeIntervalSince1970: 999)
+                )
+            ],
+            now: now
+        )
+
+        XCTAssertTrue(effectiveProductIDs.isEmpty)
+    }
+
     func testFreeStageDoesNotRequirePremiumEntitlement() {
         XCTAssertTrue(
             PremiumAccessPolicy.hasAccess(

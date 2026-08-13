@@ -10,7 +10,9 @@ struct MotherhoodDetailView: View {
     @State private var isSettingsPresented = false
     @State private var isStagesPresented = false
     @State private var isAgeRangeEditorPresented = false
-    @State private var selectedMeditation: DailyMeditation?
+    @State private var playbackSession: MeditationPlaybackSession?
+    @State private var isPlayerPresented = false
+    @State private var isPlaybackContinuationToastPresented = false
     @State private var infoContent: ContextualInfoContent?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -35,11 +37,20 @@ struct MotherhoodDetailView: View {
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-        .fullScreenCover(item: $selectedMeditation) { meditation in
-            HESIAMeditationTransitionContainer {
-                MeditationPlayerView(meditation: meditation, autoPlay: true)
+        .fullScreenCover(
+            isPresented: $isPlayerPresented,
+            onDismiss: handlePlayerDismissed
+        ) {
+            if let playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
                     .environment(\.locale, locale)
                     .tint(AYAColors.primary)
+                }
             }
         }
         .sheet(isPresented: $isStagesPresented) {
@@ -59,6 +70,9 @@ struct MotherhoodDetailView: View {
             ContextualInfoSheet(content: content)
                 .environment(\.locale, locale)
         }
+        .meditationPlaybackContinuationToast(
+            isPresented: $isPlaybackContinuationToastPresented
+        )
     }
 
     private var selectedRange: MotherhoodAgeRange? {
@@ -79,9 +93,10 @@ struct MotherhoodDetailView: View {
 
                     DailyMeditationCard(
                         meditation: meditation,
+                        playbackViewModel: playbackViewModel(for: meditation),
                         infoAccessibilityLabel: motherhoodInfoAccessibility(for: range),
                         infoAction: { infoContent = MotherhoodInfoProvider.content(for: range) },
-                        start: { selectedMeditation = meditation }
+                        start: { startMeditation(meditation) }
                     )
                 }
 
@@ -144,6 +159,32 @@ struct MotherhoodDetailView: View {
         AppLanguage(rawValue: languageCode) ?? .system
     }
 
+    private func startMeditation(_ meditation: DailyMeditation) {
+        isPlaybackContinuationToastPresented = false
+        if playbackSession?.meditation.id != meditation.id {
+            playbackSession?.viewModel.stop()
+            playbackSession = MeditationPlaybackSession(
+                meditation: meditation,
+                language: selectedLanguage
+            )
+        }
+        isPlayerPresented = true
+    }
+
+    private func handlePlayerDismissed() {
+        isPlaybackContinuationToastPresented = playbackSession?.viewModel.isPlaying == true
+    }
+
+    private func playbackViewModel(for meditation: DailyMeditation) -> MeditationPlayerViewModel? {
+        guard playbackSession?.meditation.id == meditation.id else { return nil }
+        return playbackSession?.viewModel
+    }
+
+    private func stopPlaybackSession() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
+    }
+
     private var greetingText: String {
         let format = selectedLanguage.localizedString(forKey: greetingLocalizationKey)
         return String(format: format, locale: locale, userName)
@@ -185,6 +226,7 @@ struct MotherhoodDetailView: View {
 
     private func showThemes() {
         isSettingsPresented = false
+        stopPlaybackSession()
         if let showThemesAction { showThemesAction() } else { dismiss() }
     }
 }

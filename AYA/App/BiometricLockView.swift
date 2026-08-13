@@ -1,45 +1,80 @@
 import SwiftUI
 
+enum BiometricAutomaticUnlockPolicy {
+    static func shouldAttempt(
+        isLocked: Bool,
+        isAuthenticating: Bool,
+        hasAttempted: Bool
+    ) -> Bool {
+        isLocked && !isAuthenticating && !hasAttempted
+    }
+}
+
 @MainActor
-private final class BiometricLockViewModel: ObservableObject {
+final class BiometricLockViewModel: ObservableObject {
     @Published private(set) var isLocked: Bool
     @Published private(set) var isAuthenticating = false
     @Published private(set) var authenticationFailed = false
 
     private let authenticationService = BiometricAuthenticationService()
+    private var hasAttemptedAutomaticUnlock = false
 
     init(isEnabled: Bool, initiallyUnlocked: Bool) {
         isLocked = isEnabled && !initiallyUnlocked
     }
 
     func lock() {
-        guard !isAuthenticating else { return }
+        guard !isAuthenticating, !isLocked else { return }
         isLocked = true
         authenticationFailed = false
+        hasAttemptedAutomaticUnlock = false
     }
 
     func disableLock() {
         isLocked = false
         authenticationFailed = false
+        hasAttemptedAutomaticUnlock = false
     }
 
-    func unlock(reason: String) async {
+    func unlock(reason: String, automatically: Bool) async {
         guard isLocked, !isAuthenticating else { return }
+        if automatically {
+            guard BiometricAutomaticUnlockPolicy.shouldAttempt(
+                isLocked: isLocked,
+                isAuthenticating: isAuthenticating,
+                hasAttempted: hasAttemptedAutomaticUnlock
+            ) else { return }
+            hasAttemptedAutomaticUnlock = true
+        }
 
         isAuthenticating = true
         authenticationFailed = false
         defer { isAuthenticating = false }
 
         do {
-            if try await authenticationService.authenticate(
+            let authenticated = try await authenticationService.authenticate(
                 reason: reason,
                 allowDevicePasscode: true
-            ) {
+            )
+            if authenticated {
                 isLocked = false
+            } else {
+                authenticationFailed = true
             }
         } catch {
             authenticationFailed = true
         }
+    }
+}
+
+private struct BiometricLockViewModelEnvironmentKey: EnvironmentKey {
+    static let defaultValue: BiometricLockViewModel? = nil
+}
+
+extension EnvironmentValues {
+    var biometricLockViewModel: BiometricLockViewModel? {
+        get { self[BiometricLockViewModelEnvironmentKey.self] }
+        set { self[BiometricLockViewModelEnvironmentKey.self] = newValue }
     }
 }
 
@@ -70,20 +105,13 @@ struct BiometricLockContainer<Content: View>: View {
     }
 
     var body: some View {
-        ZStack {
+        BiometricProtectedContent {
             content
-                .opacity(isFaceIDEnabled && viewModel.isLocked ? 0 : 1)
-                .allowsHitTesting(!isFaceIDEnabled || !viewModel.isLocked)
-                .accessibilityHidden(isFaceIDEnabled && viewModel.isLocked)
-
-            if isFaceIDEnabled && viewModel.isLocked {
-                lockScreen
-            }
         }
-        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
+        .environment(\.biometricLockViewModel, viewModel)
         .task(id: isFaceIDEnabled) {
             if isFaceIDEnabled {
-                await unlock()
+                await unlock(automatically: true)
             } else {
                 viewModel.disableLock()
             }
@@ -91,15 +119,77 @@ struct BiometricLockContainer<Content: View>: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard isFaceIDEnabled else { return }
 
-            if newPhase == .background {
+            if newPhase == .inactive || newPhase == .background {
                 viewModel.lock()
             } else if newPhase == .active {
-                Task { await unlock() }
+                Task { await unlock(automatically: true) }
             }
         }
     }
 
-    private var lockScreen: some View {
+    private func unlock(automatically: Bool) async {
+        let reason = language.localizedString(forKey: "biometric.authentication.reason")
+        await viewModel.unlock(reason: reason, automatically: automatically)
+    }
+}
+
+struct BiometricProtectedContent<Content: View>: View {
+    @AppStorage(BiometricPreferenceKeys.isEnabled) private var isFaceIDEnabled = false
+    @Environment(\.biometricLockViewModel) private var viewModel
+
+    private let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    @ViewBuilder
+    var body: some View {
+        if let viewModel {
+            BiometricProtectedObservedContent(
+                isEnabled: isFaceIDEnabled,
+                viewModel: viewModel,
+                content: content
+            )
+        } else {
+            content
+        }
+    }
+}
+
+private struct BiometricProtectedObservedContent<Content: View>: View {
+    let isEnabled: Bool
+    @ObservedObject var viewModel: BiometricLockViewModel
+    let content: Content
+
+    private var isLocked: Bool {
+        isEnabled && viewModel.isLocked
+    }
+
+    var body: some View {
+        ZStack {
+            content
+                .opacity(isLocked ? 0 : 1)
+                .allowsHitTesting(!isLocked)
+                .accessibilityHidden(isLocked)
+
+            if isLocked {
+                BiometricLockScreen(viewModel: viewModel)
+            }
+        }
+        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
+    }
+}
+
+private struct BiometricLockScreen: View {
+    @AppStorage("app.language") private var languageCode = AppLanguage.defaultExplicitLanguage.rawValue
+    @ObservedObject var viewModel: BiometricLockViewModel
+
+    private var language: AppLanguage {
+        AppLanguage(rawValue: languageCode) ?? .defaultExplicitLanguage
+    }
+
+    var body: some View {
         VStack(spacing: AYASpacing.xl) {
             Spacer()
 
@@ -149,10 +239,11 @@ struct BiometricLockContainer<Content: View>: View {
         .padding(.vertical, AYASpacing.xxxl)
         .frame(maxWidth: 520)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityAddTraits(.isModal)
     }
 
     private func unlock() async {
         let reason = language.localizedString(forKey: "biometric.authentication.reason")
-        await viewModel.unlock(reason: reason)
+        await viewModel.unlock(reason: reason, automatically: false)
     }
 }

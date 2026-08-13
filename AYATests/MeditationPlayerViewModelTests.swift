@@ -131,6 +131,37 @@ final class MeditationPlayerViewModelTests: XCTestCase {
         XCTAssertNotNil(meditation.audioResourceName)
     }
 
+    func testPregnancyMeditationUsesWeeklyRemoteContent() {
+        let calculation = PregnancyCalculation(
+            currentWeek: 18,
+            trimester: .second,
+            progress: 0.45
+        )
+
+        let meditation = PregnancyContentProvider().meditation(for: calculation)
+
+        XCTAssertEqual(meditation.id, "pregnancy-week-18")
+        XCTAssertEqual(meditation.remoteAudioSource?.pregnancyWeek, 18)
+        XCTAssertEqual(
+            meditation.remoteAudioSource?.metadataURL.absoluteString,
+            "https://hesia.app/content/pregnancy/week_18/metadata.json"
+        )
+        XCTAssertNotNil(meditation.audioResourceName)
+    }
+
+    func testPregnancyMetadataDecodesWeekSchema() throws {
+        let data = Data(
+            #"{"id":"pregnancy_week_18","week":18,"audio":{"tr":"tr.mp3","en":"en.mp3"},"title":{"tr":"Başlık","en":"Title"},"description":{"tr":"Açıklama","en":"Description"},"duration_minutes":5,"narrator":"Yaren"}"#.utf8
+        )
+
+        let metadata = try JSONDecoder().decode(RemoteMeditationMetadata.self, from: data)
+
+        XCTAssertEqual(metadata.week, 18)
+        XCTAssertNil(metadata.day)
+        XCTAssertEqual(metadata.audioFileName(for: .turkish), "tr.mp3")
+        XCTAssertEqual(metadata.localizedTitle(for: .english), "Title")
+    }
+
     @MainActor
     func testDailyMeditationsLoadBundledDemoAudio() {
         for phase in CyclePhase.allCases {

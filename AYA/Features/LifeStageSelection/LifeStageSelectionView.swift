@@ -447,7 +447,9 @@ struct SettingsPanel: View {
                     themesButton
                     if presentation == .tutorialPreview {
                         profileSection
-                        languageSection
+                        if HESIAFeatureFlags.supportsMultipleLanguages {
+                            languageSection
+                        }
                         supportSection
                     } else {
                         howHesiaWorksButton
@@ -475,7 +477,9 @@ struct SettingsPanel: View {
                             premiumSection
                         }
                         profileSection
-                        languageSection
+                        if HESIAFeatureFlags.supportsMultipleLanguages {
+                            languageSection
+                        }
                         appearanceSection
                         BiometricLockSettings()
                         OfflineMeditationSettings()

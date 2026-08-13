@@ -9,16 +9,21 @@ struct PregnancyHomeView: View {
     @AppStorage(PregnancyPersistenceKeys.referenceDate) private var referenceTimestamp = 0.0
     @AppStorage(PregnancyPersistenceKeys.onboardingCompleted) private var isOnboardingCompleted = false
     @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = LifeStage.pregnancy.rawValue
+    @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isOfflineListeningEnabled = false
 
     @State private var isSettingsPresented = false
     @State private var isWeekEditorPresented = false
     @State private var isCalendarPresented = false
-    @State private var selectedMeditation: DailyMeditation?
+    @State private var playbackSession: MeditationPlaybackSession?
+    @State private var isPlayerPresented = false
+    @State private var isPlaybackContinuationToastPresented = false
     @State private var weekInfoPresentation: PregnancyWeekInfoPresentation?
+    @State private var remoteMeditationMetadata: RemoteMeditationMetadata?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.scenePhase) private var scenePhase
 
     private let tracker = PregnancyTracker()
     private let contentProvider = PregnancyContentProvider()
@@ -46,11 +51,20 @@ struct PregnancyHomeView: View {
                 PregnancyCalendarView(profile: profile)
             }
         }
-        .fullScreenCover(item: $selectedMeditation) { meditation in
-            HESIAMeditationTransitionContainer {
-                MeditationPlayerView(meditation: meditation, autoPlay: true)
+        .fullScreenCover(
+            isPresented: $isPlayerPresented,
+            onDismiss: handlePlayerDismissed
+        ) {
+            if let playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
                     .environment(\.locale, locale)
                     .tint(AYAColors.primary)
+                }
             }
         }
         .sheet(isPresented: $isWeekEditorPresented) {
@@ -64,6 +78,9 @@ struct PregnancyHomeView: View {
             PregnancyWeekInfoSheet(presentation: presentation)
                 .environment(\.locale, locale)
         }
+        .meditationPlaybackContinuationToast(
+            isPresented: $isPlaybackContinuationToastPresented
+        )
     }
 
     private var profile: PregnancyProfile? {
@@ -92,8 +109,12 @@ struct PregnancyHomeView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("pregnancy.home.today_meditation")
 
-                    DailyMeditationCard(meditation: meditation) {
-                        selectedMeditation = meditation
+                    DailyMeditationCard(
+                        meditation: meditation,
+                        remoteMetadata: remoteMeditationMetadata,
+                        playbackViewModel: playbackViewModel(for: meditation)
+                    ) {
+                        startMeditation(meditation)
                     }
                 }
 
@@ -120,6 +141,17 @@ struct PregnancyHomeView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
+        .task(id: meditation.id) {
+            await loadRemoteMetadata(for: meditation)
+        }
+        .task(id: offlinePackageTaskID(calculation: calculation)) {
+            syncOfflinePackage(calculation: calculation)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            let refreshedCalculation = tracker.calculate(profile: profile)
+            syncOfflinePackage(calculation: refreshedCalculation)
+        }
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
             if isSettingsPresented {
@@ -205,6 +237,62 @@ struct PregnancyHomeView: View {
         )
     }
 
+    private func loadRemoteMetadata(for meditation: DailyMeditation) async {
+        remoteMeditationMetadata = nil
+        guard let source = meditation.remoteAudioSource else { return }
+
+        do {
+            let metadata = try await RemoteMeditationContentLoader.loadMetadata(source: source)
+            guard !Task.isCancelled else { return }
+            remoteMeditationMetadata = metadata
+        } catch {
+            guard !Task.isCancelled else { return }
+            remoteMeditationMetadata = nil
+        }
+    }
+
+    private func offlinePackageTaskID(calculation: PregnancyCalculation) -> String {
+        [
+            isOfflineListeningEnabled ? "enabled" : "disabled",
+            String(calculation.currentWeek),
+            selectedLanguage.rawValue
+        ].joined(separator: "-")
+    }
+
+    private func syncOfflinePackage(calculation: PregnancyCalculation) {
+        guard isOfflineListeningEnabled else { return }
+        OfflineMeditationManager.shared.syncPregnancyPackage(
+            week: calculation.currentWeek,
+            language: selectedLanguage
+        )
+    }
+
+    private func startMeditation(_ meditation: DailyMeditation) {
+        isPlaybackContinuationToastPresented = false
+        if playbackSession?.meditation.id != meditation.id {
+            playbackSession?.viewModel.stop()
+            playbackSession = MeditationPlaybackSession(
+                meditation: meditation,
+                language: selectedLanguage
+            )
+        }
+        isPlayerPresented = true
+    }
+
+    private func handlePlayerDismissed() {
+        isPlaybackContinuationToastPresented = playbackSession?.viewModel.isPlaying == true
+    }
+
+    private func playbackViewModel(for meditation: DailyMeditation) -> MeditationPlayerViewModel? {
+        guard playbackSession?.meditation.id == meditation.id else { return nil }
+        return playbackSession?.viewModel
+    }
+
+    private func stopPlaybackSession() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
+    }
+
     private var userInitial: String {
         guard let firstCharacter = userName.trimmingCharacters(in: .whitespacesAndNewlines).first else {
             return "H"
@@ -218,6 +306,7 @@ struct PregnancyHomeView: View {
 
     private func showThemes() {
         isSettingsPresented = false
+        stopPlaybackSession()
         if let showThemesAction {
             showThemesAction()
         } else {
@@ -238,6 +327,7 @@ struct PregnancyHomeView: View {
     }
 
     private func continueToPostpartum() {
+        stopPlaybackSession()
         activeStageRawValue = LifeStage.postpartum.rawValue
     }
 }
