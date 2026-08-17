@@ -306,8 +306,8 @@ private struct TutorialThemePreview: View {
     private let surfaces: [Color] = [
         AYAColors.cycleHeroSurface,
         AYAColors.pregnancyHeroSurface,
-        AYAColors.postpartumHeroSurface,
-        AYAColors.motherhoodHeroSurface
+        AYAColors.birthMomentHeroSurface,
+        AYAColors.postpartumHeroSurface
     ]
 
     var body: some View {

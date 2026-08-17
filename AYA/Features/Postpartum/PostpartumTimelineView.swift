@@ -49,7 +49,7 @@ struct PostpartumTimelineView: View {
     }
 
     private var displayedJourneyDay: Int {
-        min(calculation.currentDay, 42)
+        min(calculation.currentDay, PostpartumJourney.totalDays)
     }
 
     private var header: some View {

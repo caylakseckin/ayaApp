@@ -3,10 +3,10 @@ import Foundation
 import StoreKit
 
 enum PremiumProductIdentifiers {
-    static let lifetime = "com.ayameditation.app.premium.lifetime"
     static let monthly = "com.ayameditation.app.premium.monthly"
+    static let yearly = "com.ayameditation.app.premium.yearly"
 
-    static let all: Set<String> = [lifetime, monthly]
+    static let all: Set<String> = [monthly, yearly]
 }
 
 enum PremiumPurchaseOutcome: Equatable {
@@ -23,7 +23,8 @@ enum PremiumRestoreOutcome: Equatable {
     case failed
 }
 
-struct PremiumMonthlySubscription: Equatable {
+struct PremiumSubscription: Equatable {
+    let productID: String
     let renewalDate: Date?
     let willAutoRenew: Bool?
 }
@@ -86,9 +87,9 @@ final class PremiumStore: ObservableObject {
     static let shared = PremiumStore()
 
     @Published private(set) var products: [PremiumPlan: Product] = [:]
+    @Published private(set) var eligibleIntroductoryOfferPlans = Set<PremiumPlan>()
     @Published private(set) var hasPremiumAccess = false
-    @Published private(set) var hasLifetimeAccess = false
-    @Published private(set) var monthlySubscription: PremiumMonthlySubscription?
+    @Published private(set) var subscription: PremiumSubscription?
     @Published private(set) var hasResolvedEntitlements = false
     @Published private(set) var hasLoadedProducts = false
     @Published private(set) var isLoadingProducts = false
@@ -139,8 +140,10 @@ final class PremiumStore: ObservableObject {
                     return (plan, product)
                 }
             )
+            eligibleIntroductoryOfferPlans = await eligibleIntroductoryOffers(in: products)
         } catch {
             products = [:]
+            eligibleIntroductoryOfferPlans = []
             log("Unable to load products: \(error)")
         }
     }
@@ -154,7 +157,7 @@ final class PremiumStore: ObservableObject {
         }
 
         var entitledProductIDs = Set<String>()
-        var monthlyTransaction: StoreKit.Transaction?
+        var subscriptionTransaction: StoreKit.Transaction?
 
         for await result in StoreKit.Transaction.currentEntitlements {
             do {
@@ -165,8 +168,16 @@ final class PremiumStore: ObservableObject {
                     expirationDate: transaction.expirationDate
                 ) {
                     entitledProductIDs.insert(transaction.productID)
-                    if transaction.productID == PremiumProductIdentifiers.monthly {
-                        monthlyTransaction = transaction
+                    if PremiumProductIdentifiers.all.contains(transaction.productID) {
+                        if let current = subscriptionTransaction {
+                            let currentExpiration = current.expirationDate ?? .distantPast
+                            let candidateExpiration = transaction.expirationDate ?? .distantPast
+                            if candidateExpiration > currentExpiration {
+                                subscriptionTransaction = transaction
+                            }
+                        } else {
+                            subscriptionTransaction = transaction
+                        }
                     }
                 }
             } catch {
@@ -178,12 +189,12 @@ final class PremiumStore: ObservableObject {
             storeProductIDs: entitledProductIDs,
             sessionEntitlements: sessionEntitlementsAtStart
         )
-        let hasSessionMonthlyAccess = effectiveProductIDs.contains(PremiumProductIdentifiers.monthly)
-            && monthlyTransaction == nil
-        let resolvedMonthlySubscription = if hasSessionMonthlyAccess {
-            monthlySubscription
+        let hasSessionSubscriptionAccess = !effectiveProductIDs.intersection(PremiumProductIdentifiers.all).isEmpty
+            && subscriptionTransaction == nil
+        let resolvedSubscription = if hasSessionSubscriptionAccess {
+            subscription
         } else {
-            await subscriptionDetails(for: monthlyTransaction)
+            await subscriptionDetails(for: subscriptionTransaction)
         }
         guard revisionAtStart == entitlementStateRevision else { return }
 
@@ -196,11 +207,10 @@ final class PremiumStore: ObservableObject {
                 ) ? (entitlement.productID, entitlement) : nil
             }
         )
-        hasLifetimeAccess = effectiveProductIDs.contains(PremiumProductIdentifiers.lifetime)
-        monthlySubscription = resolvedMonthlySubscription
+        subscription = resolvedSubscription
         hasPremiumAccess = !effectiveProductIDs.isEmpty
         hasResolvedEntitlements = true
-        scheduleEntitlementRefresh(at: monthlySubscription?.renewalDate)
+        scheduleEntitlementRefresh(at: subscription?.renewalDate)
     }
 
     func purchase(_ plan: PremiumPlan) async -> PremiumPurchaseOutcome {
@@ -302,11 +312,11 @@ final class PremiumStore: ObservableObject {
         entitlementStateRevision += 1
         sessionEntitlements[transaction.productID] = entitlement
 
-        let resolvedMonthlySubscription: PremiumMonthlySubscription?
-        if transaction.productID == PremiumProductIdentifiers.monthly {
-            resolvedMonthlySubscription = await subscriptionDetails(for: transaction)
+        let resolvedSubscription: PremiumSubscription?
+        if PremiumProductIdentifiers.all.contains(transaction.productID) {
+            resolvedSubscription = await subscriptionDetails(for: transaction)
         } else {
-            resolvedMonthlySubscription = nil
+            resolvedSubscription = nil
         }
 
         // Also invalidate any refresh that began while subscription details loaded.
@@ -314,11 +324,9 @@ final class PremiumStore: ObservableObject {
         hasPremiumAccess = true
         hasResolvedEntitlements = true
 
-        if transaction.productID == PremiumProductIdentifiers.lifetime {
-            hasLifetimeAccess = true
-        } else if transaction.productID == PremiumProductIdentifiers.monthly {
-            monthlySubscription = resolvedMonthlySubscription
-            scheduleEntitlementRefresh(at: monthlySubscription?.renewalDate)
+        if PremiumProductIdentifiers.all.contains(transaction.productID) {
+            subscription = resolvedSubscription
+            scheduleEntitlementRefresh(at: subscription?.renewalDate)
         }
 
         return true
@@ -326,7 +334,7 @@ final class PremiumStore: ObservableObject {
 
     private func subscriptionDetails(
         for transaction: StoreKit.Transaction?
-    ) async -> PremiumMonthlySubscription? {
+    ) async -> PremiumSubscription? {
         guard let transaction else { return nil }
 
         var renewalDate = transaction.expirationDate
@@ -340,10 +348,32 @@ final class PremiumStore: ObservableObject {
             willAutoRenew = renewalInfo.willAutoRenew
         }
 
-        return PremiumMonthlySubscription(
+        return PremiumSubscription(
+            productID: transaction.productID,
             renewalDate: renewalDate,
             willAutoRenew: willAutoRenew
         )
+    }
+
+    private func eligibleIntroductoryOffers(
+        in products: [PremiumPlan: Product]
+    ) async -> Set<PremiumPlan> {
+        var eligiblePlans = Set<PremiumPlan>()
+
+        for (plan, product) in products {
+            guard
+                let subscription = product.subscription,
+                let offer = subscription.introductoryOffer,
+                offer.paymentMode == .freeTrial,
+                offer.period.unit == .week,
+                offer.period.value == 2,
+                await subscription.isEligibleForIntroOffer
+            else { continue }
+
+            eligiblePlans.insert(plan)
+        }
+
+        return eligiblePlans
     }
 
     private func scheduleEntitlementRefresh(at date: Date?) {

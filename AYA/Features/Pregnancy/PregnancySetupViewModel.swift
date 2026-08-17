@@ -14,7 +14,7 @@ final class PregnancySetupViewModel: ObservableObject {
 
     var canContinue: Bool {
         guard let selectedWeek else { return false }
-        return (1...42).contains(selectedWeek)
+        return PregnancyTracker.supportedWeekRange.contains(selectedWeek)
     }
 
     @discardableResult

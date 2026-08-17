@@ -26,6 +26,8 @@ struct LifeStageSelectionView: View {
                         CycleDestinationView()
                     } else if stage == .pregnancy {
                         PregnancyDestinationView()
+                    } else if stage == .birthMoment {
+                        BirthMomentDestinationView()
                     } else if stage == .postpartum {
                         PostpartumDestinationView()
                     } else if stage == .motherhood03 {
@@ -51,7 +53,7 @@ struct LifeStageSelectionView: View {
                         .padding(.bottom, usesCompactMetrics ? 18 : 20)
 
                     LazyVStack(spacing: usesCompactMetrics ? 8 : 10) {
-                        ForEach(LifeStage.allCases) { stage in
+                        ForEach(LifeStage.availableCases) { stage in
                             LifeStageCardView(
                                 stage: stage,
                                 isSelected: viewModel.selectedStage == stage,
@@ -200,6 +202,331 @@ struct PostpartumDestinationView: View {
 
     private func returnToThemes() {
         if let showThemes { showThemes() } else { dismiss() }
+    }
+}
+
+struct BirthMomentDestinationView: View {
+    var showThemes: (() -> Void)? = nil
+
+    var body: some View {
+        BirthMomentHomeView(showThemes: showThemes)
+    }
+}
+
+private struct BirthMomentHomeView: View {
+    private let showThemesAction: (() -> Void)?
+
+    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
+    @AppStorage("user.name") private var userName = ""
+    @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isOfflineListeningEnabled = false
+    @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = LifeStage.birthMoment.rawValue
+    @State private var isSettingsPresented = false
+    @State private var playbackSession: MeditationPlaybackSession?
+    @State private var isPlayerPresented = false
+    @State private var isPlaybackContinuationToastPresented = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
+
+    init(showThemes: (() -> Void)? = nil) {
+        showThemesAction = showThemes
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AYASpacing.xl) {
+                header
+
+                VStack(alignment: .leading, spacing: AYASpacing.sm) {
+                    Text("birth_moment.home.title")
+                        .ayaTypography(.screenTitle)
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Text("birth_moment.home.description")
+                        .ayaTypography(.body)
+                        .foregroundStyle(AYAColors.textSecondary)
+                        .lineSpacing(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(AYASpacing.xl)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    AYAColors.birthMomentHeroSurface,
+                    in: RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
+                        .stroke(AYAColors.primary.opacity(0.12), lineWidth: 1)
+                }
+
+                VStack(alignment: .leading, spacing: AYASpacing.md) {
+                    Text("birth_moment.meditations.title")
+                        .ayaTypography(.homeSectionHeading)
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .accessibilityAddTraits(.isHeader)
+
+                    VStack(spacing: AYASpacing.md) {
+                        ForEach(BirthMomentMeditationProvider.meditations) { meditation in
+                            BirthMomentMeditationRow(
+                                meditation: meditation,
+                                playbackViewModel: playbackViewModel(for: meditation),
+                                action: { startMeditation(meditation) }
+                            )
+                        }
+                    }
+                }
+
+                LifeStageContinuationCard(
+                    destination: .postpartum,
+                    titleKey: "birth_moment.transition.postpartum.title",
+                    messageKey: "birth_moment.transition.postpartum.message",
+                    actionKey: "birth_moment.transition.postpartum.action",
+                    action: continueToPostpartum
+                )
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, AYASpacing.xl)
+        }
+        .scrollIndicators(.hidden)
+        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .fullScreenCover(
+            isPresented: $isPlayerPresented,
+            onDismiss: handlePlayerDismissed
+        ) {
+            if let playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
+                    .environment(\.locale, locale)
+                    .tint(AYAColors.primary)
+                }
+            }
+        }
+        .overlay {
+            if isSettingsPresented {
+                AYASettingsOverlay(
+                    languageCode: $languageCode,
+                    userName: $userName,
+                    activeStage: .birthMoment,
+                    close: { isSettingsPresented = false },
+                    showThemes: showThemes
+                )
+                .transition(.opacity)
+            }
+        }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: isSettingsPresented)
+        .meditationPlaybackContinuationToast(
+            isPresented: $isPlaybackContinuationToastPresented
+        )
+        .task(id: offlinePackageTaskID) {
+            guard isOfflineListeningEnabled else { return }
+            OfflineMeditationManager.shared.syncBirthPackage(
+                practices: BirthMomentMeditationProvider.practiceIDs,
+                language: selectedLanguage
+            )
+        }
+    }
+
+    private var header: some View {
+        HStack {
+            Text("life_stage.birthMoment.title")
+                .ayaTypography(.homeGreeting)
+                .foregroundStyle(AYAColors.textPrimary)
+                .accessibilityAddTraits(.isHeader)
+
+            Spacer(minLength: AYASpacing.sm)
+
+            if !isSettingsPresented {
+                AYAProfileButton(initial: userInitial) {
+                    isPlaybackContinuationToastPresented = false
+                    isSettingsPresented = true
+                }
+            }
+        }
+    }
+
+    private func showThemes() {
+        isSettingsPresented = false
+        stopPlaybackSession()
+        if let showThemesAction { showThemesAction() } else { dismiss() }
+    }
+
+    private func continueToPostpartum() {
+        stopPlaybackSession()
+        activeStageRawValue = LifeStage.postpartum.rawValue
+    }
+
+    private func startMeditation(_ meditation: DailyMeditation) {
+        isPlaybackContinuationToastPresented = false
+        if playbackSession?.meditation.id != meditation.id {
+            playbackSession?.viewModel.stop()
+            playbackSession = MeditationPlaybackSession(
+                meditation: meditation,
+                language: selectedLanguage
+            )
+        }
+        isPlayerPresented = true
+    }
+
+    private func handlePlayerDismissed() {
+        isPlaybackContinuationToastPresented = playbackSession?.viewModel.isPlaying == true
+    }
+
+    private func playbackViewModel(for meditation: DailyMeditation) -> MeditationPlayerViewModel? {
+        guard playbackSession?.meditation.id == meditation.id else { return nil }
+        return playbackSession?.viewModel
+    }
+
+    private func stopPlaybackSession() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
+        isPlaybackContinuationToastPresented = false
+    }
+
+    private var selectedLanguage: AppLanguage {
+        AppLanguage.resolved(from: languageCode)
+    }
+
+    private var offlinePackageTaskID: String {
+        "\(isOfflineListeningEnabled)-\(selectedLanguage.rawValue)-birth"
+    }
+
+    private var userInitial: String {
+        guard let character = userName.trimmingCharacters(in: .whitespacesAndNewlines).first else {
+            return "H"
+        }
+        return String(character).uppercased(with: locale)
+    }
+}
+
+enum BirthMomentMeditationProvider {
+    static let practiceIDs = [
+        "flower_breath",
+        "arrow_breath",
+        "zipper_breath",
+        "curtain_breath"
+    ]
+
+    static let meditations: [DailyMeditation] = [
+        meditation(id: "flower_breath", durationMinutes: 5),
+        meditation(id: "arrow_breath", durationMinutes: 6),
+        meditation(id: "zipper_breath", durationMinutes: 3),
+        meditation(id: "curtain_breath", durationMinutes: 5)
+    ]
+
+    private static func meditation(id: String, durationMinutes: Int) -> DailyMeditation {
+        DailyMeditation(
+            id: "birth-moment-\(id)",
+            titleLocalizationKey: "birth_moment.meditation.\(id).title",
+            descriptionLocalizationKey: "birth_moment.meditation.\(id).description",
+            contextNameLocalizationKey: "life_stage.birthMoment.title",
+            contextFormatLocalizationKey: "birth_moment.meditation.context_format",
+            contextValue: 0,
+            durationMinutes: durationMinutes,
+            voiceLocalizationKey: "meditation.voice.yaren",
+            audioResourceName: nil,
+            remoteAudioSource: RemoteMeditationAudioSource(birthPractice: id)
+        )
+    }
+}
+
+private struct BirthMomentMeditationRow: View {
+    let meditation: DailyMeditation
+    let playbackViewModel: MeditationPlayerViewModel?
+    let action: () -> Void
+
+    @Environment(\.locale) private var locale
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .center, spacing: AYASpacing.md) {
+                VStack(alignment: .leading, spacing: AYASpacing.xs) {
+                    Text(meditation.titleKey)
+                        .ayaTypography(.sectionTitle)
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(meditation.descriptionKey)
+                        .ayaTypography(.homeSupporting)
+                        .foregroundStyle(AYAColors.textSecondary)
+                        .lineSpacing(2)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    HStack(spacing: AYASpacing.xs) {
+                        HesiaIcon.clock.view(size: 13)
+                        Text(verbatim: durationText)
+                    }
+                    .ayaTypography(.homeMetadata)
+                    .foregroundStyle(AYAColors.textTertiary)
+                    .padding(.top, AYASpacing.xs)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                playbackControl
+            }
+            .padding(AYASpacing.lg)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .background(
+                AYAColors.surfaceElevated,
+                in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
+                    .stroke(AYAColors.border, lineWidth: 1)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .ayaElevation(.card)
+        .accessibilityIdentifier("birth_moment.meditation.\(meditation.id)")
+    }
+
+    @ViewBuilder
+    private var playbackControl: some View {
+        if let playbackViewModel {
+            BirthMomentActiveMeditationControl(viewModel: playbackViewModel)
+        } else {
+            Image(systemName: "play.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(AYAColors.onAccent)
+                .frame(width: 44, height: 44)
+                .background(AYAColors.emphasis, in: Circle())
+                .accessibilityHidden(true)
+        }
+    }
+
+    private var durationText: String {
+        let format = String(localized: "meditation.duration.minutes", locale: locale)
+        return String(format: format, locale: locale, meditation.durationMinutes)
+    }
+}
+
+private struct BirthMomentActiveMeditationControl: View {
+    @ObservedObject var viewModel: MeditationPlayerViewModel
+
+    var body: some View {
+        Group {
+            if viewModel.isLoadingAudio {
+                ProgressView()
+                    .tint(AYAColors.onAccent)
+            } else if viewModel.isPlaying {
+                PlaybackWaveformIndicator(isPlaying: true)
+            } else {
+                Image(systemName: "play.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(AYAColors.onAccent)
+            }
+        }
+        .frame(width: 44, height: 44)
+        .background(AYAColors.emphasis, in: Circle())
+        .accessibilityHidden(true)
     }
 }
 
@@ -543,7 +870,7 @@ struct SettingsPanel: View {
                 .padding(.horizontal, AYASpacing.lg)
                 .padding(.vertical, AYASpacing.md)
 
-                if premiumStore.monthlySubscription != nil {
+                if premiumStore.subscription != nil {
                     divider
 
                     Button {
@@ -577,16 +904,12 @@ struct SettingsPanel: View {
     }
 
     private var premiumStatusText: String {
-        if premiumStore.hasLifetimeAccess {
-            return localizedString("settings.premium.lifetime")
-        }
-
-        guard let subscription = premiumStore.monthlySubscription else {
-            return localizedString("settings.premium.monthly.active")
+        guard let subscription = premiumStore.subscription else {
+            return localizedString("settings.premium.subscription.active")
         }
 
         guard let renewalDate = subscription.renewalDate else {
-            return localizedString("settings.premium.monthly.active")
+            return localizedString("settings.premium.subscription.active")
         }
 
         let language = AppLanguage(rawValue: languageCode) ?? .system
@@ -594,8 +917,8 @@ struct SettingsPanel: View {
             Date.FormatStyle(date: .long, time: .omitted).locale(language.locale)
         )
         let key = subscription.willAutoRenew == false
-            ? "settings.premium.monthly.expires"
-            : "settings.premium.monthly.renews"
+            ? "settings.premium.subscription.expires"
+            : "settings.premium.subscription.renews"
         let format = language.localizedString(forKey: key)
         return String(format: format, locale: language.locale, date)
     }

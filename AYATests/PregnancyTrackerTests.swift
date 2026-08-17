@@ -31,7 +31,7 @@ final class PregnancyTrackerTests: XCTestCase {
     }
 
     func testTrimesterRangesCoverSupportedPregnancyJourney() {
-        XCTAssertEqual(PregnancyTrimester.first.weekRange, 1...13)
+        XCTAssertEqual(PregnancyTrimester.first.weekRange, 4...13)
         XCTAssertEqual(PregnancyTrimester.second.weekRange, 14...27)
         XCTAssertEqual(PregnancyTrimester.third.weekRange, 28...42)
         XCTAssertEqual(
@@ -49,12 +49,13 @@ final class PregnancyTrackerTests: XCTestCase {
     func testOverviewWeeksStayInsideSupportedRange() {
         let tracker = PregnancyTracker()
 
-        XCTAssertEqual(tracker.overviewWeeks(around: 1), Array(1...8))
+        XCTAssertEqual(tracker.overviewWeeks(around: 1), Array(4...11))
+        XCTAssertEqual(tracker.overviewWeeks(around: 4), Array(4...11))
         XCTAssertEqual(tracker.overviewWeeks(around: 18), Array(15...22))
         XCTAssertEqual(tracker.overviewWeeks(around: 42), Array(35...42))
     }
 
-    func testPostpartumTransitionIsOfferedFromWeekForty() throws {
+    func testBirthMomentTransitionIsOfferedFromWeekForty() throws {
         let referenceDate = Date(timeIntervalSince1970: 2_000_000_000)
         let tracker = PregnancyTracker()
         let weekThirtyNine = try XCTUnwrap(
@@ -66,11 +67,11 @@ final class PregnancyTrackerTests: XCTestCase {
 
         XCTAssertFalse(
             tracker.calculate(profile: weekThirtyNine, on: referenceDate)
-                .shouldOfferPostpartumTransition
+                .shouldOfferBirthMomentTransition
         )
         XCTAssertTrue(
             tracker.calculate(profile: weekForty, on: referenceDate)
-                .shouldOfferPostpartumTransition
+                .shouldOfferBirthMomentTransition
         )
     }
 
@@ -91,6 +92,22 @@ final class PregnancyTrackerTests: XCTestCase {
         XCTAssertEqual(defaults.integer(forKey: PregnancyPersistenceKeys.referenceWeek), 18)
         XCTAssertTrue(defaults.bool(forKey: PregnancyPersistenceKeys.onboardingCompleted))
         XCTAssertEqual(store.profile, profile)
+    }
+
+    func testLegacyEarlyWeekProfileNeverDisplaysBeforeWeekFour() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let referenceDate = Date(timeIntervalSince1970: 2_000_000_000)
+        let profile = try XCTUnwrap(
+            PregnancyProfile(referenceWeek: 1, referenceDate: referenceDate, calendar: calendar)
+        )
+        let tracker = PregnancyTracker(calendar: calendar)
+        let fourWeeksLater = try XCTUnwrap(
+            calendar.date(byAdding: .day, value: 28, to: referenceDate)
+        )
+
+        XCTAssertEqual(tracker.calculate(profile: profile, on: referenceDate).currentWeek, 4)
+        XCTAssertEqual(tracker.calculate(profile: profile, on: fourWeeksLater).currentWeek, 5)
     }
 
     func testUpdatingWeekResetsReferenceDateAndKeepsCompletedState() throws {
@@ -122,6 +139,13 @@ final class PregnancyTrackerTests: XCTestCase {
         XCTAssertNil(viewModel.selectedWeek)
         XCTAssertFalse(viewModel.canContinue)
         XCTAssertFalse(viewModel.save())
+
+        viewModel.selectedWeek = 3
+        XCTAssertFalse(viewModel.canContinue)
+        XCTAssertFalse(viewModel.save())
+
+        viewModel.selectedWeek = 4
+        XCTAssertTrue(viewModel.canContinue)
 
         viewModel.selectedWeek = 18
         XCTAssertTrue(viewModel.canContinue)

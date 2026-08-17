@@ -2,15 +2,18 @@ import Foundation
 
 struct RemoteMeditationAudioSource: Equatable {
     static let supportedCycleDays = 1...35
-    static let supportedPregnancyWeeks = 1...42
+    static let supportedPregnancyWeeks = 4...42
+    static let supportedPostpartumDays = 1...90
 
     enum Context: Equatable {
         case cycle(day: Int)
         case pregnancy(week: Int)
+        case birth(practice: String)
+        case postpartum(day: Int)
     }
 
     let context: Context
-    let fallbackResourceName: String
+    let fallbackResourceName: String?
 
     init(cycleDay: Int, fallbackResourceName: String) {
         context = .cycle(day: cycleDay)
@@ -20,6 +23,16 @@ struct RemoteMeditationAudioSource: Equatable {
     init(pregnancyWeek: Int, fallbackResourceName: String) {
         context = .pregnancy(week: pregnancyWeek)
         self.fallbackResourceName = fallbackResourceName
+    }
+
+    init(postpartumDay: Int, fallbackResourceName: String) {
+        context = .postpartum(day: postpartumDay)
+        self.fallbackResourceName = fallbackResourceName
+    }
+
+    init(birthPractice: String) {
+        context = .birth(practice: birthPractice)
+        fallbackResourceName = nil
     }
 
     var cycleDay: Int? {
@@ -32,6 +45,16 @@ struct RemoteMeditationAudioSource: Equatable {
         return week
     }
 
+    var postpartumDay: Int? {
+        guard case let .postpartum(day) = context else { return nil }
+        return day
+    }
+
+    var birthPractice: String? {
+        guard case let .birth(practice) = context else { return nil }
+        return practice
+    }
+
     var directoryURL: URL {
         switch context {
         case let .cycle(day):
@@ -40,6 +63,11 @@ struct RemoteMeditationAudioSource: Equatable {
         case let .pregnancy(week):
             let directory = String(format: "week_%02d", week)
             return URL(string: "https://hesia.app/content/pregnancy/\(directory)/")!
+        case let .birth(practice):
+            return URL(string: "https://hesia.app/content/birth/\(practice)/")!
+        case let .postpartum(day):
+            let directory = String(format: "day_%02d", day)
+            return URL(string: "https://hesia.app/content/postpartum/\(directory)/")!
         }
     }
 
@@ -52,6 +80,7 @@ struct RemoteMeditationMetadata: Decodable, Equatable {
     let id: String
     let day: Int?
     let week: Int?
+    let practice: String?
     let audio: [String: String]
     let title: [String: String]
     let description: [String: String]
@@ -62,6 +91,7 @@ struct RemoteMeditationMetadata: Decodable, Equatable {
         case id
         case day
         case week
+        case practice
         case audio
         case title
         case description
@@ -70,7 +100,10 @@ struct RemoteMeditationMetadata: Decodable, Equatable {
     }
 
     func audioFileName(for language: AppLanguage) -> String? {
-        audio[language.contentLanguageCode]
+        guard let fileName = audio[language.contentLanguageCode], !fileName.isEmpty else {
+            return nil
+        }
+        return fileName
     }
 
     func localizedTitle(for language: AppLanguage) -> String? {
@@ -171,6 +204,10 @@ enum RemoteMeditationContentLoader {
             metadata.day == day
         case let .pregnancy(week):
             metadata.week == week
+        case let .birth(practice):
+            metadata.practice == practice
+        case let .postpartum(day):
+            metadata.day == day
         }
         guard hasMatchingContext else { throw LoadingError.invalidResponse }
         return metadata

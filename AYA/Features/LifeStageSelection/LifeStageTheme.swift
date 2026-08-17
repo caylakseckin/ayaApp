@@ -58,6 +58,15 @@ struct LifeStageTheme {
                 darkSurfaceTint: AYAColors.tertiary.opacity(0.16),
                 darkMotifOpacity: 0.18
             )
+        case .birthMoment:
+            lightTheme(
+                background: AYAColors.birthMomentSurface,
+                secondaryBackground: AYAColors.softPink,
+                badgeBackground: AYAColors.softPink.opacity(0.62),
+                asset: "stage_birth_moment",
+                darkSurfaceTint: AYAColors.softPink.opacity(0.12),
+                darkMotifOpacity: 0.16
+            )
         case .postpartum:
             lightTheme(
                 background: AYAColors.postpartumSurface,

@@ -148,6 +148,7 @@ struct LifeStageCardView: View {
             switch stage {
             case .cycle: CycleMotifView()
             case .pregnancy: PregnancyMotifView()
+            case .birthMoment: BirthMomentMotifView()
             case .postpartum: PostpartumMotifView()
             case .motherhood03: MotherhoodMotifView()
             }
@@ -160,5 +161,15 @@ struct LifeStageCardView: View {
         )
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+}
+
+private struct BirthMomentMotifView: View {
+    var body: some View {
+        Image("stage_birth_moment")
+            .resizable()
+            .scaledToFill()
+            .scaleEffect(x: 1.05, y: 1.15)
+            .accessibilityHidden(true)
     }
 }

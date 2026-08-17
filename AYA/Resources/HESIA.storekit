@@ -4,26 +4,7 @@
 
   ],
   "products" : [
-    {
-      "displayPrice" : "25.00",
-      "familyShareable" : false,
-      "internalID" : "hesia-premium-lifetime",
-      "localizations" : [
-        {
-          "description" : "Unlock every HESIA life stage with one purchase.",
-          "displayName" : "HESIA Premium Lifetime",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Tek satın alımla HESIA'nın tüm yaşam dönemlerini aç.",
-          "displayName" : "HESIA Premium Ömür Boyu",
-          "locale" : "tr_TR"
-        }
-      ],
-      "productID" : "com.ayameditation.app.premium.lifetime",
-      "referenceName" : "HESIA Premium Lifetime",
-      "type" : "NonConsumable"
-    }
+
   ],
   "settings" : {
     "_applicationInternalID" : ""
@@ -43,11 +24,48 @@
           "codeOffers" : [
 
           ],
+          "displayPrice" : "40.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "hesia-premium-yearly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Yearly access to every HESIA life stage.",
+              "displayName" : "HESIA Premium Yearly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "HESIA'nın tüm yaşam dönemlerine yıllık erişim.",
+              "displayName" : "HESIA Premium Yıllık",
+              "locale" : "tr_TR"
+            }
+          ],
+          "productID" : "com.ayameditation.app.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "HESIA Premium Yearly",
+          "subscriptionGroupID" : "hesia-premium-subscription-group",
+          "type" : "RecurringSubscription",
+          "winBackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
           "displayPrice" : "5.00",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "hesia-premium-monthly",
-          "introductoryOffer" : null,
+          "introductoryOffer" : {
+            "internalID" : "hesia-premium-monthly-intro-trial",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
           "localizations" : [
             {
               "description" : "Monthly access to every HESIA life stage.",

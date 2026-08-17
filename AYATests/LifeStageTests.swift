@@ -2,8 +2,13 @@ import XCTest
 @testable import HESIA
 
 final class LifeStageTests: XCTestCase {
-    func testFourLifeStagesAreDefined() {
-        XCTAssertEqual(LifeStage.allCases.count, 4)
+    func testMotherhoodRemainsDefinedWhileFourStagesAreAvailable() {
+        XCTAssertEqual(LifeStage.allCases.count, 5)
+        XCTAssertEqual(
+            LifeStage.availableCases,
+            [.cycle, .pregnancy, .birthMoment, .postpartum]
+        )
+        XCTAssertFalse(LifeStage.motherhood03.isAvailable)
     }
 
     func testOnlyCycleIsFree() {
@@ -60,27 +65,17 @@ final class LifeStageTests: XCTestCase {
     }
 
     func testPremiumProductIdentifiersAreStableAndUnique() {
-        XCTAssertEqual(PremiumProductIdentifiers.lifetime, "com.ayameditation.app.premium.lifetime")
         XCTAssertEqual(PremiumProductIdentifiers.monthly, "com.ayameditation.app.premium.monthly")
+        XCTAssertEqual(PremiumProductIdentifiers.yearly, "com.ayameditation.app.premium.yearly")
         XCTAssertEqual(PremiumProductIdentifiers.all.count, 2)
     }
 
     func testPremiumPlansMapToStoreKitProductIdentifiers() {
-        XCTAssertEqual(PremiumPlan.lifetime.productIdentifier, PremiumProductIdentifiers.lifetime)
+        XCTAssertEqual(PremiumPlan.yearly.productIdentifier, PremiumProductIdentifiers.yearly)
         XCTAssertEqual(PremiumPlan.monthly.productIdentifier, PremiumProductIdentifiers.monthly)
-        XCTAssertEqual(PremiumPlan(productIdentifier: PremiumProductIdentifiers.lifetime), .lifetime)
+        XCTAssertEqual(PremiumPlan(productIdentifier: PremiumProductIdentifiers.yearly), .yearly)
         XCTAssertEqual(PremiumPlan(productIdentifier: PremiumProductIdentifiers.monthly), .monthly)
         XCTAssertNil(PremiumPlan(productIdentifier: "unknown.product"))
-    }
-
-    func testVerifiedLifetimePurchaseGrantsAccessWithoutExpiration() {
-        XCTAssertTrue(
-            PremiumAccessPolicy.isActiveEntitlement(
-                productID: PremiumProductIdentifiers.lifetime,
-                revocationDate: nil,
-                expirationDate: nil
-            )
-        )
     }
 
     func testExpiredOrRevokedPurchaseDoesNotGrantAccess() {
@@ -96,9 +91,9 @@ final class LifeStageTests: XCTestCase {
         )
         XCTAssertFalse(
             PremiumAccessPolicy.isActiveEntitlement(
-                productID: PremiumProductIdentifiers.lifetime,
+                productID: PremiumProductIdentifiers.monthly,
                 revocationDate: now,
-                expirationDate: nil,
+                expirationDate: Date(timeIntervalSince1970: 2_000),
                 now: now
             )
         )
@@ -114,19 +109,19 @@ final class LifeStageTests: XCTestCase {
         )
     }
 
-    func testVerifiedSessionPurchaseSurvivesTemporarilyEmptyStoreRefresh() {
+    func testVerifiedSubscriptionSurvivesTemporarilyEmptyStoreRefresh() {
         let effectiveProductIDs = PremiumAccessPolicy.effectiveProductIDs(
             storeProductIDs: [],
             sessionEntitlements: [
                 PremiumEntitlementRecord(
-                    productID: PremiumProductIdentifiers.lifetime,
+                    productID: PremiumProductIdentifiers.monthly,
                     revocationDate: nil,
-                    expirationDate: nil
+                    expirationDate: Date.distantFuture
                 )
             ]
         )
 
-        XCTAssertEqual(effectiveProductIDs, [PremiumProductIdentifiers.lifetime])
+        XCTAssertEqual(effectiveProductIDs, [PremiumProductIdentifiers.monthly])
     }
 
     func testExpiredSessionPurchaseDoesNotSurviveStoreRefresh() {

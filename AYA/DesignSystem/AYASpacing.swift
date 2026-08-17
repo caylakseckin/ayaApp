@@ -23,3 +23,8 @@ enum AYASpacing {
     /// 48 pt — hero / top-of-screen breathing room.
     static let xxxl: CGFloat = 48
 }
+
+enum AYALayout {
+    /// Keeps editorial content readable on iPad while allowing full-width iPhone layouts.
+    static let readableContentMaxWidth: CGFloat = 760
+}

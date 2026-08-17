@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "stage_birth_moment@1x.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "stage_birth_moment@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "stage_birth_moment@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

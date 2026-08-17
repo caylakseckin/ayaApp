@@ -28,15 +28,29 @@ final class PostpartumTrackerTests: XCTestCase {
         XCTAssertEqual(PostpartumStage(day: 85), .newRhythm)
     }
 
-    func testProgressCapsAtOneAfterDayFortyTwo() throws {
+    func testProgressUsesNinetyDayJourneyAndCapsAtOne() throws {
         let now = Date(timeIntervalSince1970: 2_000_000_000)
-        let birthDate = now.addingTimeInterval(-100 * 86_400)
-        let profile = try XCTUnwrap(PostpartumProfile(birthDate: birthDate, now: now))
+        let dayFortyFiveBirthDate = now.addingTimeInterval(-44 * 86_400)
+        let dayFortyFiveProfile = try XCTUnwrap(
+            PostpartumProfile(birthDate: dayFortyFiveBirthDate, now: now)
+        )
+        let pastJourneyBirthDate = now.addingTimeInterval(-100 * 86_400)
+        let pastJourneyProfile = try XCTUnwrap(
+            PostpartumProfile(birthDate: pastJourneyBirthDate, now: now)
+        )
 
-        XCTAssertEqual(PostpartumTracker().calculate(profile: profile, on: now).progress, 1)
+        XCTAssertEqual(
+            PostpartumTracker().calculate(profile: dayFortyFiveProfile, on: now).progress,
+            0.5,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            PostpartumTracker().calculate(profile: pastJourneyProfile, on: now).progress,
+            1
+        )
     }
 
-    func testMotherhoodTransitionIsOfferedAfterDayFortyTwo() throws {
+    func testMotherhoodTransitionIsOfferedAfterDayNinety() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         let birthDate = try XCTUnwrap(
@@ -45,16 +59,16 @@ final class PostpartumTrackerTests: XCTestCase {
         let profile = try XCTUnwrap(
             PostpartumProfile(birthDate: birthDate, calendar: calendar, now: birthDate)
         )
-        let dayFortyTwo = try XCTUnwrap(calendar.date(byAdding: .day, value: 41, to: birthDate))
-        let dayFortyThree = try XCTUnwrap(calendar.date(byAdding: .day, value: 42, to: birthDate))
+        let dayNinety = try XCTUnwrap(calendar.date(byAdding: .day, value: 89, to: birthDate))
+        let dayNinetyOne = try XCTUnwrap(calendar.date(byAdding: .day, value: 90, to: birthDate))
         let tracker = PostpartumTracker(calendar: calendar)
 
         XCTAssertFalse(
-            tracker.calculate(profile: profile, on: dayFortyTwo)
+            tracker.calculate(profile: profile, on: dayNinety)
                 .shouldOfferMotherhoodTransition
         )
         XCTAssertTrue(
-            tracker.calculate(profile: profile, on: dayFortyThree)
+            tracker.calculate(profile: profile, on: dayNinetyOne)
                 .shouldOfferMotherhoodTransition
         )
     }
@@ -63,6 +77,8 @@ final class PostpartumTrackerTests: XCTestCase {
         let tracker = PostpartumTracker()
         XCTAssertEqual(tracker.timelineDays(around: 1), Array(1...7))
         XCTAssertEqual(tracker.timelineDays(around: 12), Array(9...15))
+        XCTAssertEqual(tracker.timelineDays(around: 90), Array(84...90))
+        XCTAssertEqual(tracker.timelineDays(around: 100), Array(84...90))
     }
 
     func testJourneyPhaseBoundaries() {
@@ -73,7 +89,9 @@ final class PostpartumTrackerTests: XCTestCase {
         XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 15), .settlingIn)
         XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 28), .settlingIn)
         XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 29), .rebuildingRhythm)
-        XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 42), .rebuildingRhythm)
+        XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 56), .rebuildingRhythm)
+        XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 57), .growingTogether)
+        XCTAssertEqual(PostpartumJourneyPhase.phase(containing: 90), .growingTogether)
     }
 
     func testJourneyPhaseStatesForDayTen() {
@@ -81,6 +99,7 @@ final class PostpartumTrackerTests: XCTestCase {
         XCTAssertEqual(PostpartumJourneyPhase.earlyPostpartum.state(on: 10), .current)
         XCTAssertEqual(PostpartumJourneyPhase.settlingIn.state(on: 10), .upcoming)
         XCTAssertEqual(PostpartumJourneyPhase.rebuildingRhythm.state(on: 10), .upcoming)
+        XCTAssertEqual(PostpartumJourneyPhase.growingTogether.state(on: 10), .upcoming)
     }
 
     func testFutureBirthDateIsRejected() {

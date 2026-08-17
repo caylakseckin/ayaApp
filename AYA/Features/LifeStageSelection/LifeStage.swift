@@ -7,6 +7,7 @@ enum LifeStagePersistenceKeys {
 enum LifeStage: String, CaseIterable, Identifiable, Hashable, Sendable {
     case cycle
     case pregnancy
+    case birthMoment
     case postpartum
     case motherhood03
 
@@ -14,10 +15,19 @@ enum LifeStage: String, CaseIterable, Identifiable, Hashable, Sendable {
 
     var isPremium: Bool { self != .cycle }
 
+    static var availableCases: [LifeStage] {
+        allCases.filter(\.isAvailable)
+    }
+
+    var isAvailable: Bool {
+        self != .motherhood03 || HESIAFeatureFlags.supportsMotherhood
+    }
+
     var titleKey: LocalizedStringKey {
         switch self {
         case .cycle: "life_stage.cycle.title"
         case .pregnancy: "life_stage.pregnancy.title"
+        case .birthMoment: "life_stage.birthMoment.title"
         case .postpartum: "life_stage.postpartum.title"
         case .motherhood03: "life_stage.motherhood03.title"
         }
@@ -27,6 +37,7 @@ enum LifeStage: String, CaseIterable, Identifiable, Hashable, Sendable {
         switch self {
         case .cycle: "life_stage.cycle.description"
         case .pregnancy: "life_stage.pregnancy.description"
+        case .birthMoment: "life_stage.birthMoment.description"
         case .postpartum: "life_stage.postpartum.description"
         case .motherhood03: "life_stage.motherhood03.description"
         }
@@ -36,6 +47,7 @@ enum LifeStage: String, CaseIterable, Identifiable, Hashable, Sendable {
         switch self {
         case .cycle: "life_stage.cycle.badge"
         case .pregnancy: "life_stage.pregnancy.badge"
+        case .birthMoment: "life_stage.birthMoment.badge"
         case .postpartum: "life_stage.postpartum.badge"
         case .motherhood03: "life_stage.motherhood03.badge"
         }
@@ -45,6 +57,7 @@ enum LifeStage: String, CaseIterable, Identifiable, Hashable, Sendable {
         switch self {
         case .cycle: "life_stage.cycle.action"
         case .pregnancy: "life_stage.pregnancy.action"
+        case .birthMoment: "life_stage.birthMoment.action"
         case .postpartum: "life_stage.postpartum.action"
         case .motherhood03: "life_stage.motherhood03.action"
         }

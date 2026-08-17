@@ -105,6 +105,9 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     }
 
     func play() {
+        // A play request may arrive from the Watch while remote audio is still
+        // loading. Keep that intent so preparation can start playback when ready.
+        shouldAutoPlay = true
         guard !isPlaying else { return }
         guard
             !isLoadingAudio,
@@ -125,6 +128,8 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     }
 
     func pause() {
+        // Also cancels a pending automatic start when pause arrives during load.
+        shouldAutoPlay = false
         audioPlayer?.pause()
         isPlaying = false
         stopProgressTimer()
@@ -221,6 +226,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
                 return
             }
             prepareAudio(named: source.fallbackResourceName)
+            isAudioUnavailable = !isAudioLoaded
             isLoadingAudio = false
             audioPreparationTask = nil
             autoPlayIfReady()

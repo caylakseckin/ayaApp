@@ -79,11 +79,28 @@ final class HESIAOnboardingStateTests: XCTestCase {
     }
 
     func testPregnancyOfflinePackageContainsOnlyCurrentWeek() {
+        XCTAssertTrue(OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 3).isEmpty)
+        XCTAssertEqual(
+            OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 4),
+            [4]
+        )
         XCTAssertEqual(
             OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 18),
             [18]
         )
         XCTAssertTrue(OfflineMeditationPackagePlanner.pregnancyWeeks(currentWeek: 43).isEmpty)
+    }
+
+    func testPostpartumOfflinePackageContainsTodayAndNextAvailableDays() {
+        XCTAssertEqual(
+            OfflineMeditationPackagePlanner.postpartumDays(currentDay: 18),
+            [18, 19, 20]
+        )
+        XCTAssertEqual(
+            OfflineMeditationPackagePlanner.postpartumDays(currentDay: 89),
+            [89, 90]
+        )
+        XCTAssertTrue(OfflineMeditationPackagePlanner.postpartumDays(currentDay: 91).isEmpty)
     }
 
     func testBiometricAutomaticUnlockRunsOnlyOncePerLock() {

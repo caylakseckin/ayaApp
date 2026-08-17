@@ -5,6 +5,10 @@ enum PostpartumPersistenceKeys {
     static let onboardingCompleted = "postpartum.onboardingCompleted"
 }
 
+enum PostpartumJourney {
+    static let totalDays = 90
+}
+
 enum PostpartumStage: String, CaseIterable, Sendable {
     case firstDays
     case earlyPostpartum
@@ -46,20 +50,22 @@ enum PostpartumStage: String, CaseIterable, Sendable {
     }
 }
 
-/// Meditation and content-organization phases for HESIA's first 42-day
+/// Meditation and content-organization phases for HESIA's first 90-day
 /// postpartum journey. These are not medical recovery stages.
 enum PostpartumJourneyPhase: String, CaseIterable, Sendable {
     case restAndArrival
     case earlyPostpartum
     case settlingIn
     case rebuildingRhythm
+    case growingTogether
 
     var dayRange: ClosedRange<Int> {
         switch self {
         case .restAndArrival: 1...7
         case .earlyPostpartum: 8...14
         case .settlingIn: 15...28
-        case .rebuildingRhythm: 29...42
+        case .rebuildingRhythm: 29...56
+        case .growingTogether: 57...PostpartumJourney.totalDays
         }
     }
 
@@ -86,8 +92,8 @@ enum PostpartumJourneyPhase: String, CaseIterable, Sendable {
     }
 
     static func phase(containing day: Int) -> PostpartumJourneyPhase {
-        let journeyDay = min(max(day, 1), 42)
-        return allCases.first { $0.dayRange.contains(journeyDay) } ?? .rebuildingRhythm
+        let journeyDay = min(max(day, 1), PostpartumJourney.totalDays)
+        return allCases.first { $0.dayRange.contains(journeyDay) } ?? .growingTogether
     }
 }
 
@@ -116,10 +122,10 @@ struct PostpartumCalculation: Equatable, Sendable {
     let stage: PostpartumStage
     let progress: Double
 
-    /// The dedicated first-42-days experience remains available; from day 43
+    /// The dedicated first-90-days experience remains available; from day 91
     /// onward the user can optionally continue into the Motherhood module.
     var shouldOfferMotherhoodTransition: Bool {
-        currentDay > 42
+        currentDay > PostpartumJourney.totalDays
     }
 }
 
@@ -139,12 +145,13 @@ struct PostpartumTracker {
         return PostpartumCalculation(
             currentDay: day,
             stage: PostpartumStage(day: day),
-            progress: min(max(Double(day) / 42.0, 0), 1)
+            progress: min(max(Double(day) / Double(PostpartumJourney.totalDays), 0), 1)
         )
     }
 
     func timelineDays(around currentDay: Int) -> [Int] {
-        let start = max(currentDay - 3, 1)
+        let latestStart = PostpartumJourney.totalDays - 6
+        let start = min(max(currentDay - 3, 1), latestStart)
         return Array(start...(start + 6))
     }
 }

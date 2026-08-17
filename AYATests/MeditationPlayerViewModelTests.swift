@@ -162,6 +162,90 @@ final class MeditationPlayerViewModelTests: XCTestCase {
         XCTAssertEqual(metadata.localizedTitle(for: .english), "Title")
     }
 
+    func testBirthMeditationUsesPracticeRemoteContent() {
+        let source = RemoteMeditationAudioSource(birthPractice: "flower_breath")
+
+        XCTAssertEqual(source.birthPractice, "flower_breath")
+        XCTAssertNil(source.fallbackResourceName)
+        XCTAssertEqual(
+            source.metadataURL.absoluteString,
+            "https://hesia.app/content/birth/flower_breath/metadata.json"
+        )
+    }
+
+    func testBirthMetadataDecodesPracticeSchema() throws {
+        let data = Data(
+            #"{"id":"birth_flower_breath","practice":"flower_breath","audio":{"tr":"birth_flower_breath_tr.m4a","en":""},"title":{"tr":"Çiçek Nefesi","en":"Flower Breath"},"description":{"tr":"Açıklama","en":"Description"},"duration_minutes":5,"narrator":"Yaren"}"#.utf8
+        )
+
+        let metadata = try JSONDecoder().decode(RemoteMeditationMetadata.self, from: data)
+
+        XCTAssertEqual(metadata.practice, "flower_breath")
+        XCTAssertEqual(metadata.audioFileName(for: .turkish), "birth_flower_breath_tr.m4a")
+        XCTAssertNil(metadata.audioFileName(for: .english))
+    }
+
+    func testPostpartumMeditationUsesDailyRemoteContent() {
+        let calculation = PostpartumCalculation(
+            currentDay: 18,
+            stage: .earlyPostpartum,
+            progress: 0.2
+        )
+
+        let meditation = PostpartumMeditationProvider().meditation(for: calculation)
+
+        XCTAssertEqual(meditation.id, "postpartum-day-18")
+        XCTAssertEqual(meditation.remoteAudioSource?.postpartumDay, 18)
+        XCTAssertEqual(
+            meditation.remoteAudioSource?.metadataURL.absoluteString,
+            "https://hesia.app/content/postpartum/day_18/metadata.json"
+        )
+        XCTAssertNotNil(meditation.audioResourceName)
+    }
+
+    func testPostpartumMeditationFallsBackLocallyAfterDayNinety() {
+        let calculation = PostpartumCalculation(
+            currentDay: 91,
+            stage: .newRhythm,
+            progress: 1
+        )
+
+        let meditation = PostpartumMeditationProvider().meditation(for: calculation)
+
+        XCTAssertNil(meditation.remoteAudioSource)
+        XCTAssertNotNil(meditation.audioResourceName)
+    }
+
+    func testWatchMeditationStoreClearsCachedPractice() throws {
+        let suiteName = "WatchMeditationSharedStoreTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let session = WatchMeditationSession(
+            id: "pregnancy-week-4",
+            title: "Biraz Daha Yavaş",
+            stageKey: "watch.stage.pregnancy",
+            week: 4,
+            duration: 240,
+            audioURL: nil,
+            remoteAudioURL: URL(
+                string: "https://hesia.app/content/pregnancy/week_04/pregnancy.mp3"
+            ),
+            narrator: "Yaren",
+            syncedAt: Date()
+        )
+
+        XCTAssertTrue(WatchMeditationSharedStore.save(session, defaults: defaults))
+        XCTAssertEqual(WatchMeditationSharedStore.load(defaults: defaults)?.id, session.id)
+        XCTAssertEqual(
+            WatchMeditationSharedStore.load(defaults: defaults)?.remoteAudioURL,
+            session.remoteAudioURL
+        )
+
+        WatchMeditationSharedStore.clear(defaults: defaults)
+
+        XCTAssertNil(WatchMeditationSharedStore.load(defaults: defaults))
+    }
+
     @MainActor
     func testDailyMeditationsLoadBundledDemoAudio() {
         for phase in CyclePhase.allCases {

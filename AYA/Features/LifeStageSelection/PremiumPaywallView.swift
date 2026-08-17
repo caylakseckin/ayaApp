@@ -1,22 +1,22 @@
 import SwiftUI
 
 enum PremiumPlan: String, CaseIterable, Identifiable {
-    case lifetime
+    case yearly
     case monthly
 
     var id: String { rawValue }
 
     var productIdentifier: String {
         switch self {
-        case .lifetime: PremiumProductIdentifiers.lifetime
+        case .yearly: PremiumProductIdentifiers.yearly
         case .monthly: PremiumProductIdentifiers.monthly
         }
     }
 
     init?(productIdentifier: String) {
         switch productIdentifier {
-        case PremiumProductIdentifiers.lifetime:
-            self = .lifetime
+        case PremiumProductIdentifiers.yearly:
+            self = .yearly
         case PremiumProductIdentifiers.monthly:
             self = .monthly
         default:
@@ -26,21 +26,14 @@ enum PremiumPlan: String, CaseIterable, Identifiable {
 
     var titleKey: LocalizedStringKey {
         switch self {
-        case .lifetime: "premium.plan.lifetime.title"
+        case .yearly: "premium.plan.yearly.title"
         case .monthly: "premium.plan.monthly.title"
-        }
-    }
-
-    var fallbackPriceKey: LocalizedStringKey {
-        switch self {
-        case .lifetime: "premium.plan.lifetime.price"
-        case .monthly: "premium.plan.monthly.price"
         }
     }
 
     var detailKey: LocalizedStringKey {
         switch self {
-        case .lifetime: "premium.plan.lifetime.detail"
+        case .yearly: "premium.plan.yearly.detail"
         case .monthly: "premium.plan.monthly.detail"
         }
     }
@@ -78,10 +71,11 @@ struct PremiumPaywallView: View {
     let onAccessGranted: () -> Void
 
     @ObservedObject private var premiumStore = PremiumStore.shared
-    @State private var selectedPlan: PremiumPlan = .lifetime
+    @State private var selectedPlan: PremiumPlan = .monthly
     @State private var activeAlert: PremiumPaywallAlert?
     @State private var didGrantAccess = false
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
 
     private let termsURL = URL(string: "https://hesia.app/hesia-legal-site/terms.html")!
     private let privacyURL = URL(string: "https://hesia.app/hesia-legal-site/privacy.html")!
@@ -97,7 +91,8 @@ struct PremiumPaywallView: View {
                 benefits
                 plans
 
-                if premiumStore.hasLoadedProducts, premiumStore.products.isEmpty {
+                if premiumStore.hasLoadedProducts,
+                   premiumStore.products.count < PremiumPlan.allCases.count {
                     productUnavailableNotice
                 }
             }
@@ -208,7 +203,7 @@ struct PremiumPaywallView: View {
                             .ayaTypography(.sectionTitle)
                             .foregroundStyle(AYAColors.textPrimary)
 
-                        if plan == .lifetime {
+                        if plan == .yearly {
                             Text("premium.plan.best_value")
                                 .font(AYATypography.ui(size: 10, weight: .semibold))
                                 .foregroundStyle(AYAColors.emphasis)
@@ -218,7 +213,7 @@ struct PremiumPaywallView: View {
                         }
                     }
 
-                    Text(plan.detailKey)
+                    Text(detailKey(for: plan))
                         .ayaTypography(.metadata)
                         .foregroundStyle(AYAColors.textSecondary)
                 }
@@ -238,7 +233,10 @@ struct PremiumPaywallView: View {
             }
         }
         .buttonStyle(.plain)
-        .disabled(isWorking)
+        .disabled(
+            isWorking
+                || (premiumStore.hasLoadedProducts && premiumStore.product(for: plan) == nil)
+        )
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
@@ -246,8 +244,14 @@ struct PremiumPaywallView: View {
     private func price(for plan: PremiumPlan) -> some View {
         if let product = premiumStore.product(for: plan) {
             Text(product.displayPrice)
+        } else if premiumStore.isLoadingProducts || !premiumStore.hasLoadedProducts {
+            ProgressView()
+                .tint(AYAColors.accent)
+                .accessibilityLabel("premium.loading")
         } else {
-            Text(plan.fallbackPriceKey)
+            Text("premium.plan.price_unavailable")
+                .ayaTypography(.metadata)
+                .foregroundStyle(AYAColors.textTertiary)
         }
     }
 
@@ -277,15 +281,19 @@ struct PremiumPaywallView: View {
                         .tint(AYAColors.onAccent)
                         .accessibilityLabel("premium.loading")
                 } else {
-                    Text("premium.purchase")
+                    Text(purchaseButtonKey)
                 }
             }
             .buttonStyle(.appPrimary)
-            .disabled(isWorking || premiumStore.isLoadingProducts)
+            .disabled(
+                isWorking
+                    || premiumStore.isLoadingProducts
+                    || premiumStore.product(for: selectedPlan) == nil
+            )
             .accessibilityIdentifier("premium.purchase.button")
 
-            if selectedPlan == .monthly {
-                Text("premium.subscription.disclosure")
+            if let subscriptionDisclosure {
+                Text(verbatim: subscriptionDisclosure)
                     .ayaTypography(.metadata)
                     .foregroundStyle(AYAColors.textTertiary)
                     .multilineTextAlignment(.center)
@@ -324,6 +332,41 @@ struct PremiumPaywallView: View {
         .buttonStyle(.plain)
         .ayaTypography(.metadata)
         .foregroundStyle(AYAColors.textTertiary)
+    }
+
+    private func detailKey(for plan: PremiumPlan) -> LocalizedStringKey {
+        if plan == .monthly,
+           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
+            return "premium.plan.monthly.trial_detail"
+        }
+        return plan.detailKey
+    }
+
+    private var purchaseButtonKey: LocalizedStringKey {
+        if selectedPlan == .monthly,
+           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
+            return "premium.purchase.start_trial"
+        }
+        return "premium.purchase"
+    }
+
+    private var subscriptionDisclosure: String? {
+        guard let product = premiumStore.product(for: selectedPlan) else { return nil }
+
+        let key: String
+        if selectedPlan == .monthly,
+           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
+            key = "premium.subscription.monthly_trial_disclosure"
+        } else {
+            key = switch selectedPlan {
+            case .monthly: "premium.subscription.monthly_disclosure"
+            case .yearly: "premium.subscription.yearly_disclosure"
+            }
+        }
+
+        let language = AppLanguage.resolved(from: languageCode)
+        let format = language.localizedString(forKey: key)
+        return String(format: format, locale: language.locale, product.displayPrice)
     }
 
     private func purchaseSelectedPlan() async {

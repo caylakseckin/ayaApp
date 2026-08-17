@@ -281,100 +281,253 @@
         }
       }
     },
-    "onboarding.offline.benefit.cleanup.description" : {
+    "birth_moment.home.description" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "After the new day is ready, the oldest download is removed automatically." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yeni gün hazır olduğunda en eski indirme otomatik olarak silinir." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A calm space to return to your breath and yourself as you approach birth."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğuma yaklaşırken nefesine ve kendine dönebileceğin sakin bir alan."
+          }
+        }
       }
     },
-    "onboarding.offline.benefit.cleanup.title" : {
+    "birth_moment.home.title" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Storage stays tidy" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Alan düzenli kalır" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A pause for the moment of birth"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğum anına eşlik eden bir mola"
+          }
+        }
       }
     },
-    "onboarding.offline.benefit.three_days.description" : {
+    "birth_moment.meditation.arrow_breath.description" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "HESIA keeps at most three available daily meditations on this iPhone." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "HESIA, mevcut günlük meditasyonlardan en fazla üçünü bu iPhone’da tutar." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guide your breath downward and make space for your baby to move."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nefesini aşağı doğru yönlendirerek bebeğinin ilerlemesine alan aç."
+          }
+        }
       }
     },
-    "onboarding.offline.benefit.three_days.title" : {
+    "birth_moment.meditation.arrow_breath.title" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Three days, ready" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üç gün yanında" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrow Breath"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ok Nefesi"
+          }
+        }
       }
     },
-    "onboarding.offline.description" : {
+    "birth_moment.meditation.context_format" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download today’s meditation and the next two when available, so you can listen without an internet connection." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bugünün ve sonraki iki günün meditasyonlarını hazır olduklarında indir; internet olmadan da dinle." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@"
+          }
+        }
       }
     },
-    "onboarding.offline.enable" : {
+    "birth_moment.meditation.curtain_breath.description" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Offline Listening" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı Dinlemeyi Aç" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imagine a soft curtain opening as you create more space with your breath."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nefesinle yumuşak bir perdenin açıldığını ve alanın genişlediğini hayal et."
+          }
+        }
       }
     },
-    "onboarding.offline.skip" : {
+    "birth_moment.meditation.curtain_breath.title" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not now" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Şimdi değil" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curtain Breath"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perde Nefesi"
+          }
+        }
       }
     },
-    "onboarding.offline.title" : {
+    "birth_moment.meditation.flower_breath.description" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep your meditations with you" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Meditasyonların yanında olsun" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let your pelvic floor soften and open gently with each breath."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her nefeste pelvik tabanının yumuşamasına ve açılmasına izin ver."
+          }
+        }
       }
     },
-    "settings.offline.description" : {
+    "birth_moment.meditation.flower_breath.title" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep today and the next two available days offline" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bugünü ve sonraki iki mevcut günü çevrimdışı tut" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flower Breath"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çiçek Nefesi"
+          }
+        }
       }
     },
-    "settings.offline.downloading" : {
+    "birth_moment.meditation.zipper_breath.description" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preparing your three-day offline set…" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üç günlük çevrimdışı içerik hazırlanıyor…" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feel a zipper releasing downward without tightening your pelvic floor."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelvik tabanını sıkmadan fermuarın aşağı doğru açıldığını hisset."
+          }
+        }
       }
     },
-    "settings.offline.enabled" : {
+    "birth_moment.meditation.zipper_breath.title" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "New daily meditations download when available" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yeni günlük meditasyonlar hazır olduğunda indirilir" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zipper Breath"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermuar Nefesi"
+          }
+        }
       }
     },
-    "settings.offline.failed" : {
+    "birth_moment.meditations.title" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline preparation could not finish right now" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı hazırlık şu anda tamamlanamadı" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose what you need"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İhtiyacına göre seç"
+          }
+        }
       }
     },
-    "settings.offline.partial" : {
+    "birth_moment.transition.postpartum.action" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Available audio is offline; some days are not published yet" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mevcut sesler çevrimdışı hazır; bazı günler henüz yayınlanmadı" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue to Postpartum"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lohusalığa geç"
+          }
+        }
       }
     },
-    "settings.offline.ready" : {
+    "birth_moment.transition.postpartum.message" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your available offline meditations are ready" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mevcut çevrimdışı meditasyonların hazır" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When your new chapter with your baby begins, HESIA can continue beside you with gentle postpartum practices."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bebeğinle yeni dönemin başladığında HESIA, lohusalığa özel nazik pratiklerle yanında olmaya devam edebilir."
+          }
+        }
       }
     },
-    "settings.offline.section" : {
+    "birth_moment.transition.postpartum.title" : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı" } }
-      }
-    },
-    "settings.offline.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline meditations" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çevrimdışı meditasyonlar" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your next chapter"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sıradaki dönemin"
+          }
+        }
       }
     },
     "common.close" : {
@@ -2713,6 +2866,70 @@
         }
       }
     },
+    "life_stage.birthMoment.action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keşfet"
+          }
+        }
+      }
+    },
+    "life_stage.birthMoment.badge" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium"
+          }
+        }
+      }
+    },
+    "life_stage.birthMoment.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make space as birth approaches"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğuma hazırlanırken kendine alan aç"
+          }
+        }
+      }
+    },
+    "life_stage.birthMoment.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birth Moment"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğum Anı"
+          }
+        }
+      }
+    },
     "life_stage.cycle.action" : {
       "localizations" : {
         "en" : {
@@ -2750,7 +2967,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Daily meditations based on your phase"
+            "value" : "Daily meditations for your cycle"
           }
         },
         "tr" : {
@@ -2831,13 +3048,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Small but meaningful pauses on busy days"
+            "value" : "Small pauses for busy days"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yoğun günlerde küçük ama etkili molalar"
+            "value" : "Yoğun günlerde kendine küçük molalar"
           }
         }
       }
@@ -2895,13 +3112,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Make space for yourself as you change alongside your baby"
+            "value" : "Care for yourself as life changes"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bebeğinle birlikte değişirken kendine de alan aç"
+            "value" : "Bebeğinle değişirken kendini de gözet"
           }
         }
       }
@@ -2959,13 +3176,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Breathing and relaxation for your week"
+            "value" : "Calm practices for your week"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haftana uygun nefes ve gevşeme"
+            "value" : "Haftana eşlik eden sakin pratikler"
           }
         }
       }
@@ -4836,6 +5053,134 @@
         }
       }
     },
+    "onboarding.offline.benefit.cleanup.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After the new day is ready, the oldest download is removed automatically."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni gün hazır olduğunda en eski indirme otomatik olarak silinir."
+          }
+        }
+      }
+    },
+    "onboarding.offline.benefit.cleanup.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storage stays tidy"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alan düzenli kalır"
+          }
+        }
+      }
+    },
+    "onboarding.offline.benefit.three_days.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HESIA keeps at most three available daily meditations on this iPhone."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HESIA, mevcut günlük meditasyonlardan en fazla üçünü bu iPhone’da tutar."
+          }
+        }
+      }
+    },
+    "onboarding.offline.benefit.three_days.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Three days, ready"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üç gün yanında"
+          }
+        }
+      }
+    },
+    "onboarding.offline.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download today’s meditation and the next two when available, so you can listen without an internet connection."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugünün ve sonraki iki günün meditasyonlarını hazır olduklarında indir; internet olmadan da dinle."
+          }
+        }
+      }
+    },
+    "onboarding.offline.enable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Offline Listening"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Dinlemeyi Aç"
+          }
+        }
+      }
+    },
+    "onboarding.offline.skip" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not now"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şimdi değil"
+          }
+        }
+      }
+    },
+    "onboarding.offline.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your meditations with you"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditasyonların yanında olsun"
+          }
+        }
+      }
+    },
     "onboarding.privacy.title" : {
       "localizations" : {
         "en" : {
@@ -4953,13 +5298,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA offers meditations and helpful context shaped around where you are in your menstrual cycle, pregnancy, postpartum journey or motherhood."
+            "value" : "HESIA offers meditations and helpful context shaped around where you are in your menstrual cycle, pregnancy, birth journey or postpartum period."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA; adet döngüsü, hamilelik, lohusalık ve annelik döneminde bulunduğun noktaya uygun meditasyonlar ve yardımcı bilgiler sunar."
+            "value" : "HESIA; adet döngüsü, hamilelik, doğum yolculuğu ve lohusalık döneminde bulunduğun noktaya uygun meditasyonlar ve yardımcı bilgiler sunar."
           }
         }
       }
@@ -5374,13 +5719,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "/ 42 days"
+            "value" : "/ 90 days"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "/ 42 gün"
+            "value" : "/ 90 gün"
           }
         }
       }
@@ -6002,19 +6347,70 @@
         }
       }
     },
+    "postpartum.timeline.phase.growingTogether.description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As life with your baby keeps changing, make room for your own needs and the rhythm you are building together."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bebeğinle hayat değişmeye devam ederken kendi ihtiyaçlarına ve birlikte kurduğunuz ritme alan aç."
+          }
+        }
+      }
+    },
+    "postpartum.timeline.phase.growingTogether.range" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Days 57–90"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "57–90. günler"
+          }
+        }
+      }
+    },
+    "postpartum.timeline.phase.growingTogether.title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Growing Together"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birlikte Büyüyen Ritim"
+          }
+        }
+      }
+    },
     "postpartum.timeline.phase.rebuildingRhythm.description" : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A gentle transition toward a more settled rhythm, at your own pace."
+            "value" : "Notice what supports you as daily life slowly finds a more familiar rhythm."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kendi hızında, daha oturmuş bir günlük ritme doğru yumuşak bir geçiş."
+            "value" : "Günlük hayat yavaşça daha tanıdık bir ritme kavuşurken sana iyi gelen şeyleri fark et."
           }
         }
       }
@@ -6025,13 +6421,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Days 29–42"
+            "value" : "Days 29–56"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "29–42. günler"
+            "value" : "29–56. günler"
           }
         }
       }
@@ -6161,13 +6557,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Day %lld of 42"
+            "value" : "Day %lld of 90"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "42 günün %lld. günü"
+            "value" : "90 günün %lld. günü"
           }
         }
       }
@@ -6308,13 +6704,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "After the first 42 days, HESIA can continue beside you as you make space for yourself within motherhood’s new rhythm."
+            "value" : "After the first 90 days, HESIA can continue beside you as you make space for yourself within motherhood’s changing rhythm."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "İlk 42 günün ardından HESIA, anneliğin yeni ritminde kendine alan açarken yanında olmaya devam edebilir."
+            "value" : "İlk 90 günün ardından HESIA, anneliğin değişen ritminde kendine alan açarken yanında olmaya devam edebilir."
           }
         }
       }
@@ -7129,7 +7525,56 @@
         }
       }
     },
+    "pregnancy.transition.birth_moment.action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue to Birth Moment"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğum Anı’na geç"
+          }
+        }
+      }
+    },
+    "pregnancy.transition.birth_moment.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As birth approaches, HESIA can offer a calm space to return to your breath and yourself."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğum yaklaşırken HESIA, nefesine ve kendine dönebileceğin sakin bir alan sunabilir."
+          }
+        }
+      }
+    },
+    "pregnancy.transition.birth_moment.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The birth moment is approaching"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğum anı yaklaşıyor"
+          }
+        }
+      }
+    },
     "pregnancy.transition.postpartum.action" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7146,6 +7591,7 @@
       }
     },
     "pregnancy.transition.postpartum.message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7162,6 +7608,7 @@
       }
     },
     "pregnancy.transition.postpartum.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7638,54 +8085,6 @@
         }
       }
     },
-    "premium.plan.lifetime.detail" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time payment"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tek seferlik ödeme"
-          }
-        }
-      }
-    },
-    "premium.plan.lifetime.price" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "€25"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "€25"
-          }
-        }
-      }
-    },
-    "premium.plan.lifetime.title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lifetime"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ömür Boyu"
-          }
-        }
-      }
-    },
     "premium.plan.monthly.detail" : {
       "localizations" : {
         "en" : {
@@ -7702,22 +8101,6 @@
         }
       }
     },
-    "premium.plan.monthly.price" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "€5"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "€5"
-          }
-        }
-      }
-    },
     "premium.plan.monthly.title" : {
       "localizations" : {
         "en" : {
@@ -7730,6 +8113,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aylık"
+          }
+        }
+      }
+    },
+    "premium.plan.monthly.trial_detail" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First 2 weeks free"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlk 2 hafta ücretsiz"
+          }
+        }
+      }
+    },
+    "premium.plan.price_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unavailable"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanılamıyor"
+          }
+        }
+      }
+    },
+    "premium.plan.yearly.detail" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renews every year"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her yıl yenilenir"
+          }
+        }
+      }
+    },
+    "premium.plan.yearly.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıllık"
           }
         }
       }
@@ -7782,6 +8229,22 @@
         }
       }
     },
+    "premium.purchase.start_trial" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start 2-Week Free Trial"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Haftalık Ücretsiz Denemeyi Başlat"
+          }
+        }
+      }
+    },
     "premium.restore" : {
       "localizations" : {
         "en" : {
@@ -7814,18 +8277,53 @@
         }
       }
     },
-    "premium.subscription.disclosure" : {
+    "premium.subscription.monthly_disclosure" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The monthly plan renews automatically unless canceled at least 24 hours before the end of the current period."
+            "value" : "%@ per month. Renews automatically unless canceled."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aylık plan, mevcut dönem bitmeden en az 24 saat önce iptal edilmezse otomatik olarak yenilenir."
+            "value" : "Aylık %@. İptal edilmediği sürece otomatik yenilenir."
+          }
+        }
+      }
+    },
+    "premium.subscription.monthly_trial_disclosure" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free for the first 2 weeks, then %@ per month. Renews automatically unless canceled."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlk 2 hafta ücretsiz, ardından aylık %@. İptal edilmediği sürece otomatik yenilenir."
+          }
+        }
+      }
+    },
+    "premium.subscription.yearly_disclosure" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ per year. Renews automatically unless canceled."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıllık %@. İptal edilmediği sürece otomatik yenilenir."
           }
         }
       }
@@ -8216,6 +8714,134 @@
         }
       }
     },
+    "settings.offline.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep today and the next two available days offline"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugünü ve sonraki iki mevcut günü çevrimdışı tut"
+          }
+        }
+      }
+    },
+    "settings.offline.downloading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing your three-day offline set…"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üç günlük çevrimdışı içerik hazırlanıyor…"
+          }
+        }
+      }
+    },
+    "settings.offline.enabled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New daily meditations download when available"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni günlük meditasyonlar hazır olduğunda indirilir"
+          }
+        }
+      }
+    },
+    "settings.offline.failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline preparation could not finish right now"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı hazırlık şu anda tamamlanamadı"
+          }
+        }
+      }
+    },
+    "settings.offline.partial" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available audio is offline; some days are not published yet"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut sesler çevrimdışı hazır; bazı günler henüz yayınlanmadı"
+          }
+        }
+      }
+    },
+    "settings.offline.ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your available offline meditations are ready"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut çevrimdışı meditasyonların hazır"
+          }
+        }
+      }
+    },
+    "settings.offline.section" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı"
+          }
+        }
+      }
+    },
+    "settings.offline.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline meditations"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı meditasyonlar"
+          }
+        }
+      }
+    },
     "settings.postpartum.update_birth_date" : {
       "localizations" : {
         "en" : {
@@ -8228,23 +8854,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Doğum tarihini güncelle"
-          }
-        }
-      }
-    },
-    "settings.premium.lifetime" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lifetime access"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ömür boyu erişim"
           }
         }
       }
@@ -8265,24 +8874,40 @@
         }
       }
     },
-    "settings.premium.monthly.active" : {
-      "extractionState" : "stale",
+    "settings.premium.section" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monthly subscription active"
+            "value" : "Premium"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aylık abonelik aktif"
+            "value" : "Premium"
           }
         }
       }
     },
-    "settings.premium.monthly.expires" : {
+    "settings.premium.subscription.active" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium subscription active"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium aboneliğin aktif"
+          }
+        }
+      }
+    },
+    "settings.premium.subscription.expires" : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
@@ -8299,7 +8924,7 @@
         }
       }
     },
-    "settings.premium.monthly.renews" : {
+    "settings.premium.subscription.renews" : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
@@ -8312,22 +8937,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ tarihinde yenilenir"
-          }
-        }
-      }
-    },
-    "settings.premium.section" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Premium"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Premium"
           }
         }
       }

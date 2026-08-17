@@ -10,13 +10,21 @@ final class MeditationPlaybackSession {
     let meditation: DailyMeditation
     let viewModel: MeditationPlayerViewModel
 
-    init(meditation: DailyMeditation, language: AppLanguage) {
+    init(
+        meditation: DailyMeditation,
+        language: AppLanguage,
+        registersWithWatch: Bool = true
+    ) {
         self.meditation = meditation
         viewModel = MeditationPlayerViewModel(
             meditation: meditation,
             language: language,
             autoPlay: true
         )
+
+        if registersWithWatch {
+            WatchPlaybackCoordinator.shared.register(self)
+        }
     }
 }
 

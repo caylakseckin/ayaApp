@@ -168,7 +168,7 @@ struct PregnancySetupView: View {
                 .foregroundStyle(AYAColors.textPrimary)
 
             Picker("pregnancy.setup.question", selection: $draftWeek) {
-                ForEach(1...42, id: \.self) { week in
+                ForEach(PregnancyTracker.supportedWeekRange, id: \.self) { week in
                     Text(verbatim: formattedWeek(week)).tag(week)
                 }
             }

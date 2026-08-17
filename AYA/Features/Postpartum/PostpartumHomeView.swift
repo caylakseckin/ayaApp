@@ -8,6 +8,7 @@ struct PostpartumHomeView: View {
     @AppStorage(PostpartumPersistenceKeys.birthDate) private var birthDateTimestamp = 0.0
     @AppStorage(PostpartumPersistenceKeys.onboardingCompleted) private var isOnboardingCompleted = false
     @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = LifeStage.postpartum.rawValue
+    @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isOfflineListeningEnabled = false
 
     @State private var isSettingsPresented = false
     @State private var isEditingBirthDate = false
@@ -16,10 +17,12 @@ struct PostpartumHomeView: View {
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
     @State private var infoContent: ContextualInfoContent?
+    @State private var remoteMeditationMetadata: RemoteMeditationMetadata?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.scenePhase) private var scenePhase
 
     private let tracker = PostpartumTracker()
     private let meditationProvider = PostpartumMeditationProvider()
@@ -109,6 +112,7 @@ struct PostpartumHomeView: View {
 
                     DailyMeditationCard(
                         meditation: meditation,
+                        remoteMetadata: remoteMeditationMetadata,
                         playbackViewModel: playbackViewModel(for: meditation)
                     ) {
                         startMeditation(meditation)
@@ -123,7 +127,8 @@ struct PostpartumHomeView: View {
                     )
                 }
 
-                if calculation.shouldOfferMotherhoodTransition {
+                if HESIAFeatureFlags.supportsMotherhood,
+                   calculation.shouldOfferMotherhoodTransition {
                     LifeStageContinuationCard(
                         destination: .motherhood03,
                         titleKey: "postpartum.transition.motherhood.title",
@@ -138,6 +143,16 @@ struct PostpartumHomeView: View {
             .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
+        .task(id: meditation.id) {
+            await loadRemoteMetadata(for: meditation)
+        }
+        .task(id: offlinePackageTaskID(calculation: calculation)) {
+            syncOfflinePackage(calculation: calculation)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            syncOfflinePackage(calculation: tracker.calculate(profile: profile))
+        }
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
             if isSettingsPresented {
@@ -207,6 +222,36 @@ struct PostpartumHomeView: View {
     private func stopPlaybackSession() {
         playbackSession?.viewModel.stop()
         playbackSession = nil
+    }
+
+    private func loadRemoteMetadata(for meditation: DailyMeditation) async {
+        remoteMeditationMetadata = nil
+        guard let source = meditation.remoteAudioSource else { return }
+
+        do {
+            let metadata = try await RemoteMeditationContentLoader.loadMetadata(source: source)
+            guard !Task.isCancelled else { return }
+            remoteMeditationMetadata = metadata
+        } catch {
+            guard !Task.isCancelled else { return }
+            remoteMeditationMetadata = nil
+        }
+    }
+
+    private func offlinePackageTaskID(calculation: PostpartumCalculation) -> String {
+        [
+            isOfflineListeningEnabled ? "enabled" : "disabled",
+            String(calculation.currentDay),
+            selectedLanguage.rawValue
+        ].joined(separator: "-")
+    }
+
+    private func syncOfflinePackage(calculation: PostpartumCalculation) {
+        guard isOfflineListeningEnabled else { return }
+        OfflineMeditationManager.shared.syncPostpartumPackage(
+            currentDay: calculation.currentDay,
+            language: selectedLanguage
+        )
     }
 
     private var greetingText: String {
@@ -349,7 +394,12 @@ private struct PostpartumInsightCard: View {
 
     private var progressAccessibilityValue: String {
         let format = selectedLanguage.localizedString(forKey: "postpartum.home.progress.value")
-        return String(format: format, locale: locale, calculation.currentDay, 42)
+        return String(
+            format: format,
+            locale: locale,
+            calculation.currentDay,
+            PostpartumJourney.totalDays
+        )
     }
 }
 

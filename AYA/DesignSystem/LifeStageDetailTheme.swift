@@ -34,6 +34,17 @@ struct LifeStageDetailTheme {
                 timelineInactive: AYAColors.tertiary,
                 timelineConnector: AYAColors.tertiary.opacity(0.56)
             )
+        case .birthMoment:
+            Self(
+                heroSurface: AYAColors.birthMomentHeroSurface,
+                heroBorder: AYAColors.primary.opacity(0.12),
+                badgeSurface: AYAColors.softPink.opacity(0.42),
+                ringTrack: AYAColors.softPink.opacity(0.32),
+                ringProgress: AYAColors.primary,
+                timelineActive: AYAColors.secondary,
+                timelineInactive: AYAColors.softPink.opacity(0.66),
+                timelineConnector: AYAColors.softPink.opacity(0.42)
+            )
         case .postpartum:
             Self(
                 heroSurface: AYAColors.postpartumHeroSurface,
@@ -84,8 +95,7 @@ struct LifeStageHeroBackground: View {
     }
 }
 
-/// Shared layout metrics for the top hero/status panel used by all four home
-/// screens (Cycle, Pregnancy, Postpartum, Motherhood).
+/// Shared layout metrics for the top hero/status panels used across life-stage homes.
 enum LifeStageHeroMetrics {
     /// Minimum vertical presence for the hero panel. Applied via
     /// `frame(minHeight:)` (never a fixed height) so the panel still grows for

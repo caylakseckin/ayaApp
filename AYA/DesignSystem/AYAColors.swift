@@ -29,12 +29,14 @@ enum AYAColors {
 
     static let selectionBackground = softPink.opacity(0.42)
     static let pregnancySurface = tertiary.opacity(0.58)
+    static let birthMomentSurface = softPink.opacity(0.30)
     static let postpartumSurface = softPink.opacity(0.44)
     static let motherhoodSurface = primary.opacity(0.10)
 
     // Contextual Home hero surfaces.
     static let cycleHeroSurface = softPink.opacity(0.14)
     static let pregnancyHeroSurface = tertiary.opacity(0.18)
+    static let birthMomentHeroSurface = softPink.opacity(0.12)
     static let postpartumHeroSurface = softPink.opacity(0.10)
     static let motherhoodHeroSurface = primary.opacity(0.045)
 

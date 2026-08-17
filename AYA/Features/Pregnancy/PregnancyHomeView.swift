@@ -92,7 +92,12 @@ struct PregnancyHomeView: View {
     }
 
     private var currentWeek: Int {
-        guard let profile else { return min(max(referenceWeek, 1), 42) }
+        guard let profile else {
+            return min(
+                max(referenceWeek, PregnancyTracker.supportedWeekRange.lowerBound),
+                PregnancyTracker.supportedWeekRange.upperBound
+            )
+        }
         return tracker.calculate(profile: profile).currentWeek
     }
 
@@ -126,13 +131,13 @@ struct PregnancyHomeView: View {
                     )
                 }
 
-                if calculation.shouldOfferPostpartumTransition {
+                if calculation.shouldOfferBirthMomentTransition {
                     LifeStageContinuationCard(
-                        destination: .postpartum,
-                        titleKey: "pregnancy.transition.postpartum.title",
-                        messageKey: "pregnancy.transition.postpartum.message",
-                        actionKey: "pregnancy.transition.postpartum.action",
-                        action: continueToPostpartum
+                        destination: .birthMoment,
+                        titleKey: "pregnancy.transition.birth_moment.title",
+                        messageKey: "pregnancy.transition.birth_moment.message",
+                        actionKey: "pregnancy.transition.birth_moment.action",
+                        action: continueToBirthMoment
                     )
                 }
             }
@@ -142,7 +147,7 @@ struct PregnancyHomeView: View {
         }
         .scrollIndicators(.hidden)
         .task(id: meditation.id) {
-            await loadRemoteMetadata(for: meditation)
+            await loadRemoteMetadata(for: meditation, calculation: calculation)
         }
         .task(id: offlinePackageTaskID(calculation: calculation)) {
             syncOfflinePackage(calculation: calculation)
@@ -237,17 +242,40 @@ struct PregnancyHomeView: View {
         )
     }
 
-    private func loadRemoteMetadata(for meditation: DailyMeditation) async {
+    private func loadRemoteMetadata(
+        for meditation: DailyMeditation,
+        calculation: PregnancyCalculation
+    ) async {
         remoteMeditationMetadata = nil
-        guard let source = meditation.remoteAudioSource else { return }
+        guard let source = meditation.remoteAudioSource else {
+            WatchCompanionSync.shared.sendPregnancyPractice(
+                meditation: meditation,
+                calculation: calculation,
+                metadata: nil,
+                language: selectedLanguage
+            )
+            return
+        }
 
         do {
             let metadata = try await RemoteMeditationContentLoader.loadMetadata(source: source)
             guard !Task.isCancelled else { return }
             remoteMeditationMetadata = metadata
+            WatchCompanionSync.shared.sendPregnancyPractice(
+                meditation: meditation,
+                calculation: calculation,
+                metadata: metadata,
+                language: selectedLanguage
+            )
         } catch {
             guard !Task.isCancelled else { return }
             remoteMeditationMetadata = nil
+            WatchCompanionSync.shared.sendPregnancyPractice(
+                meditation: meditation,
+                calculation: calculation,
+                metadata: nil,
+                language: selectedLanguage
+            )
         }
     }
 
@@ -321,14 +349,17 @@ struct PregnancyHomeView: View {
 
     private func updatePregnancyWeek(_ week: Int) {
         let normalizedToday = Calendar.current.startOfDay(for: Date())
-        referenceWeek = min(max(week, 1), 42)
+        referenceWeek = min(
+            max(week, PregnancyTracker.supportedWeekRange.lowerBound),
+            PregnancyTracker.supportedWeekRange.upperBound
+        )
         referenceTimestamp = normalizedToday.timeIntervalSince1970
         isOnboardingCompleted = true
     }
 
-    private func continueToPostpartum() {
+    private func continueToBirthMoment() {
         stopPlaybackSession()
-        activeStageRawValue = LifeStage.postpartum.rawValue
+        activeStageRawValue = LifeStage.birthMoment.rawValue
     }
 }
 
@@ -463,7 +494,12 @@ struct PregnancyWeekEditorView: View {
     init(initialWeek: Int, save: @escaping (Int) -> Void) {
         self.initialWeek = initialWeek
         self.save = save
-        _selectedWeek = State(initialValue: min(max(initialWeek, 1), 42))
+        _selectedWeek = State(
+            initialValue: min(
+                max(initialWeek, PregnancyTracker.supportedWeekRange.lowerBound),
+                PregnancyTracker.supportedWeekRange.upperBound
+            )
+        )
     }
 
     var body: some View {
@@ -484,7 +520,7 @@ struct PregnancyWeekEditorView: View {
             }
 
             Picker("pregnancy.settings.title", selection: $selectedWeek) {
-                ForEach(1...42, id: \.self) { week in
+                ForEach(PregnancyTracker.supportedWeekRange, id: \.self) { week in
                     Text(verbatim: formattedWeek(week)).tag(week)
                 }
             }

@@ -4,6 +4,8 @@ enum HESIAFeatureFlags {
     /// Keep English resources and code paths complete while the first release is Turkish-only.
     /// Set to `true` to restore language selection throughout the app.
     static let supportsMultipleLanguages = false
+    /// Keep the completed Motherhood experience available in code while it is hidden at launch.
+    static let supportsMotherhood = false
 }
 
 enum AppLanguage: String, CaseIterable, Identifiable {
@@ -124,6 +126,7 @@ struct HESIAApp: App {
     @StateObject private var premiumStore = PremiumStore.shared
     @AppStorage("app.language") private var languageCode = AppLanguage.defaultExplicitLanguage.rawValue
     @AppStorage("app.appearance") private var appearanceRawValue = AppAppearance.system.rawValue
+    @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = ""
     @Environment(\.scenePhase) private var scenePhase
 
     private var selectedLocale: Locale {
@@ -135,6 +138,7 @@ struct HESIAApp: App {
     }
 
     init() {
+        WatchCompanionSync.shared.activate()
         let defaults = UserDefaults.standard
         if !HESIAFeatureFlags.supportsMultipleLanguages {
             defaults.set(AppLanguage.turkish.rawValue, forKey: "app.language")
@@ -151,13 +155,26 @@ struct HESIAApp: App {
                 .environment(\.locale, selectedLocale)
                 .tint(AYAColors.primary)
                 .preferredColorScheme(selectedAppearance.colorScheme)
+                .task {
+                    await synchronizeWatchPractice()
+                }
                 .onChange(of: scenePhase) { _, newPhase in
                     guard newPhase == .active else { return }
                     Task {
-                        await premiumStore.refreshEntitlements()
+                        await synchronizeWatchPractice()
+                    }
+                }
+                .onChange(of: activeStageRawValue) { _, _ in
+                    Task {
+                        await synchronizeWatchPractice()
                     }
                 }
         }
+    }
+
+    @MainActor
+    private func synchronizeWatchPractice() async {
+        await WatchCompanionSync.shared.synchronizeCurrentPracticeIfEntitled()
     }
 }
 
@@ -182,38 +199,43 @@ private struct HESIALaunchRootView: View {
 
     var body: some View {
         ZStack {
-            switch route {
-            case .app:
-                BiometricLockContainer(initiallyUnlocked: authenticatedDuringOnboarding) {
-                    AuthenticatedRootView()
-                }
-                .hesiaScreenTransition(reduceMotion: reduceMotion)
+            AYAColors.backgroundPrimary.ignoresSafeArea()
 
-            case .biometric:
-                BiometricOnboardingView { authenticated in
-                    authenticatedDuringOnboarding = authenticated
-                    hasCompletedOnboarding = true
-                }
-                .hesiaScreenTransition(reduceMotion: reduceMotion)
+            Group {
+                switch route {
+                case .app:
+                    BiometricLockContainer(initiallyUnlocked: authenticatedDuringOnboarding) {
+                        AuthenticatedRootView()
+                    }
+                    .hesiaScreenTransition(reduceMotion: reduceMotion)
 
-            case .offline:
-                OfflineMeditationOnboardingView {
-                    hasCompletedOfflineSetup = true
-                }
-                .hesiaScreenTransition(reduceMotion: reduceMotion)
+                case .biometric:
+                    BiometricOnboardingView { authenticated in
+                        authenticatedDuringOnboarding = authenticated
+                        hasCompletedOnboarding = true
+                    }
+                    .hesiaScreenTransition(reduceMotion: reduceMotion)
 
-            case .tutorial:
-                HESIATutorialView(context: .firstLaunch) {
-                    hasCompletedTutorial = true
-                }
-                .hesiaScreenTransition(reduceMotion: reduceMotion)
+                case .offline:
+                    OfflineMeditationOnboardingView {
+                        hasCompletedOfflineSetup = true
+                    }
+                    .hesiaScreenTransition(reduceMotion: reduceMotion)
 
-            case .welcome:
-                WelcomeView {
-                    hasCompletedWelcome = true
+                case .tutorial:
+                    HESIATutorialView(context: .firstLaunch) {
+                        hasCompletedTutorial = true
+                    }
+                    .hesiaScreenTransition(reduceMotion: reduceMotion)
+
+                case .welcome:
+                    WelcomeView {
+                        hasCompletedWelcome = true
+                    }
+                    .hesiaScreenTransition(reduceMotion: reduceMotion)
                 }
-                .hesiaScreenTransition(reduceMotion: reduceMotion)
             }
+            .frame(maxWidth: AYALayout.readableContentMaxWidth, maxHeight: .infinity)
         }
         .hesiaScreenAnimation(
             reduceMotion: reduceMotion,
@@ -225,11 +247,15 @@ private struct HESIALaunchRootView: View {
 private struct AuthenticatedRootView: View {
     @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = ""
     @State private var isChoosingTheme = false
+    @StateObject private var watchPlaybackCoordinator = WatchPlaybackCoordinator.shared
     @EnvironmentObject private var premiumStore: PremiumStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var activeStage: LifeStage? {
-        LifeStage(rawValue: activeStageRawValue)
+        guard let stage = LifeStage(rawValue: activeStageRawValue), stage.isAvailable else {
+            return nil
+        }
+        return stage
     }
 
     private var showsThemeSelection: Bool {
@@ -280,6 +306,18 @@ private struct AuthenticatedRootView: View {
             reduceMotion: reduceMotion,
             value: routeAnimationValue
         )
+        .fullScreenCover(isPresented: $watchPlaybackCoordinator.isPlayerPresented) {
+            if let playbackSession = watchPlaybackCoordinator.playbackSession {
+                HESIAMeditationTransitionContainer {
+                    MeditationPlayerView(
+                        meditation: playbackSession.meditation,
+                        playbackViewModel: playbackSession.viewModel,
+                        stopsPlaybackOnDismiss: false
+                    )
+                    .tint(AYAColors.primary)
+                }
+            }
+        }
     }
 }
 
@@ -294,6 +332,8 @@ private struct ActiveLifeStageView: View {
                     CycleDestinationView(showThemes: showThemes)
                 } else if stage == .pregnancy {
                     PregnancyDestinationView(showThemes: showThemes)
+                } else if stage == .birthMoment {
+                    BirthMomentDestinationView(showThemes: showThemes)
                 } else if stage == .postpartum {
                     PostpartumDestinationView(showThemes: showThemes)
                 } else if stage == .motherhood03 {

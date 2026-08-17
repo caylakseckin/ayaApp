@@ -21,6 +21,17 @@ enum OfflineMeditationPackagePlanner {
             ? [currentWeek]
             : []
     }
+
+    static func postpartumDays(currentDay: Int) -> [Int] {
+        guard RemoteMeditationAudioSource.supportedPostpartumDays.contains(currentDay) else {
+            return []
+        }
+        let finalDay = min(
+            currentDay + maximumStoredDays - 1,
+            RemoteMeditationAudioSource.supportedPostpartumDays.upperBound
+        )
+        return Array(currentDay...finalDay)
+    }
 }
 
 enum OfflineMeditationDownloadState: Equatable {
@@ -95,6 +106,57 @@ final class OfflineMeditationManager: ObservableObject {
         }
     }
 
+    func syncPostpartumPackage(currentDay: Int, language: AppLanguage) {
+        let days = OfflineMeditationPackagePlanner.postpartumDays(currentDay: currentDay)
+        guard !days.isEmpty else {
+            state = .idle
+            return
+        }
+
+        syncTask?.cancel()
+        state = .downloading
+        syncTask = Task { [weak self] in
+            let result = await OfflineMeditationStore.shared.syncPostpartumPackage(
+                days: days,
+                language: language
+            )
+            guard !Task.isCancelled else { return }
+
+            if result.availableCount == result.requestedCount {
+                self?.state = .ready(result.availableCount)
+            } else if result.availableCount > 0 {
+                self?.state = .partial(result.availableCount)
+            } else {
+                self?.state = .failed
+            }
+        }
+    }
+
+    func syncBirthPackage(practices: [String], language: AppLanguage) {
+        guard !practices.isEmpty else {
+            state = .idle
+            return
+        }
+
+        syncTask?.cancel()
+        state = .downloading
+        syncTask = Task { [weak self] in
+            let result = await OfflineMeditationStore.shared.syncBirthPackage(
+                practices: practices,
+                language: language
+            )
+            guard !Task.isCancelled else { return }
+
+            if result.availableCount == result.requestedCount {
+                self?.state = .ready(result.availableCount)
+            } else if result.availableCount > 0 {
+                self?.state = .partial(result.availableCount)
+            } else {
+                self?.state = .failed
+            }
+        }
+    }
+
     func removeDownloads() {
         syncTask?.cancel()
         syncTask = nil
@@ -116,6 +178,8 @@ actor OfflineMeditationStore {
     private struct Entry: Codable, Hashable {
         let cycleDay: Int?
         let pregnancyWeek: Int?
+        let postpartumDay: Int?
+        let birthPractice: String?
         let languageCode: String
         let audioFileName: String
         let storedFileName: String
@@ -126,6 +190,12 @@ actor OfflineMeditationStore {
             }
             if let pregnancyWeek {
                 return "pregnancy-\(pregnancyWeek)-\(languageCode)-\(audioFileName)"
+            }
+            if let postpartumDay {
+                return "postpartum-\(postpartumDay)-\(languageCode)-\(audioFileName)"
+            }
+            if let birthPractice {
+                return "birth-\(birthPractice)-\(languageCode)-\(audioFileName)"
             }
             return "invalid-\(languageCode)-\(audioFileName)"
         }
@@ -171,6 +241,18 @@ actor OfflineMeditationStore {
         case let .pregnancy(week):
             key = pregnancyEntryKey(
                 week: week,
+                languageCode: languageCode,
+                audioFileName: fileName
+            )
+        case let .birth(practice):
+            key = birthEntryKey(
+                practice: practice,
+                languageCode: languageCode,
+                audioFileName: fileName
+            )
+        case let .postpartum(day):
+            key = postpartumEntryKey(
+                day: day,
                 languageCode: languageCode,
                 audioFileName: fileName
             )
@@ -232,6 +314,8 @@ actor OfflineMeditationStore {
                 let entry = Entry(
                     cycleDay: day,
                     pregnancyWeek: nil,
+                    postpartumDay: nil,
+                    birthPractice: nil,
                     languageCode: languageCode,
                     audioFileName: audioFileName,
                     storedFileName: storedFileName
@@ -322,6 +406,8 @@ actor OfflineMeditationStore {
                 Entry(
                     cycleDay: nil,
                     pregnancyWeek: week,
+                    postpartumDay: nil,
+                    birthPractice: nil,
                     languageCode: languageCode,
                     audioFileName: audioFileName,
                     storedFileName: storedFileName
@@ -333,6 +419,201 @@ actor OfflineMeditationStore {
         } catch {
             return SyncResult(availableCount: 0, requestedCount: 1)
         }
+    }
+
+    func syncBirthPackage(practices: [String], language: AppLanguage) async -> SyncResult {
+        let requestedPractices = Array(Set(practices)).sorted { lhs, rhs in
+            (practices.firstIndex(of: lhs) ?? 0) < (practices.firstIndex(of: rhs) ?? 0)
+        }
+        guard !requestedPractices.isEmpty else {
+            return SyncResult(availableCount: 0, requestedCount: 0)
+        }
+
+        try? prepareDirectory()
+        var manifest = loadManifest()
+        var availableKeys = Set<String>()
+
+        for practice in requestedPractices {
+            guard !Task.isCancelled else { break }
+            let source = RemoteMeditationAudioSource(birthPractice: practice)
+
+            do {
+                let metadata = try await RemoteMeditationContentLoader.loadMetadata(
+                    source: source,
+                    session: session
+                )
+                guard let audioFileName = metadata.audioFileName(for: language) else { continue }
+                let languageCode = languageCode(for: language)
+                let key = birthEntryKey(
+                    practice: practice,
+                    languageCode: languageCode,
+                    audioFileName: audioFileName
+                )
+                if let existing = manifest.first(where: { $0.key == key }) {
+                    let existingURL = directoryURL.appendingPathComponent(existing.storedFileName)
+                    if fileManager.fileExists(atPath: existingURL.path) {
+                        availableKeys.insert(key)
+                        continue
+                    }
+                }
+
+                let remoteURL = source.directoryURL.appendingPathComponent(audioFileName)
+                let (temporaryURL, response) = try await session.download(from: remoteURL)
+                try validate(response)
+
+                let fileExtension = (audioFileName as NSString).pathExtension
+                let storedFileName = "birth-\(practice)-\(languageCode)-\(UUID().uuidString).\(fileExtension)"
+                let destinationURL = directoryURL.appendingPathComponent(storedFileName)
+                try fileManager.moveItem(at: temporaryURL, to: destinationURL)
+
+                let obsoletePracticeEntries = manifest.filter {
+                    $0.birthPractice == practice && $0.key != key
+                }
+                obsoletePracticeEntries.forEach { entry in
+                    try? fileManager.removeItem(
+                        at: directoryURL.appendingPathComponent(entry.storedFileName)
+                    )
+                }
+                manifest.removeAll { $0.birthPractice == practice && $0.key != key }
+                manifest.removeAll { $0.key == key }
+                manifest.append(
+                    Entry(
+                        cycleDay: nil,
+                        pregnancyWeek: nil,
+                        postpartumDay: nil,
+                        birthPractice: practice,
+                        languageCode: languageCode,
+                        audioFileName: audioFileName,
+                        storedFileName: storedFileName
+                    )
+                )
+                availableKeys.insert(key)
+                saveManifest(manifest)
+            } catch {
+                // Birth practices may be published independently; keep any completed downloads.
+                continue
+            }
+        }
+
+        let requestedPracticeSet = Set(requestedPractices)
+        let obsoleteEntries = manifest.filter {
+            guard let practice = $0.birthPractice else { return false }
+            return !requestedPracticeSet.contains(practice)
+        }
+        obsoleteEntries.forEach { entry in
+            try? fileManager.removeItem(at: directoryURL.appendingPathComponent(entry.storedFileName))
+        }
+        manifest.removeAll {
+            guard let practice = $0.birthPractice else { return false }
+            return !requestedPracticeSet.contains(practice)
+        }
+        saveManifest(manifest)
+
+        return SyncResult(
+            availableCount: availableKeys.count,
+            requestedCount: requestedPractices.count
+        )
+    }
+
+    func syncPostpartumPackage(days: [Int], language: AppLanguage) async -> SyncResult {
+        let requestedDays = Array(
+            days
+                .filter(RemoteMeditationAudioSource.supportedPostpartumDays.contains)
+                .prefix(OfflineMeditationPackagePlanner.maximumStoredDays)
+        )
+        guard !requestedDays.isEmpty else {
+            return SyncResult(availableCount: 0, requestedCount: 0)
+        }
+
+        try? prepareDirectory()
+        var manifest = loadManifest()
+        var desiredKeys = Set<String>()
+        var availableKeys = Set<String>()
+
+        for day in requestedDays {
+            guard !Task.isCancelled else { break }
+            let source = RemoteMeditationAudioSource(
+                postpartumDay: day,
+                fallbackResourceName: "aya-demo-meditation-8m.m4a"
+            )
+
+            do {
+                let metadata = try await RemoteMeditationContentLoader.loadMetadata(
+                    source: source,
+                    session: session
+                )
+                guard let audioFileName = metadata.audioFileName(for: language) else { continue }
+                let languageCode = languageCode(for: language)
+                let key = postpartumEntryKey(
+                    day: day,
+                    languageCode: languageCode,
+                    audioFileName: audioFileName
+                )
+                desiredKeys.insert(key)
+
+                if let existing = manifest.first(where: { $0.key == key }) {
+                    let existingURL = directoryURL.appendingPathComponent(existing.storedFileName)
+                    if fileManager.fileExists(atPath: existingURL.path) {
+                        availableKeys.insert(key)
+                        continue
+                    }
+                }
+
+                let remoteURL = source.directoryURL.appendingPathComponent(audioFileName)
+                let (temporaryURL, response) = try await session.download(from: remoteURL)
+                try validate(response)
+
+                let fileExtension = (audioFileName as NSString).pathExtension
+                let storedFileName = "postpartum-\(day)-\(languageCode)-\(UUID().uuidString).\(fileExtension)"
+                let destinationURL = directoryURL.appendingPathComponent(storedFileName)
+                try fileManager.moveItem(at: temporaryURL, to: destinationURL)
+
+                manifest.removeAll { $0.key == key }
+                manifest.append(
+                    Entry(
+                        cycleDay: nil,
+                        pregnancyWeek: nil,
+                        postpartumDay: day,
+                        birthPractice: nil,
+                        languageCode: languageCode,
+                        audioFileName: audioFileName,
+                        storedFileName: storedFileName
+                    )
+                )
+                availableKeys.insert(key)
+                saveManifest(manifest)
+            } catch {
+                // Missing daily content is expected while future postpartum days are published.
+                continue
+            }
+        }
+
+        if let currentDay = requestedDays.first {
+            let currentIsAvailable = manifest.contains { entry in
+                entry.postpartumDay == currentDay
+                    && entry.languageCode == languageCode(for: language)
+                    && availableKeys.contains(entry.key)
+            }
+            if currentIsAvailable {
+                let obsoleteEntries = manifest.filter {
+                    $0.postpartumDay != nil && !desiredKeys.contains($0.key)
+                }
+                obsoleteEntries.forEach { entry in
+                    try? fileManager.removeItem(
+                        at: directoryURL.appendingPathComponent(entry.storedFileName)
+                    )
+                }
+                manifest.removeAll {
+                    $0.postpartumDay != nil && !desiredKeys.contains($0.key)
+                }
+                saveManifest(manifest)
+            }
+        }
+
+        return SyncResult(
+            availableCount: availableKeys.count,
+            requestedCount: requestedDays.count
+        )
     }
 
     func removeAll() {
@@ -387,6 +668,18 @@ actor OfflineMeditationStore {
 
     private func pregnancyEntryKey(week: Int, languageCode: String, audioFileName: String) -> String {
         "pregnancy-\(week)-\(languageCode)-\(audioFileName)"
+    }
+
+    private func postpartumEntryKey(day: Int, languageCode: String, audioFileName: String) -> String {
+        "postpartum-\(day)-\(languageCode)-\(audioFileName)"
+    }
+
+    private func birthEntryKey(
+        practice: String,
+        languageCode: String,
+        audioFileName: String
+    ) -> String {
+        "birth-\(practice)-\(languageCode)-\(audioFileName)"
     }
 
     private func languageCode(for language: AppLanguage) -> String {

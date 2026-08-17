@@ -33,7 +33,7 @@ enum PregnancyTrimester: Int, CaseIterable, Sendable {
 
     var weekRange: ClosedRange<Int> {
         switch self {
-        case .first: 1...13
+        case .first: PregnancyTracker.supportedWeekRange.lowerBound...13
         case .second: 14...27
         case .third: 28...42
         }
@@ -73,7 +73,7 @@ struct PregnancyProfile: Equatable, Sendable {
     let referenceDate: Date
 
     init?(referenceWeek: Int, referenceDate: Date, calendar: Calendar = .current) {
-        guard PregnancyTracker.supportedWeekRange.contains(referenceWeek) else { return nil }
+        guard PregnancyTracker.legacyReferenceWeekRange.contains(referenceWeek) else { return nil }
         self.referenceWeek = referenceWeek
         self.referenceDate = calendar.startOfDay(for: referenceDate)
     }
@@ -85,14 +85,17 @@ struct PregnancyCalculation: Equatable, Sendable {
     let progress: Double
 
     /// Week 40 is the first point at which the user can optionally hand off to
-    /// Postpartum. The UI copy does not assume that birth has already happened.
-    var shouldOfferPostpartumTransition: Bool {
+    /// Birth Moment. The UI copy does not assume that birth has already happened.
+    var shouldOfferBirthMomentTransition: Bool {
         currentWeek >= 40
     }
 }
 
 struct PregnancyTracker {
-    static let supportedWeekRange = 1...42
+    /// Weeks presented throughout the current pregnancy experience.
+    static let supportedWeekRange = 4...42
+    /// Keeps previously stored week 1–3 profiles calculable while new input starts at week 4.
+    static let legacyReferenceWeekRange = 1...42
 
     private let calendar: Calendar
 
@@ -164,6 +167,7 @@ struct PregnancyStore {
 
     @discardableResult
     func save(referenceWeek: Int) -> PregnancyProfile? {
+        guard PregnancyTracker.supportedWeekRange.contains(referenceWeek) else { return nil }
         guard let profile = PregnancyProfile(
             referenceWeek: referenceWeek,
             referenceDate: now(),
