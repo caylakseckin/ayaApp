@@ -29,7 +29,7 @@ struct PregnancyCalendarView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, AYASpacing.lg)
             }
-            .padding(.horizontal, AYASpacing.xl)
+            .hesiaScreenPadding()
             .padding(.top, AYASpacing.md)
             .padding(.bottom, AYASpacing.xxl)
         }
@@ -58,26 +58,11 @@ struct PregnancyCalendarView: View {
 
     private var header: some View {
         VStack(spacing: AYASpacing.sm) {
-            HStack(spacing: AYASpacing.md) {
-                Button(action: { dismiss() }) {
-                    HesiaIcon.caretLeft.view(size: 17)
-                        .foregroundStyle(AYAColors.textPrimary)
-                        .frame(width: 44, height: 44)
-                        .background(AYAColors.surface, in: Circle())
-                        .overlay { Circle().stroke(AYAColors.border, lineWidth: 1) }
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("pregnancy.calendar.back")
-
-                Text("pregnancy.calendar.title")
-                    .ayaTypography(.screenTitle)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .frame(maxWidth: .infinity)
-                    .accessibilityAddTraits(.isHeader)
-
-                Color.clear
-                    .frame(width: 44, height: 44)
-                    .accessibilityHidden(true)
+            ScreenHeader(
+                "pregnancy.calendar.title",
+                backAccessibilityKey: "pregnancy.calendar.back"
+            ) {
+                dismiss()
             }
 
             Text(verbatim: currentStatusText)
@@ -159,7 +144,7 @@ struct PregnancyCalendarView: View {
         .padding(AYASpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            isCurrent ? AYAColors.pregnancyHeroSurface : AYAColors.surfaceElevated,
+            isCurrent ? AYAColors.pregnancyTint : AYAColors.surfaceElevated,
             in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
         )
         .overlay {

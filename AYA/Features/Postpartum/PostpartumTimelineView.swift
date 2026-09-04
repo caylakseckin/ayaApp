@@ -29,7 +29,7 @@ struct PostpartumTimelineView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, AYASpacing.lg)
             }
-            .padding(.horizontal, AYASpacing.xl)
+            .hesiaScreenPadding()
             .padding(.top, AYASpacing.md)
             .padding(.bottom, AYASpacing.xxl)
         }
@@ -53,26 +53,11 @@ struct PostpartumTimelineView: View {
     }
 
     private var header: some View {
-        HStack(spacing: AYASpacing.md) {
-            Button(action: { dismiss() }) {
-                HesiaIcon.caretLeft.view(size: 17)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .frame(width: 44, height: 44)
-                    .background(AYAColors.surface, in: Circle())
-                    .overlay { Circle().stroke(AYAColors.border, lineWidth: 1) }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("postpartum.timeline.back")
-
-            Text("postpartum.timeline.screen_title")
-                .ayaTypography(.screenTitle)
-                .foregroundStyle(AYAColors.textPrimary)
-                .frame(maxWidth: .infinity)
-                .accessibilityAddTraits(.isHeader)
-
-            Color.clear
-                .frame(width: 44, height: 44)
-                .accessibilityHidden(true)
+        ScreenHeader(
+            "postpartum.timeline.title",
+            backAccessibilityKey: "postpartum.timeline.back"
+        ) {
+            dismiss()
         }
     }
 

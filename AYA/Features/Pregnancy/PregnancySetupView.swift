@@ -35,7 +35,7 @@ struct PregnancySetupView: View {
                         descriptionKey: "pregnancy.setup.privacy.description"
                     )
                 }
-                .padding(.horizontal, 22)
+                .hesiaScreenPadding()
                 .padding(.top, 8)
                 .padding(.bottom, 92)
                 .frame(minHeight: geometry.size.height, alignment: .top)
@@ -47,7 +47,7 @@ struct PregnancySetupView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(spacing: AYASpacing.xs) {
                 primaryAction
                 if let returnToThemes {
                     OnboardingReturnToThemesButton(
@@ -56,7 +56,7 @@ struct PregnancySetupView: View {
                     )
                 }
             }
-            .background(AYAColors.backgroundPrimary.opacity(0.98))
+            .hesiaBottomBar()
         }
         .sheet(isPresented: $isPickerPresented) { pickerSheet }
     }
@@ -125,7 +125,7 @@ struct PregnancySetupView: View {
                     HesiaIcon.caretDown.view(size: 13)
                         .foregroundStyle(AYAColors.primary)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, AYASpacing.lg)
                 .frame(maxWidth: .infinity, minHeight: 56)
                 .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
                 .overlay {
@@ -151,13 +151,10 @@ struct PregnancySetupView: View {
                 Spacer()
                 HesiaIcon.arrowRight.view(size: 15)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, AYASpacing.lg)
         }
         .buttonStyle(.appPrimary)
         .disabled(!viewModel.canContinue)
-        .padding(.horizontal, 22)
-        .padding(.top, 10)
-        .padding(.bottom, 8)
         .accessibilityIdentifier("pregnancy.setup.continue")
     }
 
@@ -216,7 +213,7 @@ struct SingleStepProgressIndicator: View {
                 .fill(AYAColors.primary)
                 .frame(width: 9, height: 9)
             Rectangle()
-                .fill(AYAColors.divider)
+                .fill(AYAColors.separator)
                 .frame(height: 1)
         }
         .frame(maxWidth: 120)

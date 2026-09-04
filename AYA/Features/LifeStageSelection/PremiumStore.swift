@@ -3,8 +3,8 @@ import Foundation
 import StoreKit
 
 enum PremiumProductIdentifiers {
-    static let monthly = "com.ayameditation.app.premium.monthly"
-    static let yearly = "com.ayameditation.app.premium.yearly"
+    static let monthly = "com.hesia.meditation.premium.monthly"
+    static let yearly = "com.hesia.meditation.premium.yearly"
 
     static let all: Set<String> = [monthly, yearly]
 }
@@ -101,8 +101,26 @@ final class PremiumStore: ObservableObject {
     private var entitlementStateRevision = 0
     private var sessionEntitlements: [String: PremiumEntitlementRecord] = [:]
 
+    /// UI-test override. The suite has always passed
+    /// `-premium.isUnlockedForTesting YES`, but nothing read it — so whether a
+    /// premium stage opened its Home screen or the paywall depended on leftover
+    /// StoreKit state in the simulator, which made the tests flaky. DEBUG-only
+    /// so it cannot affect a shipping build.
+    static var isUnlockedForTesting: Bool {
+        #if DEBUG
+        UserDefaults.standard.bool(forKey: "premium.isUnlockedForTesting")
+        #else
+        false
+        #endif
+    }
+
     private init() {
         transactionUpdatesTask = listenForTransactionUpdates()
+
+        if Self.isUnlockedForTesting {
+            hasPremiumAccess = true
+            hasResolvedEntitlements = true
+        }
 
         Task {
             await prepare()
@@ -208,7 +226,7 @@ final class PremiumStore: ObservableObject {
             }
         )
         subscription = resolvedSubscription
-        hasPremiumAccess = !effectiveProductIDs.isEmpty
+        hasPremiumAccess = Self.isUnlockedForTesting || !effectiveProductIDs.isEmpty
         hasResolvedEntitlements = true
         scheduleEntitlementRefresh(at: subscription?.renewalDate)
     }

@@ -50,7 +50,7 @@ struct CycleCalendarView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding(.horizontal, presentation == .standard ? AYASpacing.xl : 0)
+            .padding(.horizontal, presentation == .standard ? AYALayout.screenHorizontalPadding : 0)
             .padding(.top, presentation == .standard ? AYASpacing.md : 0)
             .padding(.bottom, presentation == .standard ? AYASpacing.xxl : 0)
         }
@@ -73,26 +73,11 @@ struct CycleCalendarView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 12) {
-            Button(action: { dismiss() }) {
-                HesiaIcon.caretLeft.view(size: 17)
-                    .foregroundStyle(AYAColors.emphasis)
-                    .frame(width: 44, height: 44)
-                    .background(AYAColors.surface, in: Circle())
-                    .overlay { Circle().stroke(AYAColors.border, lineWidth: 1) }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("cycle.calendar.back")
-
-            Text("cycle.calendar.title")
-                .ayaTypography(.screenTitle)
-                .foregroundStyle(AYAColors.textPrimary)
-                .frame(maxWidth: .infinity)
-                .accessibilityAddTraits(.isHeader)
-
-            Color.clear
-                .frame(width: 44, height: 44)
-                .accessibilityHidden(true)
+        ScreenHeader(
+            "cycle.calendar.title",
+            backAccessibilityKey: "cycle.calendar.back"
+        ) {
+            dismiss()
         }
     }
 
@@ -216,8 +201,13 @@ struct CycleCalendarView: View {
             }
             .frame(width: 40, height: 40)
             .overlay {
-                if isToday && !isSelected {
-                    Circle().stroke(AYAColors.emphasis, lineWidth: 1.5)
+                if !isSelected {
+                    Circle().stroke(
+                        isToday
+                            ? AYAColors.emphasis
+                            : CycleCalendarPhaseTheme.border(for: calculation.currentPhase),
+                        lineWidth: isToday ? 1.5 : 1
+                    )
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 44)
@@ -290,6 +280,10 @@ struct CycleCalendarView: View {
                 .padding(.horizontal, AYASpacing.md)
                 .frame(minHeight: 28)
                 .background(CycleCalendarPhaseTheme.surface(for: phase), in: Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(CycleCalendarPhaseTheme.border(for: phase), lineWidth: 1)
+                }
         }
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -305,7 +299,10 @@ struct CycleCalendarView: View {
                     Circle()
                         .fill(CycleCalendarPhaseTheme.surface(for: phase))
                         .frame(width: 12, height: 12)
-                        .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
+                        .overlay {
+                            Circle()
+                                .stroke(CycleCalendarPhaseTheme.border(for: phase), lineWidth: 1)
+                        }
                         .accessibilityHidden(true)
 
                     Text(verbatim: localized(phase.nameLocalizationKey))
@@ -384,7 +381,19 @@ struct CycleCalendarView: View {
             return
         }
         displayedMonth = newMonth
-        selectedDate = calendar.dateInterval(of: .month, for: newMonth)?.start ?? newMonth
+
+        // Keep the user's selection when it is still on screen — paging away
+        // and back used to silently reset it to the 1st of the month.
+        guard
+            let interval = calendar.dateInterval(of: .month, for: newMonth),
+            !interval.contains(selectedDate)
+        else { return }
+
+        if let today = Optional(calendar.startOfDay(for: Date())), interval.contains(today) {
+            selectedDate = today
+        } else {
+            selectedDate = interval.start
+        }
     }
 
     private func localized(_ key: String) -> String {

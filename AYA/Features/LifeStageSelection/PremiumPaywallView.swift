@@ -86,7 +86,7 @@ struct PremiumPaywallView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 22) {
+            VStack(spacing: AYASpacing.xl) {
                 header
                 benefits
                 plans
@@ -96,13 +96,18 @@ struct PremiumPaywallView: View {
                     productUnavailableNotice
                 }
             }
-            .padding(.horizontal, 22)
-            .padding(.top, 8)
-            .padding(.bottom, 168)
+            .hesiaScreenPadding()
+            .padding(.top, AYASpacing.sm)
+            .padding(.bottom, AYALayout.screenBottomPadding)
         }
         .scrollIndicators(.hidden)
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
-        .safeAreaInset(edge: .bottom) {
+        // Pinned rather than scrolling with the content: a close control that
+        // disappears on a paywall reads as a dark pattern even when it isn't.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            closeBar
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             purchaseArea
         }
         .presentationDetents([.large])
@@ -123,21 +128,25 @@ struct PremiumPaywallView: View {
         }
     }
 
-    private var header: some View {
-        VStack(spacing: 13) {
-            HStack {
-                Spacer()
-                Button(action: { dismiss() }) {
-                    HesiaIcon.close.view(size: 14)
-                        .foregroundStyle(AYAColors.textSecondary)
-                        .frame(width: 44, height: 44)
-                        .background(AYAColors.surface, in: Circle())
-                        .overlay { Circle().stroke(AYAColors.border, lineWidth: 1) }
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("common.close")
+    private var closeBar: some View {
+        HStack {
+            Spacer()
+            Button(action: { dismiss() }) {
+                HesiaIcon.close.view(size: HesiaIconSize.sm)
+                    .foregroundStyle(AYAColors.textSecondary)
+                    .frame(width: 44, height: 44)
+                    .background(AYAColors.surfaceElevated, in: Circle())
+                    .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("common.close")
+        }
+        .hesiaScreenPadding()
+        .padding(.vertical, AYASpacing.sm)
+    }
 
+    private var header: some View {
+        VStack(spacing: AYASpacing.md) {
             Text("premium.title")
                 .ayaTypography(.screenTitle)
                 .foregroundStyle(AYAColors.textPrimary)
@@ -153,14 +162,14 @@ struct PremiumPaywallView: View {
     }
 
     private var benefits: some View {
-        VStack(alignment: .leading, spacing: 13) {
+        VStack(alignment: .leading, spacing: AYASpacing.md) {
             benefit("premium.benefit.all_stages")
             benefit("premium.benefit.daily_meditation")
             benefit("premium.benefit.switch_anytime")
         }
-        .padding(18)
+        .padding(AYASpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
+        .background(AYAColors.surfaceElevated, in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
                 .stroke(AYAColors.border, lineWidth: 1)
@@ -168,7 +177,7 @@ struct PremiumPaywallView: View {
     }
 
     private func benefit(_ key: LocalizedStringKey) -> some View {
-        HStack(spacing: 11) {
+        HStack(spacing: AYASpacing.md) {
             HesiaSelectionIndicator(
                 isSelected: true,
                 selectedFill: AYAColors.accentSoft,
@@ -181,7 +190,7 @@ struct PremiumPaywallView: View {
     }
 
     private var plans: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: AYASpacing.md) {
             ForEach(PremiumPlan.allCases) { plan in
                 planButton(plan)
             }
@@ -194,37 +203,37 @@ struct PremiumPaywallView: View {
         return Button {
             selectedPlan = plan
         } label: {
-            HStack(spacing: 14) {
+            HStack(spacing: AYASpacing.md) {
                 HesiaSelectionIndicator(isSelected: isSelected)
 
-                VStack(alignment: .leading, spacing: 5) {
-                    HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: AYASpacing.xs) {
+                    HStack(spacing: AYASpacing.sm) {
                         Text(plan.titleKey)
                             .ayaTypography(.sectionTitle)
                             .foregroundStyle(AYAColors.textPrimary)
 
                         if plan == .yearly {
-                            Text("premium.plan.best_value")
-                                .font(AYATypography.ui(size: 10, weight: .semibold))
-                                .foregroundStyle(AYAColors.emphasis)
-                                .padding(.horizontal, 8)
-                                .frame(minHeight: 23)
-                                .background(AYAColors.tertiary.opacity(0.72), in: Capsule())
+                            // `.soft` rather than the warm `tertiary` fill: in
+                            // dark mode tertiary resolves to a muddy brown and
+                            // the plum label loses contrast against it.
+                            HesiaBadge("premium.plan.best_value")
                         }
                     }
 
                     Text(detailKey(for: plan))
                         .ayaTypography(.metadata)
                         .foregroundStyle(AYAColors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Spacer(minLength: 10)
+                Spacer(minLength: AYASpacing.sm)
 
                 price(for: plan)
-                    .font(AYATypography.ui(size: 17, weight: .semibold))
+                    .ayaTypography(.price)
                     .foregroundStyle(AYAColors.emphasis)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, AYASpacing.lg)
+            .padding(.vertical, AYASpacing.md)
             .frame(maxWidth: .infinity, minHeight: 76)
             .background(isSelected ? AYAColors.accentSoft : AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
             .overlay {
@@ -306,10 +315,7 @@ struct PremiumPaywallView: View {
                 .foregroundStyle(AYAColors.textTertiary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.horizontal, 22)
-        .padding(.top, 14)
-        .padding(.bottom, 8)
-        .background(AYAColors.backgroundPrimary.opacity(0.98))
+        .hesiaBottomBar()
     }
 
     private var legalLinks: some View {

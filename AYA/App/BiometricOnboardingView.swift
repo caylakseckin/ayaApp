@@ -41,15 +41,15 @@ struct BiometricOnboardingView: View {
                 }
 
                 VStack(alignment: .leading, spacing: AYASpacing.lg) {
-                    benefitRow(
+                    OnboardingBenefitRow(
                         icon: .lock,
-                        title: "biometric.onboarding.benefit.private.title",
-                        description: "biometric.onboarding.benefit.private.description"
+                        titleKey: "biometric.onboarding.benefit.private.title",
+                        descriptionKey: "biometric.onboarding.benefit.private.description"
                     )
-                    benefitRow(
+                    OnboardingBenefitRow(
                         icon: .check,
-                        title: "biometric.onboarding.benefit.simple.title",
-                        description: "biometric.onboarding.benefit.simple.description"
+                        titleKey: "biometric.onboarding.benefit.simple.title",
+                        descriptionKey: "biometric.onboarding.benefit.simple.description"
                     )
                 }
                 .padding(AYASpacing.xl)
@@ -65,7 +65,7 @@ struct BiometricOnboardingView: View {
 
                 Spacer(minLength: AYASpacing.xxl)
             }
-            .padding(.horizontal, AYASpacing.xl)
+            .hesiaScreenPadding()
             .frame(maxWidth: 560)
             .frame(maxWidth: .infinity)
         }
@@ -88,32 +88,23 @@ struct BiometricOnboardingView: View {
                 .disabled(isAuthenticating || !authenticationService.isFaceIDAvailable)
                 .accessibilityIdentifier("biometric.onboarding.enable.button")
 
-                Button {
+                OnboardingSecondaryButton(
+                    titleKey: "biometric.onboarding.skip",
+                    isEnabled: !isAuthenticating,
+                    accessibilityIdentifier: "biometric.onboarding.skip.button"
+                ) {
                     isFaceIDEnabled = false
                     completion(false)
-                } label: {
-                    Text("biometric.onboarding.skip")
-                        .font(AYATypography.ui(size: 15, weight: .medium))
-                        .foregroundStyle(AYAColors.textSecondary)
-                        .frame(maxWidth: .infinity, minHeight: 44)
                 }
-                .buttonStyle(.plain)
-                .disabled(isAuthenticating)
-                .accessibilityIdentifier("biometric.onboarding.skip.button")
 
                 if !authenticationService.isFaceIDAvailable {
                     Text("biometric.error.unavailable")
-                        .font(AYATypography.ui(size: 12))
+                        .ayaTypography(.metadata)
                         .foregroundStyle(AYAColors.textTertiary)
                         .multilineTextAlignment(.center)
                 }
             }
-            .frame(maxWidth: 512)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, AYASpacing.xl)
-            .padding(.top, AYASpacing.sm)
-            .padding(.bottom, AYASpacing.md)
-            .background(AYAColors.backgroundPrimary.opacity(0.96))
+            .hesiaBottomBar()
         }
         .alert("biometric.error.title", isPresented: $showsAuthenticationError) {
             Button("common.close", role: .cancel) {}
@@ -122,28 +113,6 @@ struct BiometricOnboardingView: View {
         }
     }
 
-    private func benefitRow(
-        icon: HesiaIcon,
-        title: LocalizedStringKey,
-        description: LocalizedStringKey
-    ) -> some View {
-        HStack(alignment: .top, spacing: AYASpacing.md) {
-            icon.view(size: 19)
-                .foregroundStyle(AYAColors.accent)
-                .frame(width: 24, height: 24)
-
-            VStack(alignment: .leading, spacing: AYASpacing.xs) {
-                Text(title)
-                    .font(AYATypography.ui(size: 15, weight: .medium))
-                    .foregroundStyle(AYAColors.textPrimary)
-
-                Text(description)
-                    .font(AYATypography.ui(size: 13))
-                    .foregroundStyle(AYAColors.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
 
     private func enableFaceID() {
         guard authenticationService.isFaceIDAvailable else {

@@ -26,9 +26,11 @@ struct WelcomeView: View {
 
                 Spacer(minLength: 96)
             }
-            .padding(.horizontal, 24)
-            .frame(maxWidth: 560)
-            .frame(minHeight: UIScreen.main.bounds.height - 44)
+            .hesiaScreenPadding()
+            .frame(maxWidth: AYALayout.readableContentMaxWidth)
+            // Fills the scroll viewport without reading UIScreen, which is
+            // wrong under multi-scene and on iPad.
+            .containerRelativeFrame(.vertical, alignment: .top) { height, _ in height }
             .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
@@ -36,12 +38,7 @@ struct WelcomeView: View {
         .background(background)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             continueButton
-                .frame(maxWidth: 512)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 24)
-                .padding(.top, 10)
-                .padding(.bottom, 12)
-                .background(AYAColors.backgroundPrimary.opacity(0.96))
+                .hesiaBottomBar()
         }
         .onAppear {
             name = storedName
@@ -100,9 +97,9 @@ struct WelcomeView: View {
                     .textContentType(.givenName)
                     .submitLabel(.done)
                     .focused($isNameFocused)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, AYASpacing.lg)
                     .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
-                    .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
+                    .background(AYAColors.surfaceElevated, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
                     .overlay {
                         RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
                             .stroke(isNameFocused ? AYAColors.accent : AYAColors.separator, lineWidth: 1)
@@ -129,7 +126,7 @@ struct WelcomeView: View {
 
             MeditationReminderSettings(presentation: .welcome)
         }
-        .padding(18)
+        .padding(AYASpacing.lg)
         .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)

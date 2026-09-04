@@ -18,7 +18,7 @@ struct PregnancyHomeView: View {
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
     @State private var weekInfoPresentation: PregnancyWeekInfoPresentation?
-    @State private var remoteMeditationMetadata: RemoteMeditationMetadata?
+    @State private var metadataState: DailyMeditationMetadataState = .loading
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
@@ -27,8 +27,7 @@ struct PregnancyHomeView: View {
 
     private let tracker = PregnancyTracker()
     private let contentProvider = PregnancyContentProvider()
-    // Retained for a possible future return of the pregnancy overview timeline.
-    private let showsOverviewTimeline = true
+    private let detailTheme = LifeStageDetailTheme.theme(for: .pregnancy)
 
     init(showThemes: (() -> Void)? = nil) {
         showThemesAction = showThemes
@@ -105,47 +104,63 @@ struct PregnancyHomeView: View {
         let calculation = tracker.calculate(profile: profile)
         let meditation = contentProvider.meditation(for: calculation)
 
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header(calculation: calculation)
+        return HomeScreenScaffold(contentTopPadding: AYALayout.screenTopPadding) {
+            HomeHeader(
+                greeting: greetingText,
+                userInitial: userInitial,
+                showsProfileButton: !isSettingsPresented,
+                openSettings: { isSettingsPresented = true }
+            ) {
+                HomeHeaderDetail(text: pregnancyWeekText(calculation.currentWeek))
+            }
+        } content: {
+            PregnancyHeroCard(
+                theme: detailTheme,
+                weekDisplay: heroWeekDisplay(calculation.currentWeek),
+                badgeText: localized(calculation.trimester.nameLocalizationKey),
+                title: localized(calculation.trimester.insightTitleLocalizationKey),
+                message: localized(calculation.trimester.insightDescriptionLocalizationKey),
+                accessibilityValue: progressAccessibilityValue(calculation: calculation),
+                weekInsightDescription: weekInsightDescription(for: calculation.currentWeek),
+                weekInsightAction: { showWeekInfo(for: calculation.currentWeek) }
+            )
 
-                PregnancyInsightCard(calculation: calculation)
+            VStack(alignment: .leading, spacing: AYASpacing.md) {
+                SectionHeader("pregnancy.home.today_meditation")
 
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader("pregnancy.home.today_meditation")
-
-                    DailyMeditationCard(
-                        meditation: meditation,
-                        remoteMetadata: remoteMeditationMetadata,
-                        playbackViewModel: playbackViewModel(for: meditation)
-                    ) {
-                        startMeditation(meditation)
-                    }
-                }
-
-                if showsOverviewTimeline {
-                    PregnancyOverviewView(
-                        weeks: tracker.overviewWeeks(around: calculation.currentWeek),
-                        currentWeek: calculation.currentWeek,
-                        viewCalendar: { isCalendarPresented = true }
-                    )
-                }
-
-                if calculation.shouldOfferBirthMomentTransition {
-                    LifeStageContinuationCard(
-                        destination: .birthMoment,
-                        titleKey: "pregnancy.transition.birth_moment.title",
-                        messageKey: "pregnancy.transition.birth_moment.message",
-                        actionKey: "pregnancy.transition.birth_moment.action",
-                        action: continueToBirthMoment
-                    )
+                DailyMeditationCard(
+                    meditation: meditation,
+                    metadataState: metadataState,
+                    playbackViewModel: playbackViewModel(for: meditation),
+                    contextPlacement: .eyebrow
+                ) {
+                    startMeditation(meditation)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 24)
+
+            LifeStageOverviewSection(
+                titleKey: "pregnancy.overview.title",
+                linkKey: "pregnancy.overview.view_calendar",
+                linkAccessibilityIdentifier: "pregnancy.home.calendar.button",
+                action: { isCalendarPresented = true }
+            ) {
+                PregnancyOverviewJourney(
+                    theme: detailTheme,
+                    values: tracker.overviewWeeks(around: calculation.currentWeek),
+                    currentValue: calculation.currentWeek
+                )
+            }
+
+            if calculation.shouldOfferBirthMomentTransition {
+                LifeStageContinuationCard(
+                    destination: .birthMoment,
+                    titleKey: "pregnancy.transition.birth_moment.title",
+                    messageKey: "pregnancy.transition.birth_moment.message",
+                    actionKey: "pregnancy.transition.birth_moment.action",
+                    action: continueToBirthMoment
+                )
+            }
         }
-        .scrollIndicators(.hidden)
         .task(id: meditation.id) {
             await loadRemoteMetadata(for: meditation, calculation: calculation)
         }
@@ -157,7 +172,6 @@ struct PregnancyHomeView: View {
             let refreshedCalculation = tracker.calculate(profile: profile)
             syncOfflinePackage(calculation: refreshedCalculation)
         }
-        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
             if isSettingsPresented {
                 AYASettingsOverlay(
@@ -175,35 +189,34 @@ struct PregnancyHomeView: View {
         .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: isSettingsPresented)
     }
 
-    private func header(calculation: PregnancyCalculation) -> some View {
-        HStack(alignment: .center, spacing: 14) {
-            VStack(alignment: .leading, spacing: 7) {
-                Text(verbatim: greetingText)
-                    .ayaTypography(.homeGreeting)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
+    private func localized(_ key: String) -> String {
+        selectedLanguage.localizedString(forKey: key)
+    }
 
-                HStack(spacing: 2) {
-                    Text(verbatim: pregnancyWeekText(calculation.currentWeek))
-                        .ayaTypography(.homeSupporting)
-                        .foregroundStyle(AYAColors.textSecondary)
+    private func progressAccessibilityValue(calculation: PregnancyCalculation) -> String {
+        String(
+            format: selectedLanguage.localizedString(forKey: "pregnancy.home.progress.value"),
+            locale: locale,
+            calculation.currentWeek,
+            40
+        )
+    }
 
-                    ContextualInfoButton(
-                        accessibilityLabel: pregnancyInfoAccessibility(for: calculation.currentWeek),
-                        action: { showWeekInfo(for: calculation.currentWeek) }
-                    )
-                }
-            }
-
-            Spacer(minLength: 8)
-
-            if !isSettingsPresented {
-                AYAProfileButton(initial: userInitial) {
-                    isSettingsPresented = true
-                }
-            }
+    private func weekInsightDescription(for week: Int) -> String {
+        guard let description = PregnancyWeekInfoRepository.shared
+            .info(for: week, language: selectedLanguage)?.baby
+        else {
+            return localized("pregnancy.week_insight.fallback")
         }
+
+        guard let sentenceEnd = description.firstIndex(of: ".") else {
+            return description
+        }
+        return String(description[...sentenceEnd])
+    }
+
+    private func heroWeekDisplay(_ week: Int) -> String {
+        HesiaOrdinalFormatter.string(week, language: selectedLanguage)
     }
 
     private var selectedLanguage: AppLanguage {
@@ -229,11 +242,6 @@ struct PregnancyHomeView: View {
         return String(format: format, locale: locale, week)
     }
 
-    private func pregnancyInfoAccessibility(for week: Int) -> String {
-        let format = selectedLanguage.localizedString(forKey: "info.pregnancy.accessibility")
-        return String(format: format, locale: locale, week)
-    }
-
     private func showWeekInfo(for week: Int) {
         weekInfoPresentation = PregnancyWeekInfoPresentation(
             week: week,
@@ -246,8 +254,8 @@ struct PregnancyHomeView: View {
         for meditation: DailyMeditation,
         calculation: PregnancyCalculation
     ) async {
-        remoteMeditationMetadata = nil
         guard let source = meditation.remoteAudioSource else {
+            metadataState = .loaded(nil)
             WatchCompanionSync.shared.sendPregnancyPractice(
                 meditation: meditation,
                 calculation: calculation,
@@ -257,10 +265,11 @@ struct PregnancyHomeView: View {
             return
         }
 
+        metadataState = .loading
         do {
             let metadata = try await RemoteMeditationContentLoader.loadMetadata(source: source)
             guard !Task.isCancelled else { return }
-            remoteMeditationMetadata = metadata
+            metadataState = .loaded(metadata)
             WatchCompanionSync.shared.sendPregnancyPractice(
                 meditation: meditation,
                 calculation: calculation,
@@ -269,7 +278,7 @@ struct PregnancyHomeView: View {
             )
         } catch {
             guard !Task.isCancelled else { return }
-            remoteMeditationMetadata = nil
+            metadataState = .failed
             WatchCompanionSync.shared.sendPregnancyPractice(
                 meditation: meditation,
                 calculation: calculation,
@@ -363,123 +372,287 @@ struct PregnancyHomeView: View {
     }
 }
 
-private struct PregnancyInsightCard: View {
-    let calculation: PregnancyCalculation
-
-    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.locale) private var locale
-    private let detailTheme = LifeStageDetailTheme.theme(for: .pregnancy)
+private struct PregnancyHeroCard: View {
+    let theme: LifeStageDetailTheme
+    let weekDisplay: String
+    let badgeText: String
+    let title: String
+    let message: String
+    let accessibilityValue: String
+    let weekInsightDescription: String
+    let weekInsightAction: () -> Void
 
     var body: some View {
-        Group {
-            if usesVerticalLayout {
-                VStack(alignment: .leading, spacing: 16) {
-                    progressRing.frame(maxWidth: .infinity, alignment: .center)
-                    insight
-                }
-            } else {
-                HStack(spacing: 16) {
-                    progressRing
-                    insight
-                }
+        VStack(alignment: .leading, spacing: AYASpacing.lg) {
+            HesiaBadge(verbatim: badgeText, prominence: .themed(theme.badgeSurface))
+
+            HeroAdaptiveRow {
+                HeroMetricColumn(
+                    value: weekDisplay,
+                    unitKey: "pregnancy.hero.week_unit",
+                    accessibilityLabelKey: "pregnancy.home.progress.accessibility",
+                    accessibilityValue: accessibilityValue
+                )
+            } trailing: {
+                HeroInsight(title: title, message: message)
             }
+
+            HeroDivider(theme: theme)
+
+            PregnancyWeekInsight(
+                theme: theme,
+                description: weekInsightDescription,
+                action: weekInsightAction
+            )
         }
-        .padding(16)
-        .frame(minHeight: LifeStageHeroMetrics.minHeight)
-        .background { LifeStageHeroBackground(theme: detailTheme) }
-        .overlay {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .stroke(detailTheme.heroBorder, lineWidth: 1)
-        }
-        .ayaCardShadow()
-    }
-
-    private var progressRing: some View {
-        StageProgressRing(
-            currentValue: calculation.currentWeek,
-            totalLabelKey: "pregnancy.home.total_weeks",
-            progress: calculation.progress,
-            accessibilityLabelKey: "pregnancy.home.progress.accessibility",
-            accessibilityValue: progressAccessibilityValue,
-            trackColor: detailTheme.ringTrack,
-            progressColor: detailTheme.ringProgress
-        )
-    }
-
-    private var insight: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(verbatim: localized(calculation.trimester.nameLocalizationKey))
-                .ayaTypography(.homeBadge)
-                .foregroundStyle(AYAColors.emphasis)
-                .padding(.horizontal, 11)
-                .frame(minHeight: 27)
-                .background(detailTheme.badgeSurface, in: Capsule())
-
-            Text(verbatim: localized(calculation.trimester.insightTitleLocalizationKey))
-                .ayaTypography(.homeInsightTitle)
-                .foregroundStyle(AYAColors.textPrimary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text(verbatim: localized(calculation.trimester.insightDescriptionLocalizationKey))
-                .ayaTypography(.homeBody)
-                .foregroundStyle(AYAColors.textSecondary)
-                .lineSpacing(3)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func localized(_ key: String) -> String {
-        (AppLanguage(rawValue: languageCode) ?? .system).localizedString(forKey: key)
-    }
-
-    private var usesVerticalLayout: Bool {
-        dynamicTypeSize >= .xxxLarge
-    }
-
-    private var progressAccessibilityValue: String {
-        let format = selectedLanguage.localizedString(forKey: "pregnancy.home.progress.value")
-        return String(format: format, locale: locale, calculation.currentWeek, 40)
-    }
-
-    private var selectedLanguage: AppLanguage {
-        AppLanguage(rawValue: languageCode) ?? .system
+        .lifeStageHeroSurface(theme: theme)
     }
 }
 
-struct PregnancyOverviewView: View {
-    let weeks: [Int]
-    let currentWeek: Int
-    let viewCalendar: () -> Void
-    private let detailTheme = LifeStageDetailTheme.theme(for: .pregnancy)
+private struct PregnancyWeekInsight: View {
+    let theme: LifeStageDetailTheme
+    let description: String
+    let action: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AYASpacing.xs) {
-            SectionHeader("pregnancy.overview.title") {
-                Button(action: viewCalendar) {
-                    HStack(spacing: 5) {
-                        Text("pregnancy.overview.view_calendar")
-                        HesiaIcon.caretRight.view(size: 12)
-                    }
-                    .ayaTypography(.homeLink)
-                    .foregroundStyle(AYAColors.emphasis)
-                    .frame(minHeight: 44)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("pregnancy.home.calendar.button")
-            }
+        Button(action: action) {
+            HStack(alignment: .center, spacing: AYASpacing.sm) {
+                insightTitle
 
-            LifeStageHorizontalTimeline(
-                values: weeks,
-                currentValue: currentWeek,
-                accessibilityLabelKey: "pregnancy.overview.accessibility",
-                activeColor: detailTheme.timelineActive,
-                inactiveColor: detailTheme.timelineInactive,
-                connectorColor: detailTheme.timelineConnector
-            )
+                Rectangle()
+                    .fill(theme.timelineConnector)
+                    .frame(width: 1, height: 40)
+                    .accessibilityHidden(true)
+
+                insightDescription
+                chevron
+            }
+            .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(HesiaCardButtonStyle())
+        .accessibilityLabel("pregnancy.week_insight.title")
+        .accessibilityValue(Text(verbatim: description))
+        .accessibilityHint("pregnancy.week_insight.accessibility_hint")
     }
+
+    private var insightTitle: some View {
+        Text("pregnancy.week_insight.title")
+            .ayaTypography(.homeLink)
+            .foregroundStyle(AYAColors.emphasis)
+            .fixedSize(horizontal: true, vertical: false)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var insightDescription: some View {
+        Text(verbatim: description)
+            .ayaTypography(.homeBody)
+            .foregroundStyle(AYAColors.textPrimary)
+            .multilineTextAlignment(.leading)
+            .lineSpacing(2)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 4)
+            .truncationMode(.tail)
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
+    }
+
+    private var chevron: some View {
+        HesiaIcon.caretRight.view(size: HesiaIconSize.sm)
+            .foregroundStyle(AYAColors.emphasis)
+            .frame(width: HesiaIconSize.md, height: 44)
+            .accessibilityHidden(true)
+    }
+}
+
+#Preview("Pregnancy Week Insight — Content Lengths", traits: .fixedLayout(width: 393, height: 430)) {
+    let theme = LifeStageDetailTheme.theme(for: .pregnancy)
+
+    VStack(alignment: .leading, spacing: AYASpacing.lg) {
+        PregnancyWeekInsight(
+            theme: theme,
+            description: "Bebeğin büyümeye devam ediyor.",
+            action: {}
+        )
+
+        HeroDivider(theme: theme)
+
+        PregnancyWeekInsight(
+            theme: theme,
+            description: "Bebeğinin hareketleri güçleniyor; dinlenme ve uyanıklık ritmi daha belirgin hale geliyor.",
+            action: {}
+        )
+
+        HeroDivider(theme: theme)
+
+        PregnancyWeekInsight(
+            theme: theme,
+            description: "Bebeğinin duyuları gelişmeye devam ederken hareketleri daha belirgin hissedilebilir; kendi ritmini dinleyerek dinlenmeye alan açabilirsin.",
+            action: {}
+        )
+    }
+    .lifeStageHeroSurface(theme: theme)
+    .padding(AYASpacing.xl)
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "tr"))
+}
+
+#Preview("Pregnancy Week Insight — Compact English", traits: .fixedLayout(width: 320, height: 250)) {
+    let theme = LifeStageDetailTheme.theme(for: .pregnancy)
+
+    PregnancyWeekInsight(
+        theme: theme,
+        description: "Your baby is becoming more responsive to sound and movement while a clearer rhythm of rest begins to emerge.",
+        action: {}
+    )
+    .lifeStageHeroSurface(theme: theme)
+    .padding(AYASpacing.lg)
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Pregnancy Week Insight — Dynamic Type", traits: .fixedLayout(width: 393, height: 360)) {
+    let theme = LifeStageDetailTheme.theme(for: .pregnancy)
+
+    PregnancyWeekInsight(
+        theme: theme,
+        description: "Bebeğinin hareketleri güçlenirken dinlenme ve uyanıklık ritmi daha belirgin hale geliyor.",
+        action: {}
+    )
+    .lifeStageHeroSurface(theme: theme)
+    .padding(AYASpacing.xl)
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "tr"))
+    .environment(\.dynamicTypeSize, .accessibility2)
+}
+
+private struct PregnancyOverviewJourney: View {
+    let theme: LifeStageDetailTheme
+    let values: [Int]
+    let currentValue: Int
+
+    @AppStorage("app.language") private var languageCode = AppLanguage.defaultExplicitLanguage.rawValue
+    @Environment(\.locale) private var locale
+
+    var body: some View {
+        ZStack {
+            Capsule()
+                .fill(theme.timelineConnector)
+                .frame(height: 1)
+                .padding(.horizontal, AYASpacing.lg)
+                .accessibilityHidden(true)
+
+            HStack(spacing: 0) {
+                ForEach(values, id: \.self) { week in
+                    overviewMarker(for: week)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("pregnancy.overview.accessibility")
+    }
+
+    private func overviewMarker(for week: Int) -> some View {
+        let isCurrent = week == currentValue
+
+        return Text(verbatim: String(week))
+            .ayaTypography(.homeMetadata)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+            .foregroundStyle(isCurrent ? AYAColors.onAccent : AYAColors.textSecondary)
+            .frame(width: 32, height: 32)
+            .background(isCurrent ? AYAColors.emphasis : AYAColors.surfaceElevated, in: Circle())
+            .overlay {
+                if !isCurrent {
+                    Circle().stroke(theme.heroBorder, lineWidth: 1)
+                }
+            }
+            .accessibilityLabel(accessibilityLabel(for: week, isCurrent: isCurrent))
+            .accessibilityAddTraits(isCurrent ? .isSelected : [])
+    }
+
+    private func accessibilityLabel(for week: Int, isCurrent: Bool) -> String {
+        let key = isCurrent
+            ? "pregnancy.home.progress.value"
+            : "pregnancy.journey.week.accessibility"
+        let format = selectedLanguage.localizedString(forKey: key)
+
+        if isCurrent {
+            return String(format: format, locale: locale, week, 40)
+        }
+        return String(format: format, locale: locale, week)
+    }
+
+    private var selectedLanguage: AppLanguage {
+        AppLanguage(rawValue: languageCode) ?? .defaultExplicitLanguage
+    }
+}
+
+#Preview("Pregnancy Journey — 393 pt", traits: .fixedLayout(width: 393, height: 852)) {
+    ScrollView {
+        VStack(alignment: .leading, spacing: AYALayout.sectionSpacing) {
+            PregnancyHeroCard(
+                theme: .theme(for: .pregnancy),
+                weekDisplay: "30.",
+                badgeText: "3. Trimester",
+                title: "Büyümenin ritmine yerleşiyorsun.",
+                message: "Bedenin değişirken, nefesin ve bebeğinle bağın daha görünür hale geliyor.",
+                accessibilityValue: "Toplam 40 haftanın 30. haftası",
+                weekInsightDescription: "Bebeğinin emme refleksi güçleniyor; artık parmağını emebiliyor.",
+                weekInsightAction: {}
+            )
+
+            LifeStageOverviewSection(
+                titleKey: "pregnancy.overview.title",
+                linkKey: "pregnancy.overview.view_calendar",
+                linkAccessibilityIdentifier: "pregnancy.home.calendar.button",
+                action: {}
+            ) {
+                PregnancyOverviewJourney(
+                    theme: .theme(for: .pregnancy),
+                    values: Array(27...34),
+                    currentValue: 30
+                )
+            }
+        }
+        .hesiaScreenPadding()
+    }
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "tr"))
+}
+
+#Preview("Pregnancy Journey — Small + English", traits: .fixedLayout(width: 320, height: 720)) {
+    ScrollView {
+        VStack(alignment: .leading, spacing: AYALayout.sectionSpacing) {
+            PregnancyHeroCard(
+                theme: .theme(for: .pregnancy),
+                weekDisplay: "21st",
+                badgeText: "2nd Trimester",
+                title: "You are settling into the rhythm of growth.",
+                message: "As your body changes, your connection with your breath and your baby becomes more visible.",
+                accessibilityValue: "Week 21 of 40 weeks",
+                weekInsightDescription: "Your baby’s sleep and wake patterns are beginning to develop.",
+                weekInsightAction: {}
+            )
+
+            LifeStageOverviewSection(
+                titleKey: "pregnancy.overview.title",
+                linkKey: "pregnancy.overview.view_calendar",
+                linkAccessibilityIdentifier: "pregnancy.home.calendar.button",
+                action: {}
+            ) {
+                PregnancyOverviewJourney(
+                    theme: .theme(for: .pregnancy),
+                    values: Array(18...25),
+                    currentValue: 21
+                )
+            }
+        }
+        .hesiaScreenPadding()
+    }
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "en"))
 }
 
 struct PregnancyWeekEditorView: View {
@@ -503,17 +676,18 @@ struct PregnancyWeekEditorView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: AYASpacing.lg) {
             HStack {
                 Text("pregnancy.settings.title")
                     .ayaTypography(.screenTitle)
                     .foregroundStyle(AYAColors.textPrimary)
                 Spacer()
                 Button(action: { dismiss() }) {
-                    HesiaIcon.close.view(size: 15)
+                    HesiaIcon.close.view(size: HesiaIconSize.sm)
                         .foregroundStyle(AYAColors.textPrimary)
                         .frame(width: 44, height: 44)
-                        .background(AYAColors.surface, in: Circle())
+                        .background(AYAColors.surfaceElevated, in: Circle())
+                        .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("common.close")
@@ -534,7 +708,8 @@ struct PregnancyWeekEditorView: View {
             .buttonStyle(.appPrimary)
             .accessibilityIdentifier("pregnancy.settings.update")
         }
-        .padding(22)
+        .hesiaScreenPadding()
+        .padding(.vertical, AYASpacing.xl)
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)

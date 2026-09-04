@@ -13,46 +13,14 @@ struct BiometricLockSettings: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AYASpacing.sm) {
-            Text("settings.security.section")
-                .font(AYATypography.ui(size: 13, weight: .medium))
-                .foregroundStyle(AYAColors.textSecondary)
-                .textCase(.uppercase)
-                .padding(.horizontal, AYASpacing.xs)
-
-            Toggle(isOn: faceIDBinding) {
-                HStack(spacing: AYASpacing.md) {
-                    Image(systemName: "faceid")
-                        .font(.system(size: 20, weight: .regular))
-                        .foregroundStyle(AYAColors.accent)
-                        .frame(width: 22)
-                        .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: AYASpacing.xxs) {
-                        Text("settings.security.face_id.title")
-                            .font(AYATypography.ui(size: 15, weight: .medium))
-                            .foregroundStyle(AYAColors.textPrimary)
-
-                        Text("settings.security.face_id.description")
-                            .font(AYATypography.ui(size: 12))
-                            .foregroundStyle(AYAColors.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-            }
-            .tint(AYAColors.accent)
-            .disabled(isAuthenticating)
-            .padding(.horizontal, AYASpacing.lg)
-            .padding(.vertical, AYASpacing.md)
-            .frame(minHeight: 64)
-            .background(
-                AYAColors.cardSurface,
-                in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+        SettingsGroup("settings.security.section") {
+            SettingsToggleRow(
+                icon: SettingsRowIcon(symbol: "faceid"),
+                titleKey: "settings.security.face_id.title",
+                value: SettingsRowValue("settings.security.face_id.description"),
+                isOn: faceIDBinding,
+                isEnabled: !isAuthenticating
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
-                    .stroke(AYAColors.divider, lineWidth: 1)
-            }
             .accessibilityIdentifier("settings.face_id.toggle")
         }
         .alert("biometric.error.title", isPresented: $showsAuthenticationError) {

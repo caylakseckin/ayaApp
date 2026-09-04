@@ -31,15 +31,15 @@ struct OfflineMeditationOnboardingView: View {
                 }
 
                 VStack(alignment: .leading, spacing: AYASpacing.lg) {
-                    benefitRow(
+                    OnboardingBenefitRow(
                         icon: .check,
-                        title: "onboarding.offline.benefit.three_days.title",
-                        description: "onboarding.offline.benefit.three_days.description"
+                        titleKey: "onboarding.offline.benefit.three_days.title",
+                        descriptionKey: "onboarding.offline.benefit.three_days.description"
                     )
-                    benefitRow(
+                    OnboardingBenefitRow(
                         icon: .lock,
-                        title: "onboarding.offline.benefit.cleanup.title",
-                        description: "onboarding.offline.benefit.cleanup.description"
+                        titleKey: "onboarding.offline.benefit.cleanup.title",
+                        descriptionKey: "onboarding.offline.benefit.cleanup.description"
                     )
                 }
                 .padding(AYASpacing.xl)
@@ -55,7 +55,7 @@ struct OfflineMeditationOnboardingView: View {
 
                 Spacer(minLength: AYASpacing.xxl)
             }
-            .padding(.horizontal, AYASpacing.xl)
+            .hesiaScreenPadding()
             .frame(maxWidth: 560)
             .frame(maxWidth: .infinity)
         }
@@ -70,49 +70,18 @@ struct OfflineMeditationOnboardingView: View {
                 .buttonStyle(.appPrimary)
                 .accessibilityIdentifier("offline.onboarding.enable.button")
 
-                Button {
+                OnboardingSecondaryButton(
+                    titleKey: "onboarding.offline.skip",
+                    accessibilityIdentifier: "offline.onboarding.skip.button"
+                ) {
                     isEnabled = false
                     completion()
-                } label: {
-                    Text("onboarding.offline.skip")
-                        .font(AYATypography.ui(size: 15, weight: .medium))
-                        .foregroundStyle(AYAColors.textSecondary)
-                        .frame(maxWidth: .infinity, minHeight: 44)
                 }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("offline.onboarding.skip.button")
             }
-            .frame(maxWidth: 512)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, AYASpacing.xl)
-            .padding(.top, AYASpacing.sm)
-            .padding(.bottom, AYASpacing.md)
-            .background(AYAColors.backgroundPrimary.opacity(0.96))
+            .hesiaBottomBar()
         }
     }
 
-    private func benefitRow(
-        icon: HesiaIcon,
-        title: LocalizedStringKey,
-        description: LocalizedStringKey
-    ) -> some View {
-        HStack(alignment: .top, spacing: AYASpacing.md) {
-            icon.view(size: 19)
-                .foregroundStyle(AYAColors.accent)
-                .frame(width: 24, height: 24)
-
-            VStack(alignment: .leading, spacing: AYASpacing.xs) {
-                Text(title)
-                    .font(AYATypography.ui(size: 15, weight: .medium))
-                    .foregroundStyle(AYAColors.textPrimary)
-
-                Text(description)
-                    .font(AYATypography.ui(size: 13))
-                    .foregroundStyle(AYAColors.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
 }
 
 #Preview("Offline — Türkçe") {

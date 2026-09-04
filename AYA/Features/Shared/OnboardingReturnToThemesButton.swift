@@ -14,8 +14,56 @@ struct OnboardingReturnToThemesButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 22)
-        .padding(.bottom, 4)
+        .accessibilityIdentifier(accessibilityIdentifier)
+    }
+}
+
+/// One "why this is worth turning on" line in an onboarding benefit card.
+/// Shared by the Face ID and offline-listening screens, which were previously
+/// two copies of the same view.
+struct OnboardingBenefitRow: View {
+    let icon: HesiaIcon
+    let titleKey: LocalizedStringKey
+    let descriptionKey: LocalizedStringKey
+
+    var body: some View {
+        HStack(alignment: .top, spacing: AYASpacing.md) {
+            icon.view(size: HesiaIconSize.md)
+                .foregroundStyle(AYAColors.accent)
+                .frame(width: 24, height: 24)
+
+            VStack(alignment: .leading, spacing: AYASpacing.xs) {
+                Text(titleKey)
+                    .ayaTypography(.settingsRowTitle)
+                    .foregroundStyle(AYAColors.textPrimary)
+
+                Text(descriptionKey)
+                    .ayaTypography(.settingsRowValue)
+                    .foregroundStyle(AYAColors.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Quiet "skip / not now" action sitting under a primary onboarding CTA.
+struct OnboardingSecondaryButton: View {
+    let titleKey: LocalizedStringKey
+    var isEnabled: Bool = true
+    let accessibilityIdentifier: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(titleKey)
+                .ayaTypography(.settingsRowTitle)
+                .foregroundStyle(AYAColors.textSecondary)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
         .accessibilityIdentifier(accessibilityIdentifier)
     }
 }

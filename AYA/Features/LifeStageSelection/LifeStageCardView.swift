@@ -9,10 +9,10 @@ struct LifeStageCardView: View {
         static let titleDescriptionSpacing: CGFloat = 3
         static let descriptionLineSpacing: CGFloat = 1
 
-        static let badgeHeight: CGFloat = 19.8
-        static let badgeHorizontalPadding: CGFloat = 6.6
-        static let badgeContentSpacing: CGFloat = 4.4
-        static let badgeCornerRadius: CGFloat = 6.05
+        static let badgeHeight: CGFloat = 24
+        static let badgeHorizontalPadding: CGFloat = AYASpacing.sm
+        static let badgeContentSpacing: CGFloat = AYASpacing.xs
+        static let badgeCornerRadius: CGFloat = AYARadius.chip
     }
 
     let stage: LifeStage
@@ -94,7 +94,7 @@ struct LifeStageCardView: View {
     private func titleAndDescription(descriptionWidth: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: Metrics.titleDescriptionSpacing) {
             Text(stage.titleKey)
-                .font(stage == .motherhood03 ? AYATypography.longCardTitle : AYATypography.cardTitle)
+                .ayaTypography(stage == .motherhood03 ? .stageCardTitleLong : .stageCardTitle)
                 .foregroundStyle(theme.titleColor(for: colorScheme))
                 .lineLimit(1)
                 .minimumScaleFactor(0.9)
@@ -117,10 +117,10 @@ struct LifeStageCardView: View {
 
     private var premiumBadge: some View {
         HStack(spacing: Metrics.badgeContentSpacing) {
-            HesiaIcon.lock.view(size: 9)
+            HesiaIcon.lock.view(size: 11)
             Text(stage.badgeKey)
         }
-        .font(AYATypography.badge)
+        .ayaTypography(.badge)
         .foregroundStyle(theme.badgeForeground(for: colorScheme))
         .padding(.horizontal, Metrics.badgeHorizontalPadding)
         .frame(height: Metrics.badgeHeight)

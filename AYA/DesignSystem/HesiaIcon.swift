@@ -1,5 +1,22 @@
 import SwiftUI
 
+/// Canonical icon sizes.
+///
+/// Replaces the long tail of ad-hoc glyph sizes (9, 11, 12, 13, 14, 15, 17, 18,
+/// 19, 20, 22, 25…) with four intentional steps. Chevrons and other trailing
+/// accessories use `sm`, inline row icons use `md`, feature icons use `lg`, and
+/// `hero` is for the large circular badges on the onboarding screens.
+enum HesiaIconSize {
+    /// 14 pt — trailing accessories, inline metadata glyphs.
+    static let sm: CGFloat = 14
+    /// 18 pt — settings rows, list leading icons.
+    static let md: CGFloat = 18
+    /// 22 pt — feature-level icons.
+    static let lg: CGFloat = 22
+    /// 48 pt — onboarding hero glyphs inside a circular surface.
+    static let hero: CGFloat = 48
+}
+
 /// Typed access to the curated Phosphor Regular icons bundled with HESIA.
 /// Asset names intentionally stay private so feature views depend on semantic roles.
 enum HesiaIcon {

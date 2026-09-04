@@ -72,24 +72,32 @@ private struct HESIARootEdgeBackModifier: ViewModifier {
     let action: () -> Void
 
     func body(content: Content) -> some View {
-        content.simultaneousGesture(
-            DragGesture(minimumDistance: 12, coordinateSpace: .global)
-                .onEnded { value in
-                    let beganAtLeadingEdge = value.startLocation.x <= 24
-                    let movedRight = value.translation.width >= 72
-                    let isPrimarilyHorizontal = abs(value.translation.width)
-                        > abs(value.translation.height)
-                    let hasForwardMomentum = value.predictedEndTranslation.width >= 120
+        content.overlay(alignment: .leading) {
+            // Keep the high-priority drag inside the native leading-edge zone.
+            // Applying it to the complete Home screen suppresses the vertical
+            // drag owned by its ScrollView. Constraining the hit region also
+            // prevents the edge drag's touch-up from reaching meditation cards.
+            Color.clear
+                .frame(width: 24)
+                .contentShape(Rectangle())
+                .highPriorityGesture(
+                    DragGesture(minimumDistance: 12, coordinateSpace: .global)
+                        .onEnded { value in
+                            let movedRight = value.translation.width >= 72
+                            let isPrimarilyHorizontal = abs(value.translation.width)
+                                > abs(value.translation.height)
+                            let hasForwardMomentum = value.predictedEndTranslation.width >= 120
 
-                    guard
-                        beganAtLeadingEdge,
-                        isPrimarilyHorizontal,
-                        movedRight || hasForwardMomentum
-                    else { return }
+                            guard
+                                isPrimarilyHorizontal,
+                                movedRight || hasForwardMomentum
+                            else { return }
 
-                    action()
-                }
-        )
+                            action()
+                        }
+                )
+                .accessibilityHidden(true)
+        }
     }
 }
 

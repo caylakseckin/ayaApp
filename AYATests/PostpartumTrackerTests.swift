@@ -28,6 +28,13 @@ final class PostpartumTrackerTests: XCTestCase {
         XCTAssertEqual(PostpartumStage(day: 85), .newRhythm)
     }
 
+    func testRecoveryStageGroupsExistingContentStagesIntoThreeHomeStages() {
+        XCTAssertEqual(PostpartumRecoveryStage(stage: .firstDays), .firstDays)
+        XCTAssertEqual(PostpartumRecoveryStage(stage: .earlyPostpartum), .firstWeeks)
+        XCTAssertEqual(PostpartumRecoveryStage(stage: .transition), .newRhythm)
+        XCTAssertEqual(PostpartumRecoveryStage(stage: .newRhythm), .newRhythm)
+    }
+
     func testProgressUsesNinetyDayJourneyAndCapsAtOne() throws {
         let now = Date(timeIntervalSince1970: 2_000_000_000)
         let dayFortyFiveBirthDate = now.addingTimeInterval(-44 * 86_400)

@@ -20,7 +20,9 @@ enum AYAColors {
     // Legacy text roles now point at the v2 warm-ink roles for consistency.
     static let primaryText = textPrimary
     static let secondaryText = textSecondary
-    static let divider = secondary.opacity(0.12)
+    /// Card and control outlines. Paired with `separator` for hairlines between
+    /// rows — those are the only two line weights in the system now (`divider`
+    /// at 0.12 was a third, near-identical value and has been folded away).
     static let border = secondary.opacity(0.14)
     // Scrim behind the settings drawer — darkens in both appearances.
     static let overlay = Color(light: 0x2A1520, dark: 0x000000).opacity(0.32)
@@ -35,20 +37,42 @@ enum AYAColors {
 
     // Contextual Home hero surfaces.
     static let cycleHeroSurface = softPink.opacity(0.14)
-    static let pregnancyHeroSurface = tertiary.opacity(0.18)
+    /// Light pregnancy-flavoured tint for decorative fills (tutorial tiles,
+    /// calendar week cells). The hero's own warmer surface lives in
+    /// `LifeStageDetailTheme`.
+    static let pregnancyTint = tertiary.opacity(0.18)
     static let birthMomentHeroSurface = softPink.opacity(0.12)
     static let postpartumHeroSurface = softPink.opacity(0.10)
     static let motherhoodHeroSurface = primary.opacity(0.045)
 
-    // Compatibility alias for existing reusable surfaces.
-    static let cardSurface = surface
+    // Cycle calendar phases. These muted hues stay within HESIA's warm,
+    // editorial palette while remaining distinct at calendar-cell scale.
+    static let cycleMenstrual = Color(light: 0xD58FA7, dark: 0xD59AAF)
+    static let cycleFollicular = Color(light: 0xAFC49A, dark: 0xADC592)
+    static let cycleOvulatory = Color(light: 0xDDB36A, dark: 0xE0B96F)
+    static let cycleLuteal = Color(light: 0xAA9BC2, dark: 0xB8A7D0)
+
+    // Pregnancy journey — warm weekly-progress surfaces, intentionally distinct
+    // from the pink daily-recovery language used by Postpartum.
+    /// Warm amber behind Pregnancy's editorial chrome. Shares a hue with
+    /// `warning` but is its own token — the pregnancy hero must not restyle
+    /// itself if the alert palette ever changes.
+    static let pregnancyChrome = Color(light: 0xB07D3C, dark: 0xE0B36A)
 
     // MARK: - v2 semantic roles (premium-calm, appearance-aware)
 
     /// Warm near-black ink (light) / warm off-white (dark) for body/primary text.
     static let textPrimary = Color(light: 0x241C21, dark: 0xF2EAEE)
     static let textSecondary = Color(light: 0x6E616A, dark: 0xB7A8B0)
-    static let textTertiary = Color(light: 0x9C8F96, dark: 0x8A7C84)
+    /// Quietest ink. Both values are pinned to clear 4.5:1 against the *worst*
+    /// surface they land on, because this role carries 12–13 pt metadata
+    /// (duration, narrator, day numbers) rather than decorative text.
+    ///
+    /// | | was | now | worst-surface contrast |
+    /// |---|---|---|---|
+    /// | light | `#9C8F96` | `#796B73` | 2.80:1 → 4.57:1 on `backgroundPrimary` |
+    /// | dark | `#8A7C84` | `#968892` | 3.89:1 → 4.58:1 on `surfaceElevated` |
+    static let textTertiary = Color(light: 0x796B73, dark: 0x968892)
 
     /// Warm bone canvas (light) / warm near-black (dark).
     static let backgroundPrimary = Color(light: 0xF7F3EF, dark: 0x141013)

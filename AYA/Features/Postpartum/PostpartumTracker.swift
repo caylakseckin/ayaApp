@@ -50,6 +50,29 @@ enum PostpartumStage: String, CaseIterable, Sendable {
     }
 }
 
+/// The calm three-step recovery story shown on Postpartum Home. It groups the
+/// existing content stages instead of introducing a second set of day ranges.
+enum PostpartumRecoveryStage: String, CaseIterable, Sendable {
+    case firstDays
+    case firstWeeks
+    case newRhythm
+
+    init(stage: PostpartumStage) {
+        switch stage {
+        case .firstDays:
+            self = .firstDays
+        case .earlyPostpartum:
+            self = .firstWeeks
+        case .transition, .newRhythm:
+            self = .newRhythm
+        }
+    }
+
+    var titleLocalizationKey: String {
+        "postpartum.recovery_stage.\(rawValue)"
+    }
+}
+
 /// Meditation and content-organization phases for HESIA's first 90-day
 /// postpartum journey. These are not medical recovery stages.
 enum PostpartumJourneyPhase: String, CaseIterable, Sendable {
@@ -121,6 +144,10 @@ struct PostpartumCalculation: Equatable, Sendable {
     let currentDay: Int
     let stage: PostpartumStage
     let progress: Double
+
+    var recoveryStage: PostpartumRecoveryStage {
+        PostpartumRecoveryStage(stage: stage)
+    }
 
     /// The dedicated first-90-days experience remains available; from day 91
     /// onward the user can optionally continue into the Motherhood module.

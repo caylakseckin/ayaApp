@@ -31,7 +31,7 @@ struct MotherhoodPersonalizationView: View {
                         descriptionKey: "motherhood.personalization.privacy.description"
                     )
                 }
-                .padding(.horizontal, 22)
+                .hesiaScreenPadding()
                 .padding(.top, 8)
                 .padding(.bottom, 86)
                 .frame(minHeight: geometry.size.height, alignment: .top)
@@ -42,7 +42,7 @@ struct MotherhoodPersonalizationView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(spacing: AYASpacing.xs) {
                 primaryAction
                 if let returnToThemes {
                     OnboardingReturnToThemesButton(
@@ -51,7 +51,7 @@ struct MotherhoodPersonalizationView: View {
                     )
                 }
             }
-            .background(AYAColors.backgroundPrimary.opacity(0.98))
+            .hesiaBottomBar()
         }
         .sheet(isPresented: $isPickerPresented) { pickerSheet }
     }
@@ -123,7 +123,7 @@ struct MotherhoodPersonalizationView: View {
                     HesiaIcon.caretDown.view(size: 13)
                         .foregroundStyle(AYAColors.textSecondary)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, AYASpacing.lg)
                 .frame(maxWidth: .infinity, minHeight: 56)
                 .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
                 .overlay {
@@ -150,12 +150,9 @@ struct MotherhoodPersonalizationView: View {
                 Spacer()
                 HesiaIcon.arrowRight.view(size: 15)
             }
-            .padding(.horizontal, 18)
+            .padding(.horizontal, AYASpacing.lg)
         }
         .buttonStyle(.appPrimary)
-        .padding(.horizontal, 22)
-        .padding(.top, 10)
-        .padding(.bottom, 8)
         .accessibilityIdentifier("motherhood.personalization.continue")
     }
 

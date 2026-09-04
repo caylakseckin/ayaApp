@@ -30,15 +30,23 @@ struct LifeStageHorizontalTimeline<Value: Hashable & CustomStringConvertible>: V
     var body: some View {
         Group {
             if fillsAvailableWidth {
-                HStack(spacing: 0) {
-                    timelineItems(expands: true)
+                ZStack {
+                    timelineRail
+
+                    HStack(spacing: 0) {
+                        timelineItems(expands: true)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
                 .padding(.vertical, 2)
             } else {
                 ScrollView(.horizontal) {
-                    HStack(spacing: 7) {
-                        timelineItems(expands: false)
+                    ZStack {
+                        timelineRail
+
+                        HStack(spacing: 7) {
+                            timelineItems(expands: false)
+                        }
                     }
                     .padding(.vertical, 2)
                 }
@@ -50,6 +58,14 @@ struct LifeStageHorizontalTimeline<Value: Hashable & CustomStringConvertible>: V
         .accessibilityValue(currentValue.description)
     }
 
+    private var timelineRail: some View {
+        Capsule()
+            .fill(connectorColor)
+            .frame(height: 1)
+            .padding(.horizontal, AYASpacing.lg)
+            .accessibilityHidden(true)
+    }
+
     @ViewBuilder
     private func timelineItems(expands: Bool) -> some View {
         ForEach(values, id: \.self) { value in
@@ -57,8 +73,6 @@ struct LifeStageHorizontalTimeline<Value: Hashable & CustomStringConvertible>: V
                 text: value.description,
                 isCurrent: value == currentValue,
                 activeColor: activeColor,
-                inactiveColor: inactiveColor,
-                connectorColor: connectorColor,
                 expands: expands
             )
         }
@@ -69,35 +83,19 @@ private struct LifeStageTimelineItem: View {
     let text: String
     let isCurrent: Bool
     let activeColor: Color
-    let inactiveColor: Color
-    let connectorColor: Color
     let expands: Bool
 
     var body: some View {
-        VStack(spacing: 7) {
-            Text(verbatim: text)
-                .ayaTypography(.homeMetadata)
-                .foregroundStyle(isCurrent ? AYAColors.onAccent : AYAColors.textTertiary)
-                .frame(width: 32, height: 32)
-                .background(isCurrent ? activeColor : AYAColors.surface, in: Circle())
-                .overlay {
-                    if !isCurrent {
-                        Circle().stroke(AYAColors.divider, lineWidth: 1)
-                    }
+        Text(verbatim: text)
+            .ayaTypography(.homeMetadata)
+            .foregroundStyle(isCurrent ? AYAColors.onAccent : AYAColors.textTertiary)
+            .frame(width: 32, height: 32)
+            .background(isCurrent ? activeColor : AYAColors.surface, in: Circle())
+            .overlay {
+                if !isCurrent {
+                    Circle().stroke(AYAColors.separator, lineWidth: 1)
                 }
-
-            ZStack {
-                Rectangle()
-                    .fill(connectorColor)
-                    .frame(height: 1)
-
-                Circle()
-                    .fill(isCurrent ? activeColor : inactiveColor)
-                    .frame(width: 9, height: 9)
             }
-            .frame(width: expands ? nil : 39)
             .frame(maxWidth: expands ? .infinity : nil)
-        }
-        .frame(maxWidth: expands ? .infinity : nil)
     }
 }

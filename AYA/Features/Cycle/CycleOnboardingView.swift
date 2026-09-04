@@ -33,6 +33,7 @@ struct CycleOnboardingView: View {
     @State private var draftDate = Date()
     @State private var advisory: CycleOnboardingAdvisory?
     @State private var hasAcknowledgedOldDate = false
+    @State private var stepFeedbackTrigger = 0
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
@@ -74,7 +75,7 @@ struct CycleOnboardingView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 22)
+                .hesiaScreenPadding()
                 .padding(.bottom, 28)
             }
             .scrollDismissesKeyboard(.interactively)
@@ -82,8 +83,9 @@ struct CycleOnboardingView: View {
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .sensoryFeedback(.selection, trigger: stepFeedbackTrigger)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(spacing: AYASpacing.xs) {
                 primaryAction
                 if mode == .initial, let returnToThemes {
                     OnboardingReturnToThemesButton(
@@ -92,7 +94,7 @@ struct CycleOnboardingView: View {
                     )
                 }
             }
-            .background(AYAColors.backgroundPrimary.opacity(0.98))
+            .hesiaBottomBar()
         }
         .sheet(isPresented: $isDatePickerPresented) {
             datePickerSheet
@@ -122,7 +124,7 @@ struct CycleOnboardingView: View {
                         .frame(width: 44, height: 44)
                         .background(AYAColors.surface, in: Circle())
                         .overlay {
-                            Circle().stroke(AYAColors.divider, lineWidth: 1)
+                            Circle().stroke(AYAColors.separator, lineWidth: 1)
                         }
                 }
                 .buttonStyle(.plain)
@@ -356,9 +358,6 @@ struct CycleOnboardingView: View {
         }
         .buttonStyle(.appPrimary)
         .disabled(!viewModel.isCurrentStepValid)
-        .padding(.horizontal, AYASpacing.xl)
-        .padding(.top, AYASpacing.sm)
-        .padding(.bottom, AYASpacing.sm)
         .accessibilityIdentifier("cycle.onboarding.primary_action")
     }
 
@@ -409,6 +408,7 @@ struct CycleOnboardingView: View {
     }
 
     private func performAdvance() {
+        stepFeedbackTrigger += 1
         let didComplete: Bool
         if reduceMotion {
             didComplete = viewModel.advance()
@@ -463,7 +463,7 @@ private struct CycleProgressIndicator: View {
             ForEach(Array(CycleOnboardingStep.allCases.enumerated()), id: \.element) { index, step in
                 if index > 0 {
                     Rectangle()
-                        .fill(index <= currentStep.rawValue ? AYAColors.primary.opacity(0.5) : AYAColors.divider)
+                        .fill(index <= currentStep.rawValue ? AYAColors.primary.opacity(0.5) : AYAColors.separator)
                         .frame(height: 1)
                 }
 
@@ -532,7 +532,7 @@ private struct CycleNumericInput: View {
                 Button("common.done") {
                     isFocused = false
                 }
-                .font(AYATypography.ui(size: 15, weight: .semibold))
+                .ayaTypography(.button)
             }
         }
     }

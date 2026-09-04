@@ -65,8 +65,8 @@ final class LifeStageTests: XCTestCase {
     }
 
     func testPremiumProductIdentifiersAreStableAndUnique() {
-        XCTAssertEqual(PremiumProductIdentifiers.monthly, "com.ayameditation.app.premium.monthly")
-        XCTAssertEqual(PremiumProductIdentifiers.yearly, "com.ayameditation.app.premium.yearly")
+        XCTAssertEqual(PremiumProductIdentifiers.monthly, "com.hesia.meditation.premium.monthly")
+        XCTAssertEqual(PremiumProductIdentifiers.yearly, "com.hesia.meditation.premium.yearly")
         XCTAssertEqual(PremiumProductIdentifiers.all.count, 2)
     }
 

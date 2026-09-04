@@ -235,7 +235,7 @@ private struct BiometricLockScreen: View {
 
             Spacer()
         }
-        .padding(.horizontal, AYASpacing.xl)
+        .hesiaScreenPadding()
         .padding(.vertical, AYASpacing.xxxl)
         .frame(maxWidth: 520)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

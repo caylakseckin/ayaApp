@@ -1,23 +1,49 @@
 import XCTest
 
 final class HESIAUITests: XCTestCase {
-    func testThemeRootLeadingEdgeSwipeReturnsToThemeSelection() {
+    func testThemeRootLeadingEdgeSwipeReturnsWithoutStartingMeditation() {
         let app = XCUIApplication()
         app.launchArguments += [
             "-onboarding.completed", "YES",
-            "-life_stage.active", "cycle",
+            "-life_stage.active", "birthMoment",
+            "-premium.isUnlockedForTesting", "YES",
             "-app.language", "en"
         ]
         app.launch()
 
-        let cycleCard = app.buttons["life_stage.card.cycle"]
-        XCTAssertFalse(cycleCard.exists)
+        let meditationCard = app.buttons[
+            "birth_moment.meditation.birth-moment-flower_breath"
+        ]
+        XCTAssertTrue(meditationCard.waitForExistence(timeout: 3))
 
         let leadingEdge = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.52))
         let destination = app.coordinate(withNormalizedOffset: CGVector(dx: 0.72, dy: 0.52))
         leadingEdge.press(forDuration: 0.05, thenDragTo: destination)
 
-        XCTAssertTrue(cycleCard.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["life_stage.card.birthMoment"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["meditation.player.close"].exists)
+    }
+
+    func testBirthMomentHomeRemainsVerticallyScrollable() {
+        let app = XCUIApplication()
+        app.launchArguments += [
+            "-onboarding.completed", "YES",
+            "-life_stage.active", "birthMoment",
+            "-premium.isUnlockedForTesting", "YES",
+            "-app.language", "en"
+        ]
+        app.launch()
+
+        let firstMeditation = app.buttons[
+            "birth_moment.meditation.birth-moment-flower_breath"
+        ]
+        XCTAssertTrue(firstMeditation.waitForExistence(timeout: 3))
+        let initialMinY = firstMeditation.frame.minY
+
+        app.swipeUp()
+
+        XCTAssertLessThan(firstMeditation.frame.minY, initialMinY - 40)
+        XCTAssertFalse(app.buttons["meditation.player.close"].exists)
     }
 
     func testAppLaunches() {

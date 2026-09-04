@@ -159,24 +159,22 @@ struct MeditationReminderSettings: View {
     var body: some View {
         Group {
             if presentation == .settings {
-                VStack(alignment: .leading, spacing: 9) {
-                    Text("reminder.section")
-                        .ayaTypography(.metadata)
-                        .foregroundStyle(AYAColors.textSecondary)
-                        .textCase(.uppercase)
-                        .padding(.horizontal, 4)
+                SettingsGroup("reminder.section") {
+                    SettingsToggleRow(
+                        icon: SettingsRowIcon(.notification),
+                        titleKey: "reminder.title",
+                        value: SettingsRowValue("reminder.description"),
+                        isOn: reminderToggle,
+                        isEnabled: !isUpdating
+                    )
+                    .accessibilityIdentifier("meditation.reminder.toggle")
 
-                    reminderContent
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(
-                            AYAColors.cardSurface,
-                            in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
-                                .stroke(AYAColors.divider, lineWidth: 1)
-                        }
+                    if isEnabled {
+                        SettingsRowSeparator()
+                        timePicker
+                            .padding(.horizontal, AYASpacing.lg)
+                            .frame(minHeight: SettingsRowMetrics.minHeight)
+                    }
                 }
             } else {
                 reminderContent
@@ -214,50 +212,56 @@ struct MeditationReminderSettings: View {
         }
     }
 
+    /// Inline form used on the Welcome screen, where the reminder sits inside
+    /// the sign-up card rather than a settings group.
     private var reminderContent: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
-                HesiaIcon.notification.view(size: 18)
-                    .foregroundStyle(AYAColors.primary)
-                    .frame(width: 24)
+        VStack(spacing: AYASpacing.md) {
+            HStack(spacing: AYASpacing.md) {
+                SettingsRowIcon(.notification)
+                    .frame(width: SettingsRowMetrics.iconColumnWidth)
 
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: AYASpacing.xxs) {
                     Text("reminder.title")
-                        .ayaTypography(.body)
+                        .ayaTypography(.settingsRowTitle)
                         .foregroundStyle(AYAColors.textPrimary)
 
                     Text("reminder.description")
-                        .ayaTypography(.metadata)
+                        .ayaTypography(.settingsRowValue)
                         .foregroundStyle(AYAColors.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Spacer(minLength: 8)
+                Spacer(minLength: AYASpacing.sm)
 
                 Toggle("reminder.title", isOn: reminderToggle)
                     .labelsHidden()
-                    .tint(AYAColors.primary)
+                    .tint(AYAColors.accent)
                     .disabled(isUpdating)
                     .accessibilityIdentifier("meditation.reminder.toggle")
             }
 
             if isEnabled {
                 Rectangle()
-                    .fill(AYAColors.divider)
+                    .fill(AYAColors.separator)
                     .frame(height: 1)
-                    .padding(.leading, 36)
+                    .padding(.leading, SettingsRowMetrics.iconColumnWidth + AYASpacing.md)
+                    .accessibilityHidden(true)
 
-                DatePicker(
-                    "reminder.time",
-                    selection: reminderTime,
-                    displayedComponents: .hourAndMinute
-                )
-                .ayaTypography(.body)
-                .foregroundStyle(AYAColors.textPrimary)
-                .tint(AYAColors.primary)
-                .accessibilityIdentifier("meditation.reminder.time")
+                timePicker
             }
         }
+    }
+
+    private var timePicker: some View {
+        DatePicker(
+            "reminder.time",
+            selection: reminderTime,
+            displayedComponents: .hourAndMinute
+        )
+        .ayaTypography(.settingsRowTitle)
+        .foregroundStyle(AYAColors.textPrimary)
+        .tint(AYAColors.accent)
+        .accessibilityIdentifier("meditation.reminder.time")
     }
 
     private var reminderToggle: Binding<Bool> {

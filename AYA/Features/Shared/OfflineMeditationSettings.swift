@@ -705,47 +705,14 @@ struct OfflineMeditationSettings: View {
     @ObservedObject private var manager = OfflineMeditationManager.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AYASpacing.sm) {
-            Text("settings.offline.section")
-                .ayaTypography(.metadata)
-                .foregroundStyle(AYAColors.textSecondary)
-                .textCase(.uppercase)
-                .padding(.horizontal, AYASpacing.xs)
-
-            HStack(spacing: AYASpacing.md) {
-                HesiaIcon.headphones.view(size: 19)
-                    .foregroundStyle(AYAColors.accent)
-                    .frame(width: 24)
-
-                VStack(alignment: .leading, spacing: AYASpacing.xs) {
-                    Text("settings.offline.title")
-                        .ayaTypography(.body)
-                        .foregroundStyle(AYAColors.textPrimary)
-
-                    Text(statusKey)
-                        .ayaTypography(.metadata)
-                        .foregroundStyle(AYAColors.textSecondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Spacer(minLength: AYASpacing.sm)
-
-                Toggle("settings.offline.title", isOn: $isEnabled)
-                    .labelsHidden()
-                    .tint(AYAColors.accent)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .accessibilityIdentifier("settings.offline.toggle")
-            }
-            .padding(.horizontal, AYASpacing.lg)
-            .padding(.vertical, AYASpacing.md)
-            .background(
-                AYAColors.cardSurface,
-                in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
+        SettingsGroup("settings.offline.section") {
+            SettingsToggleRow(
+                icon: SettingsRowIcon(.headphones),
+                titleKey: "settings.offline.title",
+                value: SettingsRowValue(statusKey),
+                isOn: $isEnabled
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
-                    .stroke(AYAColors.divider, lineWidth: 1)
-            }
+            .accessibilityIdentifier("settings.offline.toggle")
         }
         .onChange(of: isEnabled) { _, enabled in
             if !enabled {

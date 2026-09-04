@@ -1,562 +1,307 @@
-# AYA — Visual Design System and UI Specification
+# HESIA — Visual Design System and UI Specification
 
-> Bu belge, AYA iOS uygulamasının 7 Ağustos 2026 tarihindeki çalışan SwiftUI arayüzünü tarif eden görsel kaynak dokümandır. Yeni ekranlar bu sistemi devam ettirmeli; renk, tipografi ve bileşen kararları view dosyalarında tekrar tanımlanmamalıdır.
+> Bu belge HESIA iOS uygulamasının çalışan SwiftUI arayüzünü tarif eder. Yeni ekranlar bu sistemi devam ettirmeli; renk, tipografi, boşluk ve bileşen kararları view dosyalarında yeniden tanımlanmamalıdır.
+>
+> **Son güncelleme:** 17 Ağustos 2026 — tasarım sistemi v3 geçişi.
+> Kod ile bu belge çeliştiğinde `AYA/DesignSystem/` altındaki token dosyaları esas alınır.
+
+---
 
 ## 1. Ürün ve platform
 
-- Uygulama: **AYA Meditation**
+- Uygulama: **HESIA**
 - Platform: iPhone, SwiftUI
-- Minimum sürüm: iOS 17
-- Görünüm: yalnızca Light Mode
-- Diller: Türkçe ve İngilizce
-- Temel ekran genişliği referansı: 393 pt
-- Tasarım ölçüleri SwiftUI point cinsindedir; fiziksel piksel değildir.
-- Kullanıcıya görünen bütün metinler String Catalog üzerinden gelmelidir.
+- Minimum sürüm: **iOS 17**
+- Görünüm: **Light ve Dark Mode** — ikisi de desteklenir ve test edilmelidir
+- Diller: Türkçe (lansman), İngilizce kaynakları kodda hazır (`HESIAFeatureFlags.supportsMultipleLanguages`)
+- Referans genişlik: 393 pt
+- Ölçüler SwiftUI point cinsindendir.
+- Kullanıcıya görünen bütün metinler `Localizable.xcstrings` üzerinden gelir.
+
+### Liquid Glass hakkında
+
+iOS 26 Liquid Glass **bilinçli olarak kullanılmamaktadır**. Uygulama iOS 17'yi hedefler ve her ekranda navigation bar gizlidir; Apple'ın rehberi cam efektini navigasyon katmanına ayırır, içerik katmanına değil. Sıcak, editorial bir kimlik için cam malzemenin sağlayacağı bir kazanç yoktur.
+
+---
 
 ## 2. Marka hissi
 
-AYA sakin, sıcak, yetişkin ve editorial bir meditasyon uygulamasıdır.
+HESIA sakin, sıcak, yetişkin ve editorial bir meditasyon uygulamasıdır.
 
-Arayüz şu özellikleri taşımalıdır:
+- Premium ancak gösterişli değil
+- Kadın odaklı fakat aşırı pembe değil
+- Medikal görünmeyen, anne-bebek mağazası estetiğine kaymayan
+- Bol açık yüzey, kontrollü mürdüm vurgu
+- Ağır gölge, saf siyah, yüksek doygunluk yok
 
-- Premium ancak gösterişli olmayan
-- Kadın odaklı fakat aşırı pembe olmayan
-- Sıcak, güvenilir ve yumuşak
-- Medikal görünmeyen
-- Anne-bebek mağazası estetiğine dönüşmeyen
-- Bol açık yüzey kullanan
-- Koyu mürdüm rengini kontrollü vurgu olarak kullanan
-- Ağır gölge, sert siyah ve yüksek doygunluk kullanmayan
+**Yapılmayacaklar:** rastgele gradient, neon glow, yoğun blur, sert shadow, her elemanı yuvarlak karta çevirmek, her yerde dev başlık, gövde metninde serif.
 
-Önerilen genel renk dağılımı:
+---
 
-- %65–75 açık background ve beyaz surface
-- %15–25 primary marka tonu
-- %5–10 secondary ve sıcak accent tonları
+## 3. Renk
 
-## 3. Ana renk sistemi
+Kaynak: `AYA/DesignSystem/AYAColors.swift`. Bütün tokenlar appearance-aware (`Color(light:dark:)`).
 
-### 3.1 Marka renkleri
+### 3.1 Marka paleti
 
-| Token | Hex | Kullanım |
-|---|---:|---|
-| `primary` | `#99627A` | Aktif durumlar, seçim, yumuşak marka vurgusu |
-| `secondary` | `#6C2645` | Ana metin, güçlü vurgu, koyu CTA, profil dairesi |
-| `tertiary` | `#FEEBC8` | Sıcak highlight, hamilelik yüzeyi, seçili detay |
-| `softPink` | `#ECC0D3` | Pastel dekorasyon ve lohusalık yüzeyi |
-| `background` | `#F9F5F6` | Bütün ekranların ana arka planı |
-| `surface` | `#FFFFFF` | Kart, input ve açık panel yüzeyi |
+| Token | Light | Dark |
+|---|---|---|
+| `primary` / `accent` | `#99627A` | `#CE9EB6` |
+| `secondary` / `emphasis` | `#6C2645` | `#C98BA6` |
+| `tertiary` | `#FEEBC8` | `#5A4A38` |
+| `softPink` | `#ECC0D3` | `#5A3B48` |
 
-### 3.2 Türetilmiş tokenlar
+### 3.2 Semantic roller
 
-| Token | Değer |
-|---|---|
-| `primaryText` | `secondary` |
-| `secondaryText` | `secondary` %78 opacity |
-| `divider` | `secondary` %12 opacity |
-| `border` | `secondary` %14 opacity |
-| `overlay` | `secondary` %24 opacity |
-| `shadow` | `secondary` %7 opacity |
-| `strongShadow` | `secondary` %14 opacity |
-| `selectionBackground` | `softPink` %42 opacity |
-| `pregnancySurface` | `tertiary` %58 opacity |
-| `postpartumSurface` | `softPink` %44 opacity |
-| `motherhoodSurface` | `primary` %10 opacity |
+| Token | Light | Dark | Kullanım |
+|---|---|---|---|
+| `backgroundPrimary` | `#F7F3EF` | `#141013` | Ekran zemini |
+| `backgroundSecondary` | `#EFE7E0` | `#1C161A` | İkincil zemin, quiet fill |
+| `surfaceElevated` | `#FFFFFF` | `#2A222A` | **Bütün kartlar** |
+| `textPrimary` | `#241C21` | `#F2EAEE` | Başlık ve gövde |
+| `textSecondary` | `#6E616A` | `#B7A8B0` | Açıklama |
+| `textTertiary` | `#796B73` | `#968892` | Metadata |
+| `onAccent` | `#FFFFFF` | `#1A0F14` | Accent/emphasis üstü |
+| `border` | `secondary` %14 | — | Kart konturu |
+| `separator` | `secondary` %10 | — | Satır arası hairline |
 
-### 3.3 SwiftUI kaynak tokenları
+**Kontrast kuralı.** Her ink tokenı, üzerine düştüğü **en kötü** yüzeye karşı 4.5:1 geçmelidir. `textTertiary` bu yüzden iki appearance'ta da yeniden ölçüldü:
 
-```swift
-enum AYAColors {
-    static let primary = Color(hex: 0x99627A)
-    static let secondary = Color(hex: 0x6C2645)
-    static let tertiary = Color(hex: 0xFEEBC8)
-    static let softPink = Color(hex: 0xECC0D3)
-    static let background = Color(hex: 0xF9F5F6)
-    static let surface = Color(hex: 0xFFFFFF)
+| | Eski | Yeni | En kötü yüzey |
+|---|---|---|---|
+| light | `#9C8F96` (2.80:1) | `#796B73` | **4.57:1** — `backgroundPrimary` |
+| dark | `#8A7C84` (3.89:1) | `#968892` | **4.58:1** — `surfaceElevated` |
 
-    static let primaryText = secondary
-    static let secondaryText = secondary.opacity(0.78)
-    static let divider = secondary.opacity(0.12)
-    static let border = secondary.opacity(0.14)
-    static let overlay = secondary.opacity(0.24)
-    static let shadow = secondary.opacity(0.07)
-    static let strongShadow = secondary.opacity(0.14)
-}
-```
+**Tek yüzey kuralı.** Kartlar daima `surfaceElevated` kullanır. Eski `cardSurface` aliası kaldırıldı — light modda `surface` ile aynı olduğu için dark modda fark edilmeden iki farklı elevation üretiyordu.
 
-Renkleri view içinde hex olarak tekrarlama. Yeni renk ihtiyacı varsa önce semantic token üret.
+**Tek çizgi kuralı.** Sadece `border` (kart konturu) ve `separator` (satır arası) vardır. Eski `divider` (%12) kaldırıldı.
+
+View içinde `Color(hex:)` yazılmaz; yeni ihtiyaç için önce semantic token üretilir.
+
+---
 
 ## 4. Tipografi
 
-### 4.1 Amaçlanan font aileleri
+Kaynak: `AYA/DesignSystem/AYATypography.swift`.
 
-- Primary/UI font: **Satoshi**
-- Secondary/editorial font: **Nyght Serif**
+### 4.1 Tek kural: her metin ölçeklenir
 
-Kullanım rolleri:
+Bütün metinler `.ayaTypography(_ role:)` ile yazılır. Bu modifier `@ScaledMetric` kullanır ve Dynamic Type'a uyar.
 
-- Nyght Serif: ekran ana başlıkları, hero başlıkları, büyük editorial kart başlıkları ve meditasyon başlıkları
-- Satoshi: gövde, açıklama, input, buton, badge, caption, navigation ve form kontrolleri
+`AYATypography.ui(size:)` ve `.editorial(size:)` **ölçeklenmez**. Yalnızca Dynamic Type'ın görseli bozacağı sabit-metrik iki yerde kullanılır: karşılama wordmark'ı ve seek ikonunun içine gömülü rakam. **Metin için asla kullanılmaz.**
 
-### 4.2 Mevcut uygulamadaki gerçek durum
-
-Satoshi ve Nyght Serif font dosyaları şu anda uygulama bundle’ında bulunmamaktadır. PostScript isimleri doğrulanamadığı için uygulama isim tahmini yapmaz ve erişilebilir sistem fallback’i kullanır:
-
-```swift
-static func editorial(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-    .system(size: size, weight: weight, design: .serif)
-}
-
-static func ui(size: CGFloat, weight: Font.Weight = .regular) -> Font {
-    .system(size: size, weight: weight, design: .default)
-}
-```
-
-Font dosyaları daha sonra eklenirse, yalnızca merkezi `AYATypography` API’si gerçek PostScript isimleriyle güncellenmelidir. View dosyaları değiştirilmemelidir.
-
-### 4.3 Aktif tipografi ölçeği
+### 4.2 Roller
 
 | Rol | Boyut | Weight | Tasarım |
 |---|---:|---|---|
-| Karşılama “AYA” wordmark | 62 | Semibold | Editorial/serif, tracking 4 |
-| Karşılama başlığı | 29 | Semibold | Editorial/serif |
-| Yaşam dönemi ekran başlığı | 26 | Semibold | Editorial/serif |
-| Kompakt ekran başlığı | 23 | Semibold | Editorial/serif |
-| Dönem detay başlığı | 34 | Semibold | Editorial/serif |
-| Ayarlar başlığı | 28 | Semibold | Editorial/serif |
-| Kart başlığı | 23.25 | Semibold | Editorial/serif |
-| Uzun kart başlığı | 21 | Semibold | Editorial/serif |
-| Karşılama açıklaması | 15 | Regular | UI/sans |
-| Form label | 15 | Medium | UI/sans |
-| Ana input | 17 | Regular | UI/sans |
-| Ana CTA | 16 | Semibold | UI/sans |
-| Kart açıklaması | 12 | Regular | UI/sans |
-| Kart badge | 7.7 | Medium | UI/sans |
-| Ayarlar satırı | 14–15 | Medium | UI/sans |
-| Ayarlar section label | 13 | Medium, uppercase | UI/sans |
-| Profil baş harfi | 19 | Bold | UI/sans |
+| `playerTitle` | 30 | Semibold | Serif |
+| `screenTitle` | 26 | Semibold | Serif |
+| `homeGreeting` | 26 | Semibold | Serif |
+| `stageCardTitle` | 23.25 | Semibold | Serif |
+| `homeMetricValue` | 23.25 | Semibold | Serif |
+| `stageCardTitleLong` | 21 | Semibold | Serif |
+| `homeInsightTitle` | 19 | Semibold | Serif |
+| `homeMeditationTitle` | 18.5 | Semibold | Serif |
+| `price` | 17 | Semibold | Sans |
+| `sectionTitle` / `homeSectionHeading` / `button` | 16 | Semibold | Sans |
+| `body` / `settingsRowTitle` | 15 | Regular / Medium | Sans |
+| `homeBody` / `homeCTA` | 14 | Regular / Semibold | Sans |
+| `metadata` / `settingsRowValue` / `sectionLabel` / `homeSupporting` | 13 | Medium / Regular | Sans |
+| `homeMetadata` / `homeLink` | 12 | Medium | Sans |
+| `badge` / `homeBadge` | 11 | Semibold | Sans |
 
-Kartlarda kullanılan küçük ölçüler mevcut sıkı tek-ekran kompozisyonunun bilinçli parçasıdır. Global olarak büyütülmemelidir.
+**v3'te yükseltilenler:** `homeBody` 12→14, `homeSupporting` 12→13, `homeMetadata` 11→12, life-stage kart rozeti 7.7→11. 12 pt gövde metni uygulamayı sıkışık gösteriyordu; 11 pt altı hiçbir metin kalmamıştır.
 
-## 5. Genel yüzey, border ve gölge
+Serif yalnızca başlıklarda; gövde, buton ve kontrollerde asla.
 
-- Ana ekran arka planı: `AYAColors.background`
-- Açık kart/input yüzeyi: `AYAColors.surface`
-- Standart ince border: `AYAColors.divider`, 1 pt
-- Kart border: `AYAColors.border`, 1 pt
-- Kart köşe yarıçapı: 26 pt continuous
-- Form/panel satırı köşe yarıçapı: 18 pt continuous
-- Ana input/CTA köşe yarıçapı: 16 pt continuous
-- Büyük form container köşe yarıçapı: 24 pt continuous
-- Kart gölgesi: secondary %7, radius 9, y 5
-- Seçili kart glow: kart accent renginin %28’i, radius 9, x/y 0
-- Ayarlar panel gölgesi: secondary %14, radius 22, x -8
+---
 
-Gölge hiçbir zaman siyah veya ağır olmamalıdır.
+## 5. Boşluk, radius, elevation
 
-## 6. Uygulama akışı
+### 5.1 Boşluk — `AYASpacing`
+
+`xxs 2 · xs 4 · sm 8 · md 12 · lg 16 · xl 24 · xxl 32 · xxxl 48`
+
+Literal padding yazılmaz.
+
+### 5.2 Layout — `AYALayout`
+
+| Token | Değer |
+|---|---:|
+| `screenHorizontalPadding` | **20** |
+| `screenTopPadding` | 16 |
+| `screenBottomPadding` | 24 |
+| `sectionSpacing` | 24 |
+| `readableContentMaxWidth` | 760 |
+
+**Tek gutter kuralı.** Ekran kenar boşluğu her yerde `.hesiaScreenPadding()` ile uygulanır. Eskiden 16/18/20/22/24 olmak üzere beş farklı değer vardı; Home'dan takvime geçerken içerik kenarı gözle görülür şekilde kayıyordu.
+
+### 5.3 Radius — `AYARadius`
+
+| Token | Değer | Kullanım |
+|---|---:|---|
+| `chip` | 8 | Rozet, küçük çip |
+| `control` | 16 | Buton, input, ayar satırı |
+| `card` | 22 | **Bütün kartlar** (hero dahil) |
+| `hero` | 28 | Ayarlar paneli, tam yükseklikli yüzey |
+
+Literal `cornerRadius:` yazılmaz. v3'te 18 (14 yer) ve 26 (3 yer) tamamen kaldırıldı. Hero kart artık `card` kullanır — eskiden dolgu 26, kontur 28 olduğu için Lohusalık hero kartının köşelerinde görünür bir boşluk vardı.
+
+Daima `.continuous`.
+
+### 5.4 Elevation — `AYAElevation`
+
+`card` (radius 9, y 5) · `raised` (radius 12, y 5) · `panel` (radius 22, x -8). Sıcak, düşük opaklık; asla siyah.
+
+### 5.5 İkon — `HesiaIconSize`
+
+`sm 14` (chevron, inline metadata) · `md 18` (satır ikonu) · `lg 22` (feature) · `hero 48` (onboarding dairesi).
+
+---
+
+## 6. Paylaşılan bileşenler
+
+Yeni ekran yazarken önce buraya bakılır. Aynı görsel elemanı ikinci kez elle kurmak yasaktır.
+
+### 6.1 Ekran iskeleti
+
+| Bileşen | Görev |
+|---|---|
+| `HomeScreenScaffold` | Dört Home ekranının kabuğu. Header `safeAreaInset` ile **sabitlenir** — eskiden scroll ile kayboluyor, Ayarlar'a tek giriş noktası erişilemez hâle geliyordu. |
+| `HomeHeader` / `HomeHeaderDetail` | Selamlama + alt bilgi + profil düğmesi. |
+| `ScreenHeader` | Geri düğmesi + ortalanmış başlık (takvim, timeline). |
+| `.hesiaScreenPadding()` | Tek gutter. |
+| `.hesiaBottomBar()` | Alt CTA çubuğu: `.thinMaterial` + hairline separator. Eski altı ayrı `backgroundPrimary.opacity(0.96…0.98)` varyantının yerine geçer. |
+
+### 6.2 İçerik
+
+| Bileşen | Görev |
+|---|---|
+| `LifeStageHeroCard` | Home durum paneli: ring + rozet + başlık + paragraf. |
+| `StageProgressRing` | İlerleme halkası. Dinamik payda için `totalLabelText`. |
+| `LifeStageOverviewSection` | Bölüm başlığı + link + yatay timeline. |
+| `LifeStageHorizontalTimeline` | Gün/hafta şeridi. |
+| `DailyMeditationCard` | Günün meditasyonu — **gerçek `Button`**. |
+| `LifeStageContinuationCard` | Dönemler arası geçiş. |
+| `SectionHeader` | Bölüm başlığı + isteğe bağlı trailing aksiyon. |
+| `HesiaBadge` | Tek kapsül rozet (`soft` / `themed` / `neutral`). Eskiden yedi farklı yükseklik vardı; yükseklik artık metinden türer. |
+| `ContextualInfoButton` / `ContextualInfoSheet` | Bilgi katmanı. |
+
+### 6.3 Ayarlar
+
+`SettingsGroup` · `SettingsSectionLabel` · `SettingsNavigationRow` · `SettingsToggleRow` · `SettingsLinkRow` · `SettingsStatusRow` · `SettingsRowSeparator` · `SettingsRowIcon` · `SettingsRowValue`.
+
+Tek radius (`control`), tek satır yüksekliği (52 / stacked 62), tek etiket stili. Panelde daha önce üç radius (16/18/22) ve beş satır yüksekliği aynı kolonda alt alta duruyordu.
+
+### 6.4 Buton stilleri
+
+- `.buttonStyle(.appPrimary)` — tam genişlik plum CTA, min 52 pt.
+- `HesiaCardButtonStyle` — tam kart butonları için ölçülü press geri bildirimi (Reduce Motion'da kapalı).
+
+---
+
+## 7. Uygulama akışı
 
 ```text
 İlk açılış
-  └─ Karşılama: ad + dil seçimi
-      └─ AYA yaşam dönemi seçimi
-          ├─ Regl Döngüsü → Yakında ekranı
-          ├─ Hamilelik → Yakında ekranı
-          ├─ Lohusalık → Yakında ekranı
-          └─ Annelik → Yakında ekranı
-              └─ Sağ üst profil baş harfi → Ayarlar yan paneli
-                  └─ AYA Temaları → yaşam dönemi seçimine dönüş
+  └─ Karşılama (ad)
+      └─ Tanıtım (6 adım)
+          └─ Çevrimdışı dinleme
+              └─ Face ID
+                  └─ Yaşam dönemi seçimi
+                      ├─ Regl Döngüsü  → onboarding → Home
+                      ├─ Hamilelik     → paywall → setup → Home
+                      ├─ Doğum Anı     → paywall → Home
+                      ├─ Lohusalık     → paywall → kişiselleştirme → Home
+                      └─ Annelik       → (feature flag ile gizli)
 ```
 
-- Geri butonu dönem detay ekranlarında gösterilmez.
-- Ayarlar yalnızca dönem detay ekranlarının sağ üstündedir.
-- Yaşam dönemi seçimine ayarlardaki “AYA Temaları” üzerinden dönülür.
-- Varsayılan seçili yaşam dönemi Regl Döngüsü’dür.
-- Seçilen kart, kullanıcı seçim ekranına döndüğünde glow ve checkmark ile seçili görünür.
+- Tab bar yoktur: aynı anda tek bir aktif yaşam dönemi vardır.
+- Navigation bar her ekranda gizlidir; geri hareketleri `hesiaInteractivePopGesture` / `hesiaRootEdgeBack` ile korunur.
+- Ayarlar sağdan açılan özel bir drawer'dır; Temalar'a yalnızca buradan dönülür.
 
-## 7. Karşılama ekranı
+---
 
-### 7.1 Kompozisyon
+## 8. Durumlar
 
-- ScrollView kullanılır; küçük ekran ve klavye güvenliği korunur.
-- İçerik yatay padding: 24 pt
-- İçeriğin maksimum genişliği: 560 pt
-- Üst minimum boşluk: 54 pt
-- Marka grubu ile form arası: 42 pt
-- Form ile CTA arasında esnek alan, minimum 28 pt
-- CTA alt boşluğu: 22 pt
+Veri gösteren her ekran dördünü de karşılamalıdır.
 
-### 7.2 Dekoratif arka plan
+| Durum | Kural |
+|---|---|
+| **Loading** | Nihai yerleşimle örtüşen placeholder. `DailyMeditationCard` metadata beklerken metadata satırını iskeletle doldurur — böylece içerik zıplamaz. Shimmer kullanılmaz. |
+| **Empty** | Davet, özür değil. |
+| **Error** | Ne olduğu + tekrar dene. Player'da tam ekran hata durumu, Home'da kart içi `meditation.card.offline_notice` şeridi. |
+| **Loaded** | Tek öğe, çok öğe, uzun isim, eksik görsel. |
 
-- Ana zemin: `background`
-- Sağ üst: `softPink` %28, 280×280 daire, 2 pt blur, offset x 150 / y -310
-- Sol alt: `tertiary` %34, 230×230 daire, offset x -170 / y 330
-- Dekoratif öğeler accessibility ağacından gizlenir.
+---
 
-### 7.3 Marka grubu
+## 9. Hareket ve haptik
 
-- “AYA”: 62 pt editorial semibold, secondary, tracking 4
-- Grup spacing: 12 pt
-- Karşılama başlığı: 29 pt editorial semibold
-- Açıklama: 15 pt UI regular, secondaryText
-- Bütün metinler ortalıdır.
+- Ekran geçişi 0.30 sn, player 0.35 sn (`HESIAMotion`).
+- **Reduce Motion** açıkken hareket opaklıkla değiştirilir, sadece kısaltılmaz.
+- Sayaçlarda `.contentTransition(.numericText())`.
+- Haptik: yaşam dönemi seçimi ve onboarding adımı (`.selection`), player oynat/duraklat (`.selection`), bitiş (`.success`). Ölçülü kullanılır.
 
-### 7.4 Form kartı
+---
 
-- Surface: white %82 opacity
-- Padding: 20 pt
-- İç bölüm spacing: 26 pt
-- Radius: 24 pt
-- Border: secondary %12, 1 pt
-- Shadow: semantic shadow, radius 16, y 8
+## 10. Accessibility
 
-Ad input:
+- Minimum dokunma alanı **44×44 pt**.
+- Bütün metinler Dynamic Type ile ölçeklenir; XXL ve accessibility boyutlarında test edilir.
+- Hero kart ve ayar satırları büyük boyutlarda dikey yerleşime geçer.
+- Dekoratif görseller accessibility ağacından gizlenir.
+- **`onTapGesture` ile buton yapılmaz.** Tıklanabilir her şey `Button`'dır. `DailyMeditationCard` bu yüzden yeniden yazıldı: eski hâli tap gesture + `PreferenceKey` hit-exclusion kullanıyordu, bu yüzden VoiceOver kullanıcıları kartı hiç etkinleştiremiyordu.
+- Ayarlar drawer'ı `.accessibilityAddTraits(.isModal)` taşır.
+- Renk tek başına anlam taşımaz.
 
-- Yükseklik: minimum 52 pt
-- Horizontal padding: 16 pt
-- Radius: 16 pt
-- Normal border: divider
-- Focus border: primary
-- Font: 17 pt UI regular
-- Bütün input yüzeyi dokunulabilir olmalıdır; yalnızca placeholder/metin alanı hit target olmamalıdır.
+---
 
-Dil seçimi:
+## 11. Localization
 
-- İki eşit genişlikte buton
-- Aralık: 10 pt
-- Yükseklik: minimum 46 pt
-- Radius: 14 pt
-- Seçili: primary yüzey + beyaz metin + filled checkmark
-- Seçili değil: beyaz yüzey + primaryText + boş circle
-
-Devam CTA:
-
-- Tam genişlik
-- Minimum yükseklik: 52 pt
-- Radius: 16 pt
-- Arka plan: secondary
-- Metin: surface, 16 pt semibold
-- Ad boşken disabled ve %45 opacity
-
-## 8. Yaşam dönemi seçim ekranı
-
-### 8.1 Sayfa yerleşimi
-
-- Navigation bar gizlidir.
-- Background: `#F9F5F6`
-- Yatay sayfa padding: 8 pt
-- Normal dikey padding: 16 pt
-- Kompakt dikey padding: 12 pt
-- Başlık ile ilk kart arası: normal 20 pt, kompakt 18 pt
-- Kart aralığı: normal 10 pt, kompakt 8 pt
-- Yükseklik 730 pt’den küçükse compact metrics kullanılır.
-- Başlık ve bütün kart grubu, içerik ekrana sığıyorsa sayfada dikey olarak ortalanır.
-- İçerik sığmıyorsa ScrollView doğal olarak kaydırılır.
-- Alt bilgi paneli kullanılmaz.
-
-Başlık:
-
-- Ortalanmış
-- Normal 26 pt, kompakt 23 pt
-- Editorial semibold
-- Tracking: -0.5
-- Line spacing: -4
-- Yatay kart sınırlarıyla aynı hizada
-
-### 8.2 Ortak kart ölçüleri
-
-| Özellik | Değer |
-|---|---:|
-| Normal yükseklik | 132 pt |
-| Kompakt yükseklik | 120 pt |
-| Accessibility Dynamic Type yüksekliği | 258 pt |
-| Köşe yarıçapı | 26 pt continuous |
-| Yatay iç padding | 20 pt |
-| Üst padding | 14 pt |
-| Alt padding | 15 pt |
-| Kart başlığı maksimum genişliği | 240 pt |
-| Açıklama genişliği | Kart genişliğinin %50’si |
-| Başlık–açıklama spacing | 3 pt |
-| Açıklama line spacing | 1 pt |
-
-- Kartın tamamı butondur; ayrı CTA bulunmaz.
-- Açıklama en fazla 2 satırdır.
-- Başlık tek satır hedefler, minimum scale factor 0.9’dur.
-- Premium kartlar disabled veya gri görünmez.
-- Badge kartın sağ altındadır.
-- Seçili kartın sağ üstünde checkmark dairesi vardır.
-
-### 8.3 Badge
-
-| Özellik | Değer |
-|---|---:|
-| Yükseklik | 19.8 pt |
-| Yatay padding | 6.6 pt |
-| İçerik spacing | 4.4 pt |
-| Radius | 6.05 pt |
-| Metin | 7.7 pt medium |
-| Premium kilit | 8.25 pt medium |
-
-- Badge sağ-alt hizalanır ve tabandan 8 pt yukarı offset alır.
-- Free badge kilit kullanmaz.
-- Premium badge küçük `lock` SF Symbol kullanır.
-
-### 8.4 Seçili durum
-
-- Border normalde 1 pt semantic border’dır.
-- Seçiliyken border 2 pt ve kartın accent rengidir.
-- Accent renginde %28 opacity, radius 9 glow kullanılır.
-- Sağ üstte 24×24 pt accent daire içinde 11 pt bold checkmark bulunur.
-- Checkmark container kart kenarından 11 pt içeridedir.
-- Animasyon zorunlu değildir; rahatsız edici pulse kullanılmaz.
-
-## 9. Yaşam dönemi kart temaları
-
-### 9.1 Regl Döngüsü / Menstrual Cycle
-
-- Koyu ve baskın karttır.
-- Background gradient: `secondary (#6C2645)` → `primary (#99627A)`, yukarıdan aşağı
-- Başlık: surface
-- Açıklama: surface %88
-- Accent/seçim: tertiary
-- Border: surface %14
-- Badge surface: primary
-- Badge foreground: surface
-- Asset: `stage_cycle_orbit`
-- Asset rendering: resizable + scaledToFill
-- Scale: x 1.05 / y 1.15
-- Runtime color blend: secondary %72 → primary %58 gradient, `.blendMode(.color)`
-
-### 9.2 Hamilelik / Pregnancy
-
-- Background: tertiary %58
-- Secondary background: tertiary
-- Başlık: secondary
-- Açıklama: secondary %88
-- Accent: primary
-- Badge surface: tertiary %88
-- Badge foreground: secondary
-- Asset: `stage_pregnancy_sprout`
-- Scale: x 1.05 / y 1.15
-
-### 9.3 Lohusalık / Postpartum
-
-- Background: softPink %44
-- Secondary background: softPink
-- Başlık: secondary
-- Açıklama: secondary %88
-- Accent: primary
-- Badge surface: softPink %76
-- Badge foreground: secondary
-- Asset: `stage_postpartum_rest`
-- Scale: x 1.11 / y 1.21
-
-### 9.4 Annelik / Motherhood
-
-- Background: primary %10
-- Secondary background: primary %16
-- Başlık: secondary
-- Açıklama: secondary %88
-- Accent: primary
-- Badge surface: primary %16
-- Badge foreground: secondary
-- Asset: `stage_motherhood_blocks`
-- Scale: x 1.11 / y 1.21
-
-### 9.5 Asset kuralları
-
-- Kart assetleri değiştirilmemeli, yeniden çizilmemeli veya farklı isimle kopyalanmamalıdır.
-- SVG yerine mevcut PNG assetleri kullanılmalıdır.
-- Asset isimleri, scaleEffect değerleri, opacity ve rendering yöntemi ekran bazında keyfi değiştirilmemelidir.
-- Kart assetleri dekoratiftir; hit testing ve accessibility kapalıdır.
-
-## 10. Dönem detay / “Yakında” ekranı
-
-- Background: main background
-- İçerik ekran merkezindedir.
-- Başlık: 34 pt editorial semibold, primaryText
-- Başlık altı spacing: 9 pt
-- “Yakında / Coming soon”: 16 pt UI medium, secondaryText
-- Yatay içerik padding: 24 pt
-- Sistem geri butonu ve navigation bar gizlidir.
-
-Profil düğmesi:
-
-- Sağ üst safe area içinde özel overlay olarak yer alır; navigation toolbar içine konmaz.
-- Sağ padding: 16 pt
-- Safe area üstünden padding: 8 pt
-- Ölçü: tam 44×44 pt
-- Shape: gerçek Circle; üstten/alttan kırpılmamalıdır.
-- Surface: secondary
-- Baş harf: surface, 19 pt bold
-- Kullanıcının trim edilmiş adının ilk harfi ve uppercase değeri gösterilir.
-- Accessibility label: Ayarlar/Settings
-- Ayarlar açılınca profil düğmesi tamamen kaybolur.
-
-## 11. Ayarlar yan paneli
-
-### 11.1 Panel kabuğu
-
-- Sağdan açılır.
-- Genişlik: `min(336 pt, ekran genişliğinin %88’i)`
-- Background: main background
-- Sol üst ve sol alt radius: 28 pt
-- Horizontal padding: 20 pt
-- Üst padding: `max(safeAreaTop + 14, 72)`
-- Alt padding: `max(safeAreaBottom + 16, 24)`
-- Ana dikey spacing: 22 pt
-- Arka scrim: secondary %24
-- Geçiş: sağdan move + genel opacity, 0.22 sn easeOut
-- Reduce Motion açıksa animasyon kapatılır.
-- Dış alana dokunmak paneli kapatır.
-- Panel klavye safe area değişiminde yerinden oynamamalıdır.
-
-Header:
-
-- Başlık: 28 pt editorial semibold
-- Kapatma: 44×44 beyaz daire
-- X icon: 14 pt bold
-- Border: divider, 1 pt
-- Profil baş harfi panel açıkken görünmez.
-
-### 11.2 AYA Temaları satırı
-
-- 52 pt minimum yükseklik
-- Surface card
-- 18 pt radius
-- 16 pt yatay padding
-- Icon alanı 22 pt
-- İç spacing 12 pt
-- Metin 15 pt medium
-- Sağda 12 pt semibold chevron
-- Seçim ekranına geri döndürür.
-
-### 11.3 Profil/ad alanı
-
-- Section label: 13 pt medium uppercase, secondaryText
-- Section label ile kart arası: 9 pt
-- Kart radius: 18 pt
-- Kart horizontal padding: 16 pt
-- Kart vertical padding: 11 pt
-- Label: 12 pt medium
-- TextField: 15 pt regular, minimum 32 pt
-- Kullanıcı adı `AppStorage("user.name")` ile canlı ve kalıcı güncellenir.
-- Submit sırasında baştaki/sondaki whitespace temizlenir.
-- Panel kapatıldığında sağ üst profil baş harfi yeni adı yansıtır.
-
-### 11.4 Dil accordion
-
-- Kapalı satır yüksekliği: minimum 52 pt
-- Seçenek satırı: minimum 46 pt
-- Ana metin: 15 pt medium
-- Seçenek metni: 14 pt regular
-- Globe ve checkmark/circle SF Symbols kullanılır.
-- Chevron açıldığında 180 derece döner.
-- Animasyon: 0.18 sn easeInOut; Reduce Motion’da kapalı.
-
-### 11.5 Support bağlantıları
-
-- Grup radius: 18 pt
-- Satır yüksekliği: minimum 50 pt
-- Horizontal padding: 16 pt
-- Icon alanı: 22 pt
-- İç spacing: 12 pt
-- Metin: 14 pt medium
-- Separator: divider, 1 pt; soldan 50 pt inset
-- Sağda küçük `arrow.up.right`
-
-## 12. Etkileşim ve durum yönetimi
-
-- İlk açılış tamamlandı durumu: `AppStorage("onboarding.completed")`
-- Dil: `AppStorage("app.language")`
-- Kullanıcı adı: `AppStorage("user.name")`
-- Ad whitespace ile normalize edilir; boş adla onboarding tamamlanamaz.
-- Dil seçimi anında SwiftUI locale ortamını günceller.
-- Yaşam dönemi kartının tamamı minimum erişilebilir dokunma alanıdır.
-- Kart seçimi view model içinde tutulur ve kullanıcı tema ekranına döndüğünde görünür kalır.
-- Premium kartlar şimdilik ödeme sheet’i açmaz; kendi “Yakında” ekranlarına gider.
-
-## 13. Localization
-
-- Kaynak: `Localizable.xcstrings`
-- Source language: English
-- Desteklenen diller: `en`, `tr`
+- Kaynak: `Localizable.xcstrings`, semantic key yaklaşımı.
 - Swift dosyalarında kullanıcı metni hardcode edilmez.
-- Semantic key yaklaşımı kullanılır.
+- Türkçe karakterler korunur: `İ ı ş Ş ğ Ğ ü Ü ö Ö ç Ç`.
+- İngilizce metinlerin daha uzun olabileceği hesaba katılır.
 
-Temel key grupları:
+---
 
-```text
-welcome.*
-life_stage.*
-stage.coming_soon
-settings.*
-common.*
-```
+## 12. Yeni ekran kontrol listesi
 
-- Türkçe karakterler korunmalıdır: `İ, ı, ş, Ş, ğ, Ğ, ü, Ü, ö, Ö, ç, Ç`.
-- İngilizce metinlerin daha uzun olabileceği hesaba katılmalıdır.
+1. Zemin `AYAColors.backgroundPrimary`, kartlar `surfaceElevated`.
+2. Gutter `.hesiaScreenPadding()`.
+3. Bütün metinler `.ayaTypography(_:)`.
+4. Radius yalnızca `AYARadius`'tan.
+5. Boşluk yalnızca `AYASpacing` / `AYALayout`'tan.
+6. Önce paylaşılan bileşene bak; yoksa üret ve buraya ekle.
+7. Tıklanabilir her şey `Button`, min 44 pt.
+8. Dört durum da ele alınmış.
+9. Light + Dark, TR + EN, Dynamic Type XXL preview'ları eklenmiş.
+10. Kontrast en kötü yüzeye karşı ölçülmüş.
 
-## 14. Accessibility ve responsive kurallar
+---
 
-- Minimum dokunma alanı 44×44 pt’dir.
-- Dekoratif assetler ve arka plan şekilleri accessibility ağacından gizlenir.
-- Kartlar anlamlı title, hint ve selected trait taşır.
-- Ayarlar ve kapatma düğmeleri lokalize accessibility label kullanır.
-- Dynamic Type büyüdüğünde kart yüksekliği 258 pt expanded düzene geçer.
-- Kart açıklaması iki satıra kırılabilir.
-- Kart başlığı truncation yerine en fazla 0.9 scale kullanır.
-- Sayfalar küçük ekranda ScrollView ile kaydırılır.
-- Klavye input veya panel kontrollerinin üzerini kapatmamalıdır.
-- Reduce Motion açıkken zorunlu olmayan animasyon uygulanmaz.
-- Yalnız opacity ile anlatılan disabled state oluşturma; onboarding CTA’sında ayrıca gerçek `.disabled` kullanılır.
-- Light Mode zorunludur: `.preferredColorScheme(.light)`.
-
-## 15. Yeni ekran üretme kuralları
-
-Yeni bir AYA ekranı hazırlanırken:
-
-1. Ana zeminde `AYAColors.background` kullan.
-2. Açık içerik gruplarında `surface` kullan.
-3. Başlığı editorial, gövde ve kontrolleri UI rolüyle oluştur.
-4. Primary/secondary rengini ekranın tamamına yayma; vurgu için kullan.
-5. Container radius için öncelikle 18, 24 veya 26 pt ölçeklerinden birini seç.
-6. Border’ı 1 pt semantic divider/border ile sınırla.
-7. Ağır siyah shadow veya saf siyah metin kullanma.
-8. Kontrolleri en az 44 pt hit target ile oluştur.
-9. Türkçe ve İngilizce preview ekle.
-10. Bütün görünür metinleri String Catalog’a koy.
-11. Dynamic Type ve küçük iPhone ekranında yatay taşmayı kontrol et.
-12. Mevcut kart PNG assetlerini değiştirme veya başka amaçla yeniden kullanma.
-
-## 16. Yapılmaması gerekenler
-
-- Eski mavi/sage/lavender paleti ana marka rengi olarak geri getirilmemeli.
-- Bütün açık kartlar aynı pembe tona dönüştürülmemeli.
-- Premium kartlar disabled/gri gösterilmemeli.
-- Body veya buton metninde editorial serif kullanılmamalı.
-- Font dosyası bulunmadan Satoshi/Nyght PostScript adı tahmin edilmemeli.
-- View içinde tekrar tekrar `Color(hex:)` yazılmamalı.
-- Büyük insan illüstrasyonu, medikal ikonografi veya bebek mağazası estetiği kullanılmamalı.
-- Ağır gradient, neon glow, yoğun blur ve sert shadow kullanılmamalı.
-- Profil baş harfi navigation toolbar içine konmamalı; iOS toolbar clipping uygulanabilir.
-- Parent container’a accessibility identifier vererek alt kontrollerin kimlikleri ezilmemeli.
-
-## 17. Kaynak dosyalar
-
-Tasarımın uygulamadaki kaynakları:
+## 13. Kaynak dosyalar
 
 ```text
 AYA/DesignSystem/AYAColors.swift
 AYA/DesignSystem/AYATypography.swift
-AYA/DesignSystem/View+Extensions.swift
-AYA/App/WelcomeView.swift
-AYA/Features/LifeStageSelection/LifeStageSelectionView.swift
-AYA/Features/LifeStageSelection/LifeStageCardView.swift
-AYA/Features/LifeStageSelection/LifeStageTheme.swift
-AYA/Features/LifeStageSelection/StageMotifs/*.swift
+AYA/DesignSystem/AYASpacing.swift
+AYA/DesignSystem/AYARadius.swift
+AYA/DesignSystem/AYAElevation.swift
+AYA/DesignSystem/HesiaLayout.swift        // AYALayout, hesiaScreenPadding, hesiaBottomBar, ScreenHeader
+AYA/DesignSystem/HesiaBadge.swift
+AYA/DesignSystem/HesiaIcon.swift          // HesiaIcon, HesiaIconSize
+AYA/DesignSystem/SettingsRow.swift
+AYA/DesignSystem/SectionHeader.swift
+AYA/DesignSystem/AppPrimaryButton.swift
+AYA/DesignSystem/LifeStageDetailTheme.swift
+AYA/DesignSystem/View+Extensions.swift    // HESIAMotion, geçişler
+AYA/Features/Shared/HomeScreenScaffold.swift
+AYA/Features/Shared/LifeStageHeroCard.swift
+AYA/Features/Shared/LifeStageOverviewSection.swift
+AYA/Features/Shared/StageProgressRing.swift
+AYA/Features/Meditation/DailyMeditationCard.swift
+AYA/Features/Settings/SettingsPanel.swift
 AYA/Resources/Assets.xcassets
 AYA/Resources/Localizable.xcstrings
 ```
-
-Bu belge ile kod arasında uyuşmazlık oluşursa çalışan merkezi design token dosyaları renk ve tipografi için son teknik kaynak kabul edilmelidir.

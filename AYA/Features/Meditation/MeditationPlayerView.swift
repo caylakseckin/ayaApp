@@ -170,12 +170,8 @@ struct MeditationPlayerView: View {
                     VStack(spacing: 0) {
                         scrollPositionReader
 
-                        if presentation == .standard {
-                            topControls
-                        }
-
                         meditationHeader
-                            .padding(.top, presentation == .standard ? AYASpacing.xxl : AYASpacing.lg)
+                            .padding(.top, presentation == .standard ? AYASpacing.lg : AYASpacing.lg)
 
                         Spacer(minLength: presentation == .standard ? AYASpacing.xxl : AYASpacing.sm)
 
@@ -198,7 +194,7 @@ struct MeditationPlayerView: View {
 
                         Spacer(minLength: presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
                     }
-                    .padding(.horizontal, presentation == .standard ? AYASpacing.xl : AYASpacing.lg)
+                    .padding(.horizontal, presentation == .standard ? AYALayout.screenHorizontalPadding : AYASpacing.lg)
                     .padding(.top, presentation == .standard ? AYASpacing.sm : 0)
                     .padding(.bottom, presentation == .standard ? AYASpacing.xl : AYASpacing.sm)
                     .frame(maxWidth: .infinity)
@@ -211,6 +207,13 @@ struct MeditationPlayerView: View {
                     isScrollAtTop = minY >= -1
                 }
                 .simultaneousGesture(dismissGesture(viewportHeight: geometry.size.height))
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    if presentation == .standard {
+                        topControls
+                            .hesiaScreenPadding()
+                            .padding(.vertical, AYASpacing.sm)
+                    }
+                }
             }
         }
         .background(playerBackground)
@@ -289,7 +292,7 @@ struct MeditationPlayerView: View {
                 HesiaIcon.caretDown.view(size: 19)
                     .foregroundStyle(AYAColors.textPrimary)
                     .frame(width: 46, height: 46)
-                    .background(AYAColors.surface, in: Circle())
+                    .background(AYAColors.surfaceElevated, in: Circle())
                     .ayaElevation(.card)
             }
             .buttonStyle(.plain)
@@ -309,12 +312,7 @@ struct MeditationPlayerView: View {
 
     private var meditationHeader: some View {
         VStack(spacing: 0) {
-            Text(verbatim: phaseBadgeText)
-                .ayaTypography(.metadata)
-                .foregroundStyle(AYAColors.emphasis)
-                .padding(.horizontal, AYASpacing.lg)
-                .frame(minHeight: 38)
-                .background(AYAColors.accentSoft, in: Capsule())
+            HesiaBadge(verbatim: phaseBadgeText)
 
             Text(verbatim: meditationTitle)
                 .ayaTypography(.playerTitle)
@@ -451,6 +449,7 @@ struct MeditationPlayerView: View {
         HStack(spacing: AYASpacing.md) {
             Text(verbatim: MeditationTimeFormatter.clock(viewModel.currentTime))
                 .foregroundStyle(AYAColors.textSecondary)
+                .monospacedDigit()
                 .frame(minWidth: 43, alignment: .leading)
 
             Slider(
@@ -460,6 +459,8 @@ struct MeditationPlayerView: View {
                 ),
                 in: 0...1
             )
+            // Matches the focal transport button, which is the player's
+            // dominant control colour.
             .tint(AYAColors.emphasis)
             .accessibilityLabel("meditation.player.progress")
             .accessibilityValue(progressAccessibilityValue)
@@ -467,6 +468,7 @@ struct MeditationPlayerView: View {
 
             Text(verbatim: MeditationTimeFormatter.clock(viewModel.duration))
                 .foregroundStyle(AYAColors.textTertiary)
+                .monospacedDigit()
                 .frame(minWidth: 43, alignment: .trailing)
         }
         .ayaTypography(.metadata)

@@ -69,6 +69,7 @@
 		B0010000000000000000003C /* LifeStageDetailTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000003F /* LifeStageDetailTheme.swift */; };
 		B0010000000000000000003D /* ContextualInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000040 /* ContextualInfoSheet.swift */; };
 		B0010000000000000000003E /* CycleInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000041 /* CycleInfoProvider.swift */; };
+		B0010000000000000000003F /* HesiaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000042 /* HesiaLayout.swift */; };
 		B00100000000000000000040 /* PostpartumInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000043 /* PostpartumInfoProvider.swift */; };
 		B00100000000000000000041 /* MotherhoodInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000044 /* MotherhoodInfoProvider.swift */; };
 		B00100000000000000000042 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000045 /* PremiumPaywallView.swift */; };
@@ -97,6 +98,14 @@
 		B00100000000000000000059 /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005C /* PremiumStore.swift */; };
 		B0010000000000000000005A /* OfflineMeditationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005E /* OfflineMeditationSettings.swift */; };
 		B0010000000000000000005B /* OfflineMeditationOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000005F /* OfflineMeditationOnboardingView.swift */; };
+		B0010000000000000000005C /* SettingsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000060 /* SettingsRow.swift */; };
+		B0010000000000000000005D /* SettingsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000061 /* SettingsPanel.swift */; };
+		B0010000000000000000005E /* HesiaBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000062 /* HesiaBadge.swift */; };
+		B0010000000000000000005F /* LifeStageHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000063 /* LifeStageHeroCard.swift */; };
+		B00100000000000000000060 /* HomeScreenScaffold.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000064 /* HomeScreenScaffold.swift */; };
+		B00100000000000000000061 /* DailyMeditationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000065 /* DailyMeditationCard.swift */; };
+		B00100000000000000000062 /* LifeStageOverviewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000066 /* LifeStageOverviewSection.swift */; };
+		B00100000000000000000063 /* BirthMomentHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000067 /* BirthMomentHomeView.swift */; };
 		BW0100000000000000000001 /* HESIA Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000001 /* HESIA Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BW0100000000000000000002 /* HESIA Watch Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000002 /* HESIA Watch Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BW0100000000000000000010 /* HESIAWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000010 /* HESIAWatchApp.swift */; };
@@ -241,6 +250,7 @@
 		F0010000000000000000003F /* LifeStageDetailTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageDetailTheme.swift; sourceTree = "<group>"; };
 		F00100000000000000000040 /* ContextualInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualInfoSheet.swift; sourceTree = "<group>"; };
 		F00100000000000000000041 /* CycleInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleInfoProvider.swift; sourceTree = "<group>"; };
+		F00100000000000000000042 /* HesiaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HesiaLayout.swift; sourceTree = "<group>"; };
 		F00100000000000000000043 /* PostpartumInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostpartumInfoProvider.swift; sourceTree = "<group>"; };
 		F00100000000000000000044 /* MotherhoodInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherhoodInfoProvider.swift; sourceTree = "<group>"; };
 		F00100000000000000000045 /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
@@ -270,6 +280,14 @@
 		F0010000000000000000005D /* HESIA.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = HESIA.storekit; sourceTree = "<group>"; };
 		F0010000000000000000005E /* OfflineMeditationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineMeditationSettings.swift; sourceTree = "<group>"; };
 		F0010000000000000000005F /* OfflineMeditationOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineMeditationOnboardingView.swift; sourceTree = "<group>"; };
+		F00100000000000000000060 /* SettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRow.swift; sourceTree = "<group>"; };
+		F00100000000000000000061 /* SettingsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPanel.swift; sourceTree = "<group>"; };
+		F00100000000000000000062 /* HesiaBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HesiaBadge.swift; sourceTree = "<group>"; };
+		F00100000000000000000063 /* LifeStageHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageHeroCard.swift; sourceTree = "<group>"; };
+		F00100000000000000000064 /* HomeScreenScaffold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenScaffold.swift; sourceTree = "<group>"; };
+		F00100000000000000000065 /* DailyMeditationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyMeditationCard.swift; sourceTree = "<group>"; };
+		F00100000000000000000066 /* LifeStageOverviewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeStageOverviewSection.swift; sourceTree = "<group>"; };
+		F00100000000000000000067 /* BirthMomentHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthMomentHomeView.swift; sourceTree = "<group>"; };
 		FW0100000000000000000001 /* HESIA Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HESIA Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FW0100000000000000000002 /* HESIA Watch Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "HESIA Watch Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FW0100000000000000000010 /* HESIAWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HESIAWatchApp.swift; sourceTree = "<group>"; };
@@ -381,6 +399,8 @@
 				G00100000000000000000012 /* Shared */,
 				G00100000000000000000013 /* Motherhood */,
 				G0010000000000000000000E /* Meditation */,
+				G00100000000000000000014 /* Settings */,
+				G00100000000000000000015 /* BirthMoment */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -424,6 +444,9 @@
 				F0010000000000000000004B /* AppPrimaryButton.swift */,
 				F0010000000000000000004C /* SectionHeader.swift */,
 				F00100000000000000000052 /* HesiaIcon.swift */,
+				F00100000000000000000060 /* SettingsRow.swift */,
+				F00100000000000000000042 /* HesiaLayout.swift */,
+				F00100000000000000000062 /* HesiaBadge.swift */,
 			);
 			path = DesignSystem;
 			sourceTree = "<group>";
@@ -511,6 +534,7 @@
 				F00100000000000000000022 /* MeditationPlayerView.swift */,
 				F00100000000000000000023 /* MeditationPlayerViewModel.swift */,
 				F00100000000000000000047 /* RemoteMeditationContent.swift */,
+				F00100000000000000000065 /* DailyMeditationCard.swift */,
 			);
 			path = Meditation;
 			sourceTree = "<group>";
@@ -567,6 +591,9 @@
 				F00100000000000000000054 /* BiometricAuthentication.swift */,
 				F00100000000000000000055 /* BiometricLockSettings.swift */,
 				FW0100000000000000000022 /* WatchCompanionSync.swift */,
+				F00100000000000000000063 /* LifeStageHeroCard.swift */,
+				F00100000000000000000064 /* HomeScreenScaffold.swift */,
+				F00100000000000000000066 /* LifeStageOverviewSection.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -582,6 +609,22 @@
 				F00100000000000000000044 /* MotherhoodInfoProvider.swift */,
 			);
 			path = Motherhood;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000014 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000061 /* SettingsPanel.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000015 /* BirthMoment */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000067 /* BirthMomentHomeView.swift */,
+			);
+			path = BirthMoment;
 			sourceTree = "<group>";
 		};
 		G00100000000000000000016 /* Content */ = {
@@ -609,7 +652,9 @@
 		};
 		GW0100000000000000000002 /* Models */ = {
 			isa = PBXGroup;
-			children = (FW0100000000000000000011 /* WatchMeditationSession.swift */, );
+			children = (
+				FW0100000000000000000011 /* WatchMeditationSession.swift */,
+			);
 			path = Models;
 			sourceTree = "<group>";
 		};
@@ -633,7 +678,9 @@
 		};
 		GW0100000000000000000005 /* TodayPractice */ = {
 			isa = PBXGroup;
-			children = (FW0100000000000000000015 /* TodayPracticeWatchView.swift */, );
+			children = (
+				FW0100000000000000000015 /* TodayPracticeWatchView.swift */,
+			);
 			path = TodayPractice;
 			sourceTree = "<group>";
 		};
@@ -648,7 +695,9 @@
 		};
 		GW0100000000000000000007 /* PreviewSupport */ = {
 			isa = PBXGroup;
-			children = (FW0100000000000000000012 /* WatchMockData.swift */, );
+			children = (
+				FW0100000000000000000012 /* WatchMockData.swift */,
+			);
 			path = PreviewSupport;
 			sourceTree = "<group>";
 		};
@@ -674,7 +723,9 @@
 		};
 		GW010000000000000000000A /* Connectivity */ = {
 			isa = PBXGroup;
-			children = (FW0100000000000000000023 /* WatchSessionReceiver.swift */, );
+			children = (
+				FW0100000000000000000023 /* WatchSessionReceiver.swift */,
+			);
 			path = Connectivity;
 			sourceTree = "<group>";
 		};
@@ -745,8 +796,11 @@
 				PHW0100000000000000000003 /* Resources */,
 				PHW0100000000000000000008 /* Embed App Extensions */,
 			);
-			buildRules = ();
-			dependencies = (DW0100000000000000000002 /* PBXTargetDependency */, );
+			buildRules = (
+			);
+			dependencies = (
+				DW0100000000000000000002 /* PBXTargetDependency */,
+			);
 			name = "HESIA Watch App";
 			productName = HESIAWatch;
 			productReference = FW0100000000000000000001 /* HESIA Watch App.app */;
@@ -760,8 +814,10 @@
 				PHW0100000000000000000006 /* Frameworks */,
 				PHW0100000000000000000007 /* Resources */,
 			);
-			buildRules = ();
-			dependencies = ();
+			buildRules = (
+			);
+			dependencies = (
+			);
 			name = "HESIA Watch Widget";
 			productName = HESIAWatchWidget;
 			productReference = FW0100000000000000000002 /* HESIA Watch Widget.appex */;
@@ -861,7 +917,9 @@
 		PHW0100000000000000000007 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (BW0100000000000000000024 /* Localizable.xcstrings in Resources */, );
+			files = (
+				BW0100000000000000000024 /* Localizable.xcstrings in Resources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
@@ -871,6 +929,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B00100000000000000000063 /* BirthMomentHomeView.swift in Sources */,
+				B0010000000000000000003F /* HesiaLayout.swift in Sources */,
+				B0010000000000000000005E /* HesiaBadge.swift in Sources */,
+				B0010000000000000000005F /* LifeStageHeroCard.swift in Sources */,
+				B00100000000000000000060 /* HomeScreenScaffold.swift in Sources */,
+				B00100000000000000000061 /* DailyMeditationCard.swift in Sources */,
+				B00100000000000000000062 /* LifeStageOverviewSection.swift in Sources */,
 				B00100000000000000000001 /* HESIAApp.swift in Sources */,
 				B00100000000000000000056 /* HESIAOnboardingState.swift in Sources */,
 				B00100000000000000000057 /* HESIATutorialView.swift in Sources */,
@@ -938,6 +1003,8 @@
 				B00100000000000000000047 /* AYAElevation.swift in Sources */,
 				B00100000000000000000048 /* AppPrimaryButton.swift in Sources */,
 				B00100000000000000000049 /* SectionHeader.swift in Sources */,
+				B0010000000000000000005C /* SettingsRow.swift in Sources */,
+				B0010000000000000000005D /* SettingsPanel.swift in Sources */,
 				B0010000000000000000004A /* LifeStageContinuationCard.swift in Sources */,
 				B0010000000000000000004F /* HesiaIcon.swift in Sources */,
 				B00100000000000000000051 /* BiometricAuthentication.swift in Sources */,
@@ -1108,7 +1175,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"AYA/Preview Content\"";
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AYA/Resources/Info.plist;
@@ -1121,7 +1188,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin;
 				PRODUCT_MODULE_NAME = HESIA;
 				PRODUCT_NAME = HESIA;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1138,7 +1205,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"AYA/Preview Content\"";
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AYA/Resources/Info.plist;
@@ -1151,7 +1218,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin;
 				PRODUCT_MODULE_NAME = HESIA;
 				PRODUCT_NAME = HESIA;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1165,10 +1232,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1181,10 +1248,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1196,9 +1263,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.uitests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1210,9 +1278,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.uitests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1227,14 +1296,14 @@
 				CODE_SIGN_ENTITLEMENTS = HESIAWatch/HESIAWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HESIAWatch/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ayameditation.app;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hesia.meditation.kadin;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1253,14 +1322,14 @@
 				CODE_SIGN_ENTITLEMENTS = HESIAWatch/HESIAWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HESIAWatch/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ayameditation.app;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hesia.meditation.kadin;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1279,13 +1348,13 @@
 				CODE_SIGN_ENTITLEMENTS = HESIAWatchWidget/HESIAWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HESIAWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.watchkitapp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.watchkitapp.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1304,13 +1373,13 @@
 				CODE_SIGN_ENTITLEMENTS = HESIAWatchWidget/HESIAWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = V32M5559HG;
+				DEVELOPMENT_TEAM = HFMJ6KSNF2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HESIAWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HESIA;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ayameditation.app.watchkitapp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hesia.meditation.kadin.watchkitapp.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

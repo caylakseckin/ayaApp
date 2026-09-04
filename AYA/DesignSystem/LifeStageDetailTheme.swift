@@ -24,15 +24,18 @@ struct LifeStageDetailTheme {
                 timelineConnector: AYAColors.softPink.opacity(0.48)
             )
         case .pregnancy:
+            // The warmer surface and amber rail are the Pregnancy redesign's
+            // own look. They live here rather than as loose `pregnancyJourney*`
+            // colour constants so the hero themes like every other stage.
             Self(
-                heroSurface: AYAColors.pregnancyHeroSurface,
-                heroBorder: AYAColors.primary.opacity(0.12),
-                badgeSurface: AYAColors.tertiary.opacity(0.72),
+                heroSurface: AYAColors.tertiary.opacity(0.34),
+                heroBorder: AYAColors.pregnancyChrome.opacity(0.18),
+                badgeSurface: AYAColors.tertiary.opacity(0.74),
                 ringTrack: AYAColors.primary.opacity(0.18),
                 ringProgress: AYAColors.primary,
                 timelineActive: AYAColors.secondary,
-                timelineInactive: AYAColors.tertiary,
-                timelineConnector: AYAColors.tertiary.opacity(0.56)
+                timelineInactive: AYAColors.tertiary.opacity(0.74),
+                timelineConnector: AYAColors.pregnancyChrome.opacity(0.28)
             )
         case .birthMoment:
             Self(
@@ -75,23 +78,20 @@ struct LifeStageDetailTheme {
 /// enough for an editorial calendar while keeping the four phases distinguishable.
 enum CycleCalendarPhaseTheme {
     static func surface(for phase: CyclePhase) -> Color {
-        switch phase {
-        case .menstrual: AYAColors.softPink.opacity(0.46)
-        case .follicular: AYAColors.tertiary.opacity(0.54)
-        case .ovulatory: AYAColors.primary.opacity(0.16)
-        case .luteal: AYAColors.softPink.opacity(0.24)
-        }
+        color(for: phase).opacity(0.30)
     }
-}
 
-struct LifeStageHeroBackground: View {
-    let theme: LifeStageDetailTheme
-    var cornerRadius: CGFloat = 26
+    static func border(for phase: CyclePhase) -> Color {
+        color(for: phase).opacity(0.68)
+    }
 
-    var body: some View {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(theme.heroSurface)
-            .allowsHitTesting(false)
+    private static func color(for phase: CyclePhase) -> Color {
+        switch phase {
+        case .menstrual: AYAColors.cycleMenstrual
+        case .follicular: AYAColors.cycleFollicular
+        case .ovulatory: AYAColors.cycleOvulatory
+        case .luteal: AYAColors.cycleLuteal
+        }
     }
 }
 
@@ -105,4 +105,10 @@ enum LifeStageHeroMetrics {
     /// between the meditation card and the overview. The hero content is centered
     /// within this height by the frame's default alignment.
     static let minHeight: CGFloat = 176
+    /// Minimum width reserved for the large ordinal metric column in bespoke
+    /// Pregnancy/Postpartum editorial heroes.
+    static let metricColumnMinWidth: CGFloat = 104
+    /// Prevents long localized ordinal suffixes from taking width away from the
+    /// editorial summary column on compact screens.
+    static let metricColumnMaxWidth: CGFloat = 112
 }

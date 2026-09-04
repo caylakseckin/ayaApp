@@ -60,7 +60,7 @@ struct WatchPlaybackState: Codable, Hashable, Sendable {
 }
 
 enum WatchMeditationSharedStore {
-    static let appGroupIdentifier = "group.com.ayameditation.app.watch"
+    static let appGroupIdentifier = "group.com.hesia.meditation.kadin.watch"
     static let sessionKey = "watch.todayMeditation.session"
 
     static func load(defaults: UserDefaults? = nil) -> WatchMeditationSession? {

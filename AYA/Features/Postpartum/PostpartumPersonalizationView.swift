@@ -42,7 +42,7 @@ struct PostpartumPersonalizationView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 22)
+                .hesiaScreenPadding()
                 .padding(.top, 8)
                 .padding(.bottom, 86)
                 .frame(minHeight: geometry.size.height, alignment: .top)
@@ -53,7 +53,7 @@ struct PostpartumPersonalizationView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(spacing: AYASpacing.xs) {
                 primaryAction
                 if mode == .initial, let returnToThemes {
                     OnboardingReturnToThemesButton(
@@ -62,7 +62,7 @@ struct PostpartumPersonalizationView: View {
                     )
                 }
             }
-            .background(AYAColors.backgroundPrimary.opacity(0.98))
+            .hesiaBottomBar()
         }
         .sheet(isPresented: $isDatePickerPresented) { datePickerSheet }
     }
@@ -75,7 +75,7 @@ struct PostpartumPersonalizationView: View {
                         .foregroundStyle(AYAColors.textPrimary)
                         .frame(width: 44, height: 44)
                         .background(AYAColors.surface, in: Circle())
-                        .overlay { Circle().stroke(AYAColors.divider, lineWidth: 1) }
+                        .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("postpartum.personalization.back")
@@ -155,7 +155,7 @@ struct PostpartumPersonalizationView: View {
                 HesiaIcon.caretDown.view(size: 13)
                     .foregroundStyle(AYAColors.textSecondary)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, AYASpacing.lg)
             .frame(maxWidth: .infinity, minHeight: 56)
             .background(AYAColors.surface, in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
             .overlay {
@@ -179,13 +179,10 @@ struct PostpartumPersonalizationView: View {
                 Spacer()
                 HesiaIcon.arrowRight.view(size: 15)
             }
-            .padding(.horizontal, 18)
+            .padding(.horizontal, AYASpacing.lg)
         }
         .buttonStyle(.appPrimary)
         .disabled(!viewModel.isValid)
-        .padding(.horizontal, 22)
-        .padding(.top, 10)
-        .padding(.bottom, 8)
         .accessibilityIdentifier("postpartum.personalization.primary_action")
     }
 

@@ -114,7 +114,7 @@ struct ContextualInfoSheet: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding(.horizontal, 22)
+            .hesiaScreenPadding()
             .padding(.top, 12)
             .padding(.bottom, 28)
         }

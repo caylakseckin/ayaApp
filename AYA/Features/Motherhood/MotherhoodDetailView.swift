@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MotherhoodDetailView: View {
+    private let detailTheme = LifeStageDetailTheme.theme(for: .motherhood03)
     private let showThemesAction: (() -> Void)?
 
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
@@ -21,7 +22,6 @@ struct MotherhoodDetailView: View {
 
     private let meditationProvider = MotherhoodMeditationProvider()
     // Retained for a possible future return of the motherhood overview timeline.
-    private let showsOverviewTimeline = true
 
     init(showThemes: (() -> Void)? = nil) {
         showThemesAction = showThemes
@@ -82,37 +82,57 @@ struct MotherhoodDetailView: View {
     private func homeContent(range: MotherhoodAgeRange) -> some View {
         let meditation = meditationProvider.meditation(for: range)
 
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header(range: range)
+        return HomeScreenScaffold {
+            HomeHeader(
+                greeting: greetingText,
+                userInitial: userInitial,
+                showsProfileButton: !isSettingsPresented,
+                openSettings: { isSettingsPresented = true }
+            ) {
+                Text(verbatim: localized(range.detailSubtitleLocalizationKey))
+                    .ayaTypography(.homeSupporting)
+                    .foregroundStyle(AYAColors.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        } content: {
+            LifeStageHeroCard(
+                theme: detailTheme,
+                badgeText: localized(range.badgeLocalizationKey),
+                title: localized(range.insightTitleLocalizationKey),
+                message: localized(range.insightBodyLocalizationKey)
+            ) {
+                StageProgressRing(
+                    currentText: localized(range.shortTitleLocalizationKey),
+                    totalLabelKey: "motherhood.detail.ageUnit",
+                    progress: range.progress,
+                    accessibilityLabelKey: "motherhood.detail.progress.accessibility",
+                    accessibilityValue: localized(range.titleLocalizationKey),
+                    trackColor: detailTheme.ringTrack,
+                    progressColor: detailTheme.ringProgress
+                )
+            }
 
-                MotherhoodInsightCard(range: range)
-
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader("motherhood.detail.todayMeditation")
-
-                    DailyMeditationCard(
-                        meditation: meditation,
-                        playbackViewModel: playbackViewModel(for: meditation),
-                        infoAccessibilityLabel: motherhoodInfoAccessibility(for: range),
-                        infoAction: { infoContent = MotherhoodInfoProvider.content(for: range) },
-                        start: { startMeditation(meditation) }
+            VStack(alignment: .leading, spacing: AYASpacing.md) {
+                SectionHeader("motherhood.detail.todayMeditation") {
+                    ContextualInfoButton(
+                        accessibilityLabel: motherhoodInfoAccessibility(for: range),
+                        action: { infoContent = MotherhoodInfoProvider.content(for: range) }
                     )
                 }
 
-                if showsOverviewTimeline {
-                    MotherhoodOverviewSection(
-                        selectedRange: range,
-                        viewStages: { isStagesPresented = true }
-                    )
+                DailyMeditationCard(
+                    meditation: meditation,
+                    playbackViewModel: playbackViewModel(for: meditation)
+                ) {
+                    startMeditation(meditation)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 24)
+
+            MotherhoodOverviewSection(
+                selectedRange: range,
+                viewStages: { isStagesPresented = true }
+            )
         }
-        .scrollIndicators(.hidden)
-        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
             if isSettingsPresented {
                 AYASettingsOverlay(
@@ -128,31 +148,6 @@ struct MotherhoodDetailView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: isSettingsPresented)
-    }
-
-    private func header(range: MotherhoodAgeRange) -> some View {
-        HStack(alignment: .center, spacing: 14) {
-            VStack(alignment: .leading, spacing: 7) {
-                Text(verbatim: greetingText)
-                    .ayaTypography(.homeGreeting)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
-
-                Text(verbatim: localized(range.detailSubtitleLocalizationKey))
-                    .ayaTypography(.homeSupporting)
-                    .foregroundStyle(AYAColors.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 8)
-
-            if !isSettingsPresented {
-                AYAProfileButton(initial: userInitial) {
-                    isSettingsPresented = true
-                }
-            }
-        }
     }
 
     private var selectedLanguage: AppLanguage {
@@ -286,85 +281,6 @@ private struct MotherhoodAgeRangeEditorView: View {
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-    }
-}
-
-private struct MotherhoodInsightCard: View {
-    let range: MotherhoodAgeRange
-
-    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    private let detailTheme = LifeStageDetailTheme.theme(for: .motherhood03)
-    private let badgeHorizontalPadding: CGFloat = 11
-
-    var body: some View {
-        Group {
-            if usesVerticalLayout {
-                VStack(alignment: .leading, spacing: 16) {
-                    progressRing.frame(maxWidth: .infinity, alignment: .center)
-                    insight
-                }
-            } else {
-                HStack(spacing: 16) {
-                    progressRing
-                    insight
-                }
-            }
-        }
-        .padding(16)
-        .frame(minHeight: LifeStageHeroMetrics.minHeight)
-        .background { LifeStageHeroBackground(theme: detailTheme) }
-        .overlay {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .stroke(detailTheme.heroBorder, lineWidth: 1)
-        }
-        .ayaCardShadow()
-    }
-
-    private var progressRing: some View {
-        StageProgressRing(
-            currentText: localized(range.shortTitleLocalizationKey),
-            totalLabelKey: "motherhood.detail.ageUnit",
-            progress: range.progress,
-            accessibilityLabelKey: "motherhood.detail.progress.accessibility",
-            accessibilityValue: localized(range.titleLocalizationKey),
-            trackColor: detailTheme.ringTrack,
-            progressColor: detailTheme.ringProgress
-        )
-    }
-
-    private var insight: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(verbatim: localized(range.badgeLocalizationKey))
-                .ayaTypography(.homeBadge)
-                .foregroundStyle(AYAColors.emphasis)
-                .padding(.horizontal, badgeHorizontalPadding)
-                .frame(minHeight: 27)
-                .background(detailTheme.badgeSurface, in: Capsule())
-                .alignmentGuide(.leading) { dimensions in
-                    dimensions[.leading] + badgeHorizontalPadding
-                }
-
-            Text(verbatim: localized(range.insightTitleLocalizationKey))
-                .ayaTypography(.homeInsightTitle)
-                .foregroundStyle(AYAColors.textPrimary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text(verbatim: localized(range.insightBodyLocalizationKey))
-                .ayaTypography(.homeBody)
-                .foregroundStyle(AYAColors.textSecondary)
-                .lineSpacing(3)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func localized(_ key: String) -> String {
-        (AppLanguage(rawValue: languageCode) ?? .system).localizedString(forKey: key)
-    }
-
-    private var usesVerticalLayout: Bool {
-        dynamicTypeSize >= .xxxLarge
     }
 }
 

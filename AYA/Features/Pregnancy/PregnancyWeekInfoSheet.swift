@@ -50,7 +50,7 @@ struct PregnancyWeekInfoSheet: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding(.horizontal, AYASpacing.xl)
+            .hesiaScreenPadding()
             .padding(.top, AYASpacing.md)
             .padding(.bottom, AYASpacing.xxl)
         }

@@ -17,7 +17,7 @@ struct PostpartumHomeView: View {
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
     @State private var infoContent: ContextualInfoContent?
-    @State private var remoteMeditationMetadata: RemoteMeditationMetadata?
+    @State private var metadataState: DailyMeditationMetadataState = .loading
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
@@ -26,8 +26,7 @@ struct PostpartumHomeView: View {
 
     private let tracker = PostpartumTracker()
     private let meditationProvider = PostpartumMeditationProvider()
-    // Retained for a possible future return of the postpartum overview timeline.
-    private let showsOverviewTimeline = true
+    private let detailTheme = LifeStageDetailTheme.theme(for: .postpartum)
 
     init(showThemes: (() -> Void)? = nil) {
         showThemesAction = showThemes
@@ -95,54 +94,70 @@ struct PostpartumHomeView: View {
         let calculation = tracker.calculate(profile: profile)
         let meditation = meditationProvider.meditation(for: calculation)
 
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header(calculation: calculation)
+        return HomeScreenScaffold(contentTopPadding: AYALayout.screenTopPadding) {
+            HomeHeader(
+                greeting: greetingText,
+                userInitial: userInitial,
+                showsProfileButton: !isSettingsPresented,
+                openSettings: { isSettingsPresented = true }
+            ) {
+                HStack(spacing: AYASpacing.xxs) {
+                    HomeHeaderDetail(text: postpartumDayText(calculation.currentDay))
 
-                PostpartumInsightCard(
-                    calculation: calculation,
-                    showInfo: { infoContent = $0 }
-                )
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("postpartum.meditation.today")
-                        .ayaTypography(.homeSectionHeading)
-                        .foregroundStyle(AYAColors.textPrimary)
-                        .accessibilityAddTraits(.isHeader)
-
-                    DailyMeditationCard(
-                        meditation: meditation,
-                        remoteMetadata: remoteMeditationMetadata,
-                        playbackViewModel: playbackViewModel(for: meditation)
-                    ) {
-                        startMeditation(meditation)
-                    }
-                }
-
-                if showsOverviewTimeline {
-                    PostpartumOverviewSection(
-                        days: tracker.timelineDays(around: calculation.currentDay),
-                        currentDay: calculation.currentDay,
-                        viewTimeline: { isTimelinePresented = true }
-                    )
-                }
-
-                if HESIAFeatureFlags.supportsMotherhood,
-                   calculation.shouldOfferMotherhoodTransition {
-                    LifeStageContinuationCard(
-                        destination: .motherhood03,
-                        titleKey: "postpartum.transition.motherhood.title",
-                        messageKey: "postpartum.transition.motherhood.message",
-                        actionKey: "postpartum.transition.motherhood.action",
-                        action: continueToMotherhood
+                    ContextualInfoButton(
+                        accessibilityLabel: localized(postpartumInfo(for: calculation).accessibilityLabelKey),
+                        action: { infoContent = postpartumInfo(for: calculation) }
                     )
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 24)
+        } content: {
+            PostpartumHeroCard(
+                theme: detailTheme,
+                dayDisplay: heroDayDisplay(calculation.currentDay),
+                badgeText: localized(calculation.recoveryStage.titleLocalizationKey),
+                title: localized(calculation.stage.headlineLocalizationKey),
+                message: localized(calculation.stage.bodyLocalizationKey),
+                progressText: postpartumProgressText(calculation.currentDay),
+                accessibilityValue: progressAccessibilityValue(calculation: calculation)
+            )
+
+            VStack(alignment: .leading, spacing: AYASpacing.md) {
+                SectionHeader("postpartum.meditation.today")
+
+                DailyMeditationCard(
+                    meditation: meditation,
+                    metadataState: metadataState,
+                    playbackViewModel: playbackViewModel(for: meditation),
+                    contextPlacement: .eyebrow
+                ) {
+                    startMeditation(meditation)
+                }
+            }
+
+            LifeStageOverviewSection(
+                titleKey: "postpartum.timeline.title",
+                linkKey: "postpartum.timeline.view",
+                linkAccessibilityIdentifier: "postpartum.home.timeline.button",
+                action: { isTimelinePresented = true }
+            ) {
+                PostpartumStageTimeline(
+                    currentStage: calculation.recoveryStage,
+                    accessibilityValue: progressAccessibilityValue(calculation: calculation),
+                    theme: detailTheme
+                )
+            }
+
+            if HESIAFeatureFlags.supportsMotherhood,
+               calculation.shouldOfferMotherhoodTransition {
+                LifeStageContinuationCard(
+                    destination: .motherhood03,
+                    titleKey: "postpartum.transition.motherhood.title",
+                    messageKey: "postpartum.transition.motherhood.message",
+                    actionKey: "postpartum.transition.motherhood.action",
+                    action: continueToMotherhood
+                )
+            }
         }
-        .scrollIndicators(.hidden)
         .task(id: meditation.id) {
             await loadRemoteMetadata(for: meditation)
         }
@@ -153,7 +168,6 @@ struct PostpartumHomeView: View {
             guard phase == .active else { return }
             syncOfflinePackage(calculation: tracker.calculate(profile: profile))
         }
-        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .overlay {
             if isSettingsPresented {
                 AYASettingsOverlay(
@@ -170,28 +184,35 @@ struct PostpartumHomeView: View {
         .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: isSettingsPresented)
     }
 
-    private func header(calculation: PostpartumCalculation) -> some View {
-        HStack(alignment: .center, spacing: 14) {
-            VStack(alignment: .leading, spacing: 7) {
-                Text(verbatim: greetingText)
-                    .ayaTypography(.homeGreeting)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
+    private func postpartumInfo(for calculation: PostpartumCalculation) -> ContextualInfoContent {
+        PostpartumInfoProvider.content(for: calculation.stage)
+    }
 
-                Text(verbatim: postpartumDayText(calculation.currentDay))
-                    .ayaTypography(.homeSupporting)
-                    .foregroundStyle(AYAColors.textSecondary)
-            }
+    private func localized(_ key: String) -> String {
+        selectedLanguage.localizedString(forKey: key)
+    }
 
-            Spacer(minLength: 8)
+    private func progressAccessibilityValue(calculation: PostpartumCalculation) -> String {
+        String(
+            format: selectedLanguage.localizedString(forKey: "postpartum.home.progress.value"),
+            locale: locale,
+            calculation.currentDay,
+            PostpartumJourney.totalDays
+        )
+    }
 
-            if !isSettingsPresented {
-                AYAProfileButton(initial: userInitial) {
-                    isSettingsPresented = true
-                }
-            }
-        }
+    private func heroDayDisplay(_ day: Int) -> String {
+        HesiaOrdinalFormatter.string(day, language: selectedLanguage)
+    }
+
+    private func postpartumProgressText(_ day: Int) -> String {
+        let format = selectedLanguage.localizedString(forKey: "postpartum.hero.progress")
+        return String(
+            format: format,
+            locale: locale,
+            min(day, PostpartumJourney.totalDays),
+            PostpartumJourney.totalDays
+        )
     }
 
     private var selectedLanguage: AppLanguage {
@@ -225,16 +246,19 @@ struct PostpartumHomeView: View {
     }
 
     private func loadRemoteMetadata(for meditation: DailyMeditation) async {
-        remoteMeditationMetadata = nil
-        guard let source = meditation.remoteAudioSource else { return }
+        guard let source = meditation.remoteAudioSource else {
+            metadataState = .loaded(nil)
+            return
+        }
 
+        metadataState = .loading
         do {
             let metadata = try await RemoteMeditationContentLoader.loadMetadata(source: source)
             guard !Task.isCancelled else { return }
-            remoteMeditationMetadata = metadata
+            metadataState = .loaded(metadata)
         } catch {
             guard !Task.isCancelled else { return }
-            remoteMeditationMetadata = nil
+            metadataState = .failed
         }
     }
 
@@ -301,87 +325,96 @@ struct PostpartumHomeView: View {
     }
 }
 
-private struct PostpartumInsightCard: View {
-    let calculation: PostpartumCalculation
-    let showInfo: (ContextualInfoContent) -> Void
-
-    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.locale) private var locale
-    private let detailTheme = LifeStageDetailTheme.theme(for: .postpartum)
+private struct PostpartumHeroCard: View {
+    let theme: LifeStageDetailTheme
+    let dayDisplay: String
+    let badgeText: String
+    let title: String
+    let message: String
+    let progressText: String
+    let accessibilityValue: String
 
     var body: some View {
-        Group {
-            if usesVerticalLayout {
-                VStack(alignment: .leading, spacing: 16) {
-                    progressRing.frame(maxWidth: .infinity, alignment: .center)
-                    insight
-                }
-            } else {
-                HStack(spacing: 16) {
-                    progressRing
-                    insight
+        HeroAdaptiveRow {
+            VStack(alignment: .leading, spacing: AYASpacing.md) {
+                HesiaBadge(verbatim: badgeText, prominence: .themed(theme.badgeSurface))
+
+                HeroMetricColumn(
+                    value: dayDisplay,
+                    unitKey: "postpartum.hero.day_unit",
+                    accessibilityLabelKey: "postpartum.home.progress.accessibility",
+                    accessibilityValue: accessibilityValue
+                ) {
+                    HeroDivider(theme: theme)
+                        .padding(.vertical, AYASpacing.sm)
+
+                    Text(verbatim: progressText)
+                        .ayaTypography(.homeMetadata)
+                        .foregroundStyle(AYAColors.textSecondary)
                 }
             }
+        } trailing: {
+            HeroInsight(title: title, message: message)
         }
-        .padding(16)
-        .frame(minHeight: LifeStageHeroMetrics.minHeight)
-        .background { LifeStageHeroBackground(theme: detailTheme) }
-        .overlay {
-            RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
-                .stroke(detailTheme.heroBorder, lineWidth: 1)
+        .lifeStageHeroSurface(theme: theme)
+    }
+}
+
+private struct PostpartumStageTimeline: View {
+    let currentStage: PostpartumRecoveryStage
+    let accessibilityValue: String
+    let theme: LifeStageDetailTheme
+
+    @AppStorage("app.language") private var languageCode = AppLanguage.defaultExplicitLanguage.rawValue
+
+    var body: some View {
+        VStack(spacing: AYASpacing.md) {
+            ZStack(alignment: .top) {
+                Capsule()
+                    .fill(theme.timelineConnector)
+                    .frame(height: 1)
+                    .padding(.horizontal, AYASpacing.xl)
+                    .offset(y: AYASpacing.sm)
+                    .accessibilityHidden(true)
+
+                HStack(alignment: .top, spacing: 0) {
+                    ForEach(PostpartumRecoveryStage.allCases, id: \.self) { stage in
+                        stageMarker(stage)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+
         }
-        .ayaCardShadow()
+        // İlerleme metni ("50 / 90 gün") hemen üstteki hero kartında zaten var;
+        // ekranda iki kez göstermek yerine burada yalnızca sesli erişime bırakılır.
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("postpartum.timeline.progress.accessibility")
+        .accessibilityValue(accessibilityValue)
     }
 
-    private var progressRing: some View {
-        StageProgressRing(
-            currentValue: calculation.currentDay,
-            totalLabelKey: "postpartum.home.total_days",
-            progress: calculation.progress,
-            accessibilityLabelKey: "postpartum.home.progress.accessibility",
-            accessibilityValue: progressAccessibilityValue,
-            trackColor: detailTheme.ringTrack,
-            progressColor: detailTheme.ringProgress
-        )
-    }
+    private func stageMarker(_ stage: PostpartumRecoveryStage) -> some View {
+        let isCurrent = stage == currentStage
 
-    private var insight: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 2) {
-                Text(verbatim: localized(calculation.stage.titleLocalizationKey))
-                    .ayaTypography(.homeBadge)
-                    .foregroundStyle(AYAColors.emphasis)
-                    .padding(.horizontal, 11)
-                    .frame(minHeight: 27)
-                    .background(detailTheme.badgeSurface, in: Capsule())
-
-                ContextualInfoButton(
-                    accessibilityLabel: localized(postpartumInfo.accessibilityLabelKey),
-                    action: { showInfo(postpartumInfo) }
+        return VStack(spacing: AYASpacing.sm) {
+            Circle()
+                .fill(isCurrent ? theme.timelineActive : theme.timelineInactive)
+                .frame(
+                    width: isCurrent ? AYASpacing.lg : AYASpacing.md,
+                    height: isCurrent ? AYASpacing.lg : AYASpacing.md
                 )
-            }
+                .frame(height: AYASpacing.lg)
 
-            Text(verbatim: localized(calculation.stage.headlineLocalizationKey))
-                .ayaTypography(.homeInsightTitle)
-                .foregroundStyle(AYAColors.textPrimary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text(verbatim: localized(calculation.stage.bodyLocalizationKey))
-                .ayaTypography(.homeBody)
-                .foregroundStyle(AYAColors.textSecondary)
-                .lineSpacing(3)
+            Text(LocalizedStringKey(stage.titleLocalizationKey))
+                .ayaTypography(.homeMetadata)
+                .foregroundStyle(isCurrent ? AYAColors.emphasis : AYAColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var postpartumInfo: ContextualInfoContent {
-        PostpartumInfoProvider.content(for: calculation.stage)
-    }
-
-    private var usesVerticalLayout: Bool {
-        dynamicTypeSize >= .xxxLarge
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: localized(stage.titleLocalizationKey)))
+        .accessibilityAddTraits(isCurrent ? .isSelected : [])
     }
 
     private func localized(_ key: String) -> String {
@@ -389,58 +422,7 @@ private struct PostpartumInsightCard: View {
     }
 
     private var selectedLanguage: AppLanguage {
-        AppLanguage(rawValue: languageCode) ?? .system
-    }
-
-    private var progressAccessibilityValue: String {
-        let format = selectedLanguage.localizedString(forKey: "postpartum.home.progress.value")
-        return String(
-            format: format,
-            locale: locale,
-            calculation.currentDay,
-            PostpartumJourney.totalDays
-        )
-    }
-}
-
-private struct PostpartumOverviewSection: View {
-    let days: [Int]
-    let currentDay: Int
-    let viewTimeline: () -> Void
-    private let detailTheme = LifeStageDetailTheme.theme(for: .postpartum)
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AYASpacing.xs) {
-            HStack(spacing: 12) {
-                Text("postpartum.timeline.title")
-                    .ayaTypography(.homeSectionHeading)
-                    .foregroundStyle(AYAColors.textPrimary)
-                    .accessibilityAddTraits(.isHeader)
-
-                Spacer()
-
-                Button(action: viewTimeline) {
-                    HStack(spacing: 5) {
-                        Text("postpartum.timeline.view")
-                        HesiaIcon.caretRight.view(size: 12)
-                    }
-                    .ayaTypography(.homeLink)
-                    .foregroundStyle(AYAColors.emphasis)
-                    .frame(minHeight: 44)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("postpartum.home.timeline.button")
-            }
-
-            LifeStageHorizontalTimeline(
-                values: days,
-                currentValue: currentDay,
-                accessibilityLabelKey: "postpartum.timeline.accessibility",
-                activeColor: detailTheme.timelineActive,
-                inactiveColor: detailTheme.timelineInactive,
-                connectorColor: detailTheme.timelineConnector
-            )
-        }
+        AppLanguage(rawValue: languageCode) ?? .defaultExplicitLanguage
     }
 }
 
@@ -449,4 +431,78 @@ private struct PostpartumOverviewSection: View {
         PostpartumHomeView()
             .environment(\.locale, Locale(identifier: "tr"))
     }
+}
+
+#Preview("Postpartum Recovery — Small English", traits: .fixedLayout(width: 320, height: 720)) {
+    ScrollView {
+        VStack(alignment: .leading, spacing: AYALayout.sectionSpacing) {
+            PostpartumHeroCard(
+                theme: .theme(for: .postpartum),
+                dayDisplay: "18th",
+                badgeText: "First Weeks",
+                title: "You are in a season of rest and recovery.",
+                message: "A gentle time to slow down, care for your body, and create calm moments for yourself and your baby.",
+                progressText: "18 / 90 days",
+                accessibilityValue: "Day 18 of the first 90 days"
+            )
+
+            LifeStageOverviewSection(
+                titleKey: "postpartum.timeline.title",
+                linkKey: "postpartum.timeline.view",
+                linkAccessibilityIdentifier: "postpartum.home.timeline.button",
+                action: {}
+            ) {
+                PostpartumStageTimeline(
+                    currentStage: .firstWeeks,
+                    accessibilityValue: "Day 18 of the first 90 days",
+                    theme: .theme(for: .postpartum)
+                )
+            }
+        }
+        .hesiaScreenPadding()
+    }
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Postpartum Hero — Content Lengths", traits: .fixedLayout(width: 393, height: 1_120)) {
+    let theme = LifeStageDetailTheme.theme(for: .postpartum)
+
+    ScrollView {
+        VStack(alignment: .leading, spacing: AYASpacing.xl) {
+            PostpartumHeroCard(
+                theme: theme,
+                dayDisplay: "3.",
+                badgeText: "İlk Günler",
+                title: "Bugün dinleniyorsun.",
+                message: "Bedenine sakin bir alan aç.",
+                progressText: "3 / 90 gün",
+                accessibilityValue: "90 günün 3. günü"
+            )
+
+            PostpartumHeroCard(
+                theme: theme,
+                dayDisplay: "30.",
+                badgeText: "İlk Haftalar",
+                title: "Dinlenme ve toparlanma dönemindesin.",
+                message: "Yavaşlamak, bedenine alan açmak ve kendinle sakin anlar yaratmak için nazik bir dönem.",
+                progressText: "30 / 90 gün",
+                accessibilityValue: "90 günün 30. günü"
+            )
+
+            PostpartumHeroCard(
+                theme: theme,
+                dayDisplay: "86.",
+                badgeText: "Yeni Ritim",
+                title: "Sana ait yeni bir ritim keşfediyorsun.",
+                message: "Günlük hayat yeniden şekillenirken kendinle bağını korumak ve yenileyici molalara alan açmak için destekleyici bir dönem.",
+                progressText: "86 / 90 gün",
+                accessibilityValue: "90 günün 86. günü"
+            )
+        }
+        .hesiaScreenPadding()
+        .padding(.vertical, AYASpacing.xl)
+    }
+    .background(AYAColors.backgroundPrimary)
+    .environment(\.locale, Locale(identifier: "tr"))
 }

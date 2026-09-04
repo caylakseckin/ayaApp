@@ -48,7 +48,7 @@ struct HESIATutorialView: View {
                 TutorialReadyPreview()
                     .id(step)
                     .frame(maxWidth: 600, maxHeight: .infinity)
-                    .padding(.horizontal, AYASpacing.xl)
+                    .hesiaScreenPadding()
                     .hesiaScreenTransition(reduceMotion: reduceMotion)
             } else {
                 ScrollView {
@@ -58,7 +58,7 @@ struct HESIATutorialView: View {
                             .id(step)
                             .hesiaScreenTransition(reduceMotion: reduceMotion)
                     }
-                    .padding(.horizontal, AYASpacing.xl)
+                    .hesiaScreenPadding()
                     .padding(.top, AYASpacing.lg)
                     .padding(.bottom, AYASpacing.xxl)
                     .frame(maxWidth: 600)
@@ -70,12 +70,7 @@ struct HESIATutorialView: View {
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) {
             primaryAction
-                .frame(maxWidth: 512)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, AYASpacing.xl)
-                .padding(.top, AYASpacing.sm)
-                .padding(.bottom, AYASpacing.md)
-                .background(AYAColors.backgroundPrimary.opacity(0.96))
+                .hesiaBottomBar()
         }
         .hesiaScreenAnimation(reduceMotion: reduceMotion, value: step)
     }
@@ -117,7 +112,7 @@ struct HESIATutorialView: View {
                 .accessibilityIdentifier("onboarding.tutorial.skip.button")
             }
         }
-        .padding(.horizontal, AYASpacing.xl)
+        .hesiaScreenPadding()
         .padding(.top, AYASpacing.sm)
     }
 
@@ -305,7 +300,7 @@ private struct TutorialThemePreview: View {
 
     private let surfaces: [Color] = [
         AYAColors.cycleHeroSurface,
-        AYAColors.pregnancyHeroSurface,
+        AYAColors.pregnancyTint,
         AYAColors.birthMomentHeroSurface,
         AYAColors.postpartumHeroSurface
     ]
@@ -486,7 +481,7 @@ private struct TutorialInsightIllustration: View {
         .padding(AYASpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            AYAColors.pregnancyHeroSurface,
+            AYAColors.pregnancyTint,
             in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
         )
     }
@@ -649,7 +644,7 @@ private struct TutorialSettingsPreview: View {
                         HStack(spacing: AYASpacing.md) {
                             ForEach(0..<2, id: \.self) { index in
                                 RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
-                                    .fill(index == 0 ? AYAColors.surface : AYAColors.pregnancyHeroSurface)
+                                    .fill(index == 0 ? AYAColors.surface : AYAColors.pregnancyTint)
                                     .frame(height: 92)
                             }
                         }

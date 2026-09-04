@@ -16,7 +16,7 @@ struct PregnancyContentProvider {
             titleLocalizationKey: "pregnancy.meditation.\(calculation.trimester.rawValue).title",
             descriptionLocalizationKey: "pregnancy.meditation.\(calculation.trimester.rawValue).description",
             contextNameLocalizationKey: calculation.trimester.nameLocalizationKey,
-            contextFormatLocalizationKey: "pregnancy.meditation.context_format",
+            contextFormatLocalizationKey: "pregnancy.meditation.metadata",
             contextValue: calculation.currentWeek,
             durationMinutes: 9,
             voiceLocalizationKey: "meditation.voice.yaren",

@@ -41,7 +41,7 @@
               "locale" : "tr_TR"
             }
           ],
-          "productID" : "com.ayameditation.app.premium.yearly",
+          "productID" : "com.hesia.meditation.premium.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "HESIA Premium Yearly",
           "subscriptionGroupID" : "hesia-premium-subscription-group",
@@ -78,7 +78,7 @@
               "locale" : "tr_TR"
             }
           ],
-          "productID" : "com.ayameditation.app.premium.monthly",
+          "productID" : "com.hesia.meditation.premium.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "HESIA Premium Monthly",
           "subscriptionGroupID" : "hesia-premium-subscription-group",

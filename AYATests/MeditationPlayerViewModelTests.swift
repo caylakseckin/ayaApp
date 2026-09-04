@@ -226,10 +226,6 @@ final class MeditationPlayerViewModelTests: XCTestCase {
             stageKey: "watch.stage.pregnancy",
             week: 4,
             duration: 240,
-            audioURL: nil,
-            remoteAudioURL: URL(
-                string: "https://hesia.app/content/pregnancy/week_04/pregnancy.mp3"
-            ),
             narrator: "Yaren",
             syncedAt: Date()
         )
@@ -237,8 +233,8 @@ final class MeditationPlayerViewModelTests: XCTestCase {
         XCTAssertTrue(WatchMeditationSharedStore.save(session, defaults: defaults))
         XCTAssertEqual(WatchMeditationSharedStore.load(defaults: defaults)?.id, session.id)
         XCTAssertEqual(
-            WatchMeditationSharedStore.load(defaults: defaults)?.remoteAudioURL,
-            session.remoteAudioURL
+            WatchMeditationSharedStore.load(defaults: defaults)?.narrator,
+            session.narrator
         )
 
         WatchMeditationSharedStore.clear(defaults: defaults)
