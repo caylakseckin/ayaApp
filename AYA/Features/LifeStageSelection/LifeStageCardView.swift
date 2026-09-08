@@ -26,21 +26,29 @@ struct LifeStageCardView: View {
 
     private var theme: LifeStageTheme { .theme(for: stage) }
     private var usesExpandedLayout: Bool { dynamicTypeSize.isAccessibilitySize }
-    private var cardHeight: CGFloat {
-        if usesExpandedLayout { return 258 }
-        return usesCompactMetrics ? 120 : 132
-    }
+    private var cardMinHeight: CGFloat { usesCompactMetrics ? 120 : 132 }
 
     var body: some View {
         Button(action: action) {
-            GeometryReader { geometry in
-                ZStack(alignment: .topLeading) {
-                    cardBackground
-                    motif
-                    content(descriptionWidth: geometry.size.width * 0.5)
+            Group {
+                if usesExpandedLayout {
+                    ZStack(alignment: .topLeading) {
+                        cardBackground
+                        content(descriptionWidth: nil)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: cardMinHeight, alignment: .topLeading)
+                    .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    GeometryReader { geometry in
+                        ZStack(alignment: .topLeading) {
+                            cardBackground
+                            motif
+                            content(descriptionWidth: geometry.size.width * 0.5)
+                        }
+                    }
+                    .frame(height: cardMinHeight)
                 }
             }
-            .frame(height: cardHeight)
             .clipShape(RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
@@ -83,7 +91,7 @@ struct LifeStageCardView: View {
         }
     }
 
-    private func content(descriptionWidth: CGFloat) -> some View {
+    private func content(descriptionWidth: CGFloat?) -> some View {
         titleAndDescription(descriptionWidth: descriptionWidth)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(.horizontal, Metrics.horizontalPadding)
@@ -91,24 +99,27 @@ struct LifeStageCardView: View {
             .padding(.bottom, Metrics.bottomPadding)
     }
 
-    private func titleAndDescription(descriptionWidth: CGFloat) -> some View {
+    private func titleAndDescription(descriptionWidth: CGFloat?) -> some View {
         VStack(alignment: .leading, spacing: Metrics.titleDescriptionSpacing) {
             Text(stage.titleKey)
                 .ayaTypography(stage == .motherhood03 ? .stageCardTitleLong : .stageCardTitle)
                 .foregroundStyle(theme.titleColor(for: colorScheme))
-                .lineLimit(1)
-                .minimumScaleFactor(0.9)
-                .allowsTightening(true)
+                .lineLimit(usesExpandedLayout ? nil : 1)
+                .minimumScaleFactor(usesExpandedLayout ? 1 : 0.9)
+                .allowsTightening(!usesExpandedLayout)
 
             Text(stage.descriptionKey)
                 .ayaTypography(.body)
                 .foregroundStyle(theme.bodyColor(for: colorScheme))
                 .lineSpacing(Metrics.descriptionLineSpacing)
-                .lineLimit(2)
+                .lineLimit(usesExpandedLayout ? nil : 2)
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(width: descriptionWidth, alignment: .leading)
+                .frame(maxWidth: descriptionWidth ?? .infinity, alignment: .leading)
         }
-        .frame(maxWidth: Metrics.titleWidth, alignment: .leading)
+        .frame(
+            maxWidth: usesExpandedLayout ? .infinity : Metrics.titleWidth,
+            alignment: .leading
+        )
     }
 
     private var showsPremiumBadge: Bool {

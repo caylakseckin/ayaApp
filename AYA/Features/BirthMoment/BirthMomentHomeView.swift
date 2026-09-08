@@ -13,6 +13,7 @@ struct BirthMomentHomeView: View {
     @State private var playbackSession: MeditationPlaybackSession?
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
+    @State private var metadataStates: [String: DailyMeditationMetadataState] = [:]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
@@ -46,6 +47,7 @@ struct BirthMomentHomeView: View {
                     ForEach(BirthMomentMeditationProvider.practices) { practice in
                         BirthMomentMeditationRow(
                             practice: practice,
+                            metadataState: metadataStates[practice.id] ?? .loading,
                             playbackViewModel: playbackViewModel(for: practice.meditation),
                             action: { startMeditation(practice.meditation) }
                         )
@@ -94,6 +96,9 @@ struct BirthMomentHomeView: View {
                 language: selectedLanguage
             )
         }
+        .task {
+            await loadMeditationMetadata()
+        }
     }
 
     private func showThemes() {
@@ -127,6 +132,48 @@ struct BirthMomentHomeView: View {
         playbackSession?.viewModel.stop()
         playbackSession = nil
         isPlaybackContinuationToastPresented = false
+    }
+
+    @MainActor
+    private func loadMeditationMetadata() async {
+        let practicesToLoad = BirthMomentMeditationProvider.practices.filter {
+            metadataStates[$0.id] == nil
+        }
+        guard !practicesToLoad.isEmpty else { return }
+
+        for practice in practicesToLoad {
+            metadataStates[practice.id] = .loading
+        }
+
+        await withTaskGroup(
+            of: (String, Result<RemoteMeditationMetadata, Error>).self
+        ) { group in
+            for practice in practicesToLoad {
+                group.addTask {
+                    guard let source = practice.meditation.remoteAudioSource else {
+                        return (practice.id, .failure(URLError(.badURL)))
+                    }
+                    do {
+                        let metadata = try await RemoteMeditationContentLoader.loadMetadata(
+                            source: source
+                        )
+                        return (practice.id, .success(metadata))
+                    } catch {
+                        return (practice.id, .failure(error))
+                    }
+                }
+            }
+
+            for await (practiceID, result) in group {
+                guard !Task.isCancelled else { return }
+                switch result {
+                case let .success(metadata):
+                    metadataStates[practiceID] = .loaded(metadata)
+                case .failure:
+                    metadataStates[practiceID] = .failed
+                }
+            }
+        }
     }
 
     private func localized(_ key: String) -> String {
@@ -180,16 +227,36 @@ struct BirthMomentPractice: Identifiable {
 
 enum BirthMomentMeditationProvider {
     static let practices: [BirthMomentPractice] = [
-        practice(id: "flower_breath", categoryKey: "birth_moment.category.breath"),
-        practice(id: "arrow_breath", categoryKey: "birth_moment.category.release"),
-        practice(id: "zipper_breath", categoryKey: "birth_moment.category.safety"),
-        practice(id: "curtain_breath", categoryKey: "birth_moment.category.calm")
+        practice(
+            id: "flower_breath",
+            categoryKey: "birth_moment.category.breath",
+            durationMinutes: 5
+        ),
+        practice(
+            id: "arrow_breath",
+            categoryKey: "birth_moment.category.release",
+            durationMinutes: 6
+        ),
+        practice(
+            id: "zipper_breath",
+            categoryKey: "birth_moment.category.safety",
+            durationMinutes: 3
+        ),
+        practice(
+            id: "curtain_breath",
+            categoryKey: "birth_moment.category.calm",
+            durationMinutes: 5
+        )
     ]
 
     static let practiceIDs = practices.map(\.id)
     static let meditations = practices.map(\.meditation)
 
-    private static func practice(id: String, categoryKey: String) -> BirthMomentPractice {
+    private static func practice(
+        id: String,
+        categoryKey: String,
+        durationMinutes: Int
+    ) -> BirthMomentPractice {
         BirthMomentPractice(
             id: id,
             categoryLocalizationKey: categoryKey,
@@ -200,7 +267,7 @@ enum BirthMomentMeditationProvider {
                 contextNameLocalizationKey: "life_stage.birthMoment.title",
                 contextFormatLocalizationKey: "birth_moment.meditation.context_format",
                 contextValue: 0,
-                durationMinutes: 8,
+                durationMinutes: durationMinutes,
                 voiceLocalizationKey: "meditation.voice.yaren",
                 audioResourceName: nil,
                 remoteAudioSource: RemoteMeditationAudioSource(birthPractice: id)
@@ -211,6 +278,7 @@ enum BirthMomentMeditationProvider {
 
 private struct BirthMomentMeditationRow: View {
     let practice: BirthMomentPractice
+    let metadataState: DailyMeditationMetadataState
     let playbackViewModel: MeditationPlayerViewModel?
     let action: () -> Void
 
@@ -220,12 +288,14 @@ private struct BirthMomentMeditationRow: View {
         if let playbackViewModel {
             ObservedBirthMomentMeditationRow(
                 practice: practice,
+                metadataState: metadataState,
                 viewModel: playbackViewModel,
                 action: action
             )
         } else {
             BirthMomentMeditationRowContent(
                 practice: practice,
+                metadataState: metadataState,
                 playbackState: .idle,
                 action: action
             )
@@ -235,12 +305,14 @@ private struct BirthMomentMeditationRow: View {
 
 private struct ObservedBirthMomentMeditationRow: View {
     let practice: BirthMomentPractice
+    let metadataState: DailyMeditationMetadataState
     @ObservedObject var viewModel: MeditationPlayerViewModel
     let action: () -> Void
 
     var body: some View {
         BirthMomentMeditationRowContent(
             practice: practice,
+            metadataState: metadataState,
             playbackState: playbackState,
             action: action
         )
@@ -254,6 +326,7 @@ private struct ObservedBirthMomentMeditationRow: View {
 
 private struct BirthMomentMeditationRowContent: View {
     let practice: BirthMomentPractice
+    let metadataState: DailyMeditationMetadataState
     let playbackState: DailyMeditationPlaybackState
     let action: () -> Void
 
@@ -270,13 +343,13 @@ private struct BirthMomentMeditationRowContent: View {
                         .ayaTypography(.homeBadge)
                         .foregroundStyle(AYAColors.emphasis)
 
-                    Text(meditation.titleKey)
+                    Text(verbatim: titleText)
                         .ayaTypography(.homeMeditationTitle)
                         .foregroundStyle(AYAColors.textPrimary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Text(meditation.descriptionKey)
+                    Text(verbatim: descriptionText)
                         .ayaTypography(.homeMeditationDescription)
                         .foregroundStyle(AYAColors.textSecondary)
                         .lineSpacing(3)
@@ -351,14 +424,14 @@ private struct BirthMomentMeditationRowContent: View {
         String(
             format: selectedLanguage.localizedString(forKey: "meditation.duration.minutes"),
             locale: selectedLanguage.locale,
-            meditation.durationMinutes
+            remoteMetadata?.durationMinutes ?? meditation.durationMinutes
         )
     }
 
     private var accessibilityLabel: String {
         [
             selectedLanguage.localizedString(forKey: practice.categoryLocalizationKey),
-            selectedLanguage.localizedString(forKey: meditation.titleLocalizationKey),
+            titleText,
             accessibilityDurationText
         ].joined(separator: ", ")
     }
@@ -369,8 +442,23 @@ private struct BirthMomentMeditationRowContent: View {
                 forKey: "meditation.duration.minutes_accessibility"
             ),
             locale: selectedLanguage.locale,
-            meditation.durationMinutes
+            remoteMetadata?.durationMinutes ?? meditation.durationMinutes
         )
+    }
+
+    private var remoteMetadata: RemoteMeditationMetadata? {
+        guard case let .loaded(metadata) = metadataState else { return nil }
+        return metadata
+    }
+
+    private var titleText: String {
+        remoteMetadata?.localizedTitle(for: selectedLanguage)
+            ?? selectedLanguage.localizedString(forKey: meditation.titleLocalizationKey)
+    }
+
+    private var descriptionText: String {
+        remoteMetadata?.localizedDescription(for: selectedLanguage)
+            ?? selectedLanguage.localizedString(forKey: meditation.descriptionLocalizationKey)
     }
 
     private var selectedLanguage: AppLanguage {

@@ -205,6 +205,33 @@ struct SettingsNavigationRow: View {
     }
 }
 
+/// Destructive settings action with the same geometry as navigation rows.
+/// Confirmation remains the responsibility of the presenting feature.
+struct SettingsDestructiveRow: View {
+    let icon: SettingsRowIcon
+    let titleKey: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button(role: .destructive, action: action) {
+            HStack(spacing: AYASpacing.md) {
+                icon
+                    .frame(width: SettingsRowMetrics.iconColumnWidth)
+
+                Text(titleKey)
+                    .ayaTypography(.settingsRowTitle)
+                    .foregroundStyle(AYAColors.error)
+
+                Spacer(minLength: AYASpacing.sm)
+            }
+            .padding(.horizontal, AYASpacing.lg)
+            .frame(minHeight: SettingsRowMetrics.minHeight)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 /// Trailing affordance of a settings row.
 struct SettingsRowAccessory: View {
     enum Kind {

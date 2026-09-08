@@ -98,6 +98,7 @@ final class PremiumStore: ObservableObject {
 
     private var transactionUpdatesTask: Task<Void, Never>?
     private var entitlementExpirationTask: Task<Void, Never>?
+    private var preparationTask: Task<Void, Never>?
     private var entitlementStateRevision = 0
     private var sessionEntitlements: [String: PremiumEntitlementRecord] = [:]
 
@@ -137,9 +138,20 @@ final class PremiumStore: ObservableObject {
     }
 
     func prepare() async {
-        async let productsTask: Void = loadProducts()
-        async let entitlementsTask: Void = refreshEntitlements()
-        _ = await (productsTask, entitlementsTask)
+        if let preparationTask {
+            await preparationTask.value
+            return
+        }
+
+        let task = Task { @MainActor [weak self] in
+            guard let self else { return }
+            async let productsTask: Void = self.loadProducts()
+            async let entitlementsTask: Void = self.refreshEntitlements()
+            _ = await (productsTask, entitlementsTask)
+        }
+        preparationTask = task
+        await task.value
+        preparationTask = nil
     }
 
     func loadProducts() async {

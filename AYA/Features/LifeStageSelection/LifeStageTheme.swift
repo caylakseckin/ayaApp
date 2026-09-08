@@ -44,7 +44,7 @@ struct LifeStageTheme {
                 background: AYAColors.secondary, secondaryBackground: AYAColors.primary,
                 titleColor: AYAColors.surface, bodyColor: AYAColors.surface.opacity(0.88),
                 accentColor: AYAColors.tertiary, borderColor: AYAColors.surface.opacity(0.14),
-                badgeBackground: AYAColors.primary, badgeForeground: AYAColors.surface,
+                badgeBackground: AYAColors.emphasis, badgeForeground: AYAColors.onAccent,
                 assetName: "stage_cycle_orbit",
                 darkSurfaceTint: AYAColors.secondary.opacity(0.12),
                 darkMotifOpacity: 0.38

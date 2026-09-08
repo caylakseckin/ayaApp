@@ -110,6 +110,7 @@ struct SettingsPanel: View {
     @State private var isLanguageExpanded = false
     @State private var isTutorialPresented = false
     @State private var isManageSubscriptionsPresented = false
+    @State private var showsDataResetConfirmation = false
     @ObservedObject private var premiumStore = PremiumStore.shared
     // `AppAppearance` is String-backed, so @AppStorage can bind the enum
     // directly — no hand-rolled Binding(get:set:) bridge needed. Same
@@ -152,6 +153,18 @@ struct SettingsPanel: View {
             }
         }
         .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
+        .confirmationDialog(
+            "settings.data.reset.confirmation.title",
+            isPresented: $showsDataResetConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("settings.data.reset.confirm", role: .destructive) {
+                resetLocalData()
+            }
+            Button("common.cancel", role: .cancel) {}
+        } message: {
+            Text("settings.data.reset.confirmation.message")
+        }
         .task {
             await premiumStore.refreshEntitlements()
         }
@@ -233,6 +246,7 @@ struct SettingsPanel: View {
         BiometricLockSettings()
         OfflineMeditationSettings()
         MeditationReminderSettings(presentation: .settings)
+        dataSection
         supportSection
     }
 
@@ -445,6 +459,19 @@ struct SettingsPanel: View {
         }
     }
 
+    // MARK: - Local data
+
+    private var dataSection: some View {
+        SettingsGroup("settings.data.section") {
+            SettingsDestructiveRow(
+                icon: SettingsRowIcon(symbol: "trash", tint: AYAColors.error),
+                titleKey: "settings.data.reset.title",
+                action: { showsDataResetConfirmation = true }
+            )
+            .accessibilityIdentifier("settings.data.reset.button")
+        }
+    }
+
     // MARK: - Support
 
     private var supportSection: some View {
@@ -483,6 +510,37 @@ struct SettingsPanel: View {
             locale: language.locale,
             week
         )
+    }
+
+    private func resetLocalData() {
+        isNameFocused = false
+        MeditationReminderScheduler.disable()
+        OfflineMeditationManager.shared.removeDownloads()
+        WatchPlaybackCoordinator.shared.resetForLocalDataReset()
+        WatchCompanionSync.shared.resetForLocalDataReset()
+        DeviceDataResetService.reset()
+
+        userName = ""
+        languageCode = AppLanguage.defaultExplicitLanguage.rawValue
+        appearance = .system
+        close()
+    }
+}
+
+enum DeviceDataResetService {
+    static func reset(
+        defaults: UserDefaults = .standard,
+        fileManager: FileManager = .default,
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier
+    ) {
+        if let bundleIdentifier {
+            defaults.removePersistentDomain(forName: bundleIdentifier)
+        }
+
+        let playbackDirectory = fileManager.temporaryDirectory
+            .appendingPathComponent("HESIA/Playback", isDirectory: true)
+        try? fileManager.removeItem(at: playbackDirectory)
+        URLCache.shared.removeAllCachedResponses()
     }
 }
 

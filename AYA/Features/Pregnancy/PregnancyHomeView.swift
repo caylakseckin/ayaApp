@@ -418,17 +418,7 @@ private struct PregnancyWeekInsight: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .center, spacing: AYASpacing.sm) {
-                insightTitle
-
-                Rectangle()
-                    .fill(theme.timelineConnector)
-                    .frame(width: 1, height: 40)
-                    .accessibilityHidden(true)
-
-                insightDescription
-                chevron
-            }
+            insightLayout
             .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
             .contentShape(Rectangle())
         }
@@ -443,7 +433,37 @@ private struct PregnancyWeekInsight: View {
             .ayaTypography(.homeLink)
             .foregroundStyle(AYAColors.emphasis)
             .fixedSize(horizontal: true, vertical: false)
-            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    @ViewBuilder
+    private var insightLayout: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: AYASpacing.sm) {
+                insightTitle
+
+                HStack(alignment: .top, spacing: AYASpacing.sm) {
+                    Rectangle()
+                        .fill(theme.timelineConnector)
+                        .frame(width: 1)
+                        .accessibilityHidden(true)
+
+                    insightDescription
+                    chevron
+                }
+            }
+        } else {
+            HStack(alignment: .center, spacing: AYASpacing.sm) {
+                insightTitle
+
+                Rectangle()
+                    .fill(theme.timelineConnector)
+                    .frame(width: 1, height: 40)
+                    .accessibilityHidden(true)
+
+                insightDescription
+                chevron
+            }
+        }
     }
 
     private var insightDescription: some View {

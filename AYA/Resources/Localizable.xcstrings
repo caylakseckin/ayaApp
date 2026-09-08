@@ -397,13 +397,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gently soften your jaw, shoulders, and the places holding tension."
+            "value" : "Guide your breath downward and make space for your baby to move."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Çeneni, omuzlarını ve gerginlik taşıyan bölgelerini nazikçe yumuşat."
+            "value" : "Nefesini aşağı doğru yönlendirerek bebeğinin ilerlemesine alan aç."
           }
         }
       }
@@ -414,13 +414,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Softening the Body"
+            "value" : "Arrow Breath"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bedeni Yumuşatmak"
+            "value" : "Ok Nefesi"
           }
         }
       }
@@ -448,13 +448,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A calming practice for moments when time seems to slow down."
+            "value" : "Imagine a soft curtain opening as you create more space with your breath."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaman yavaşlamış gibi hissettiren anlar için sakin bir pratik."
+            "value" : "Nefesinle yumuşak bir perdenin açıldığını ve alanın genişlediğini hayal et."
           }
         }
       }
@@ -465,13 +465,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Staying Calm While You Wait"
+            "value" : "Curtain Breath"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beklerken Sakin Kalmak"
+            "value" : "Perde Nefesi"
           }
         }
       }
@@ -482,13 +482,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Return to your breath as the intensity rises and falls."
+            "value" : "Let your pelvic floor soften and open gently with each breath."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yoğunluk yükselip azalırken yeniden nefesine dön."
+            "value" : "Her nefeste pelvik tabanının yumuşamasına ve açılmasına izin ver."
           }
         }
       }
@@ -499,13 +499,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Breathing Between the Waves"
+            "value" : "Flower Breath"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalgalar Arasında Nefes"
+            "value" : "Çiçek Nefesi"
           }
         }
       }
@@ -516,13 +516,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reconnect with an inner place that feels calm and supportive."
+            "value" : "Feel a zipper releasing downward without tightening your pelvic floor."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sakin ve destekleyici hissettiren içsel bir alanla yeniden bağ kur."
+            "value" : "Pelvik tabanını sıkmadan fermuarın aşağı doğru açıldığını hisset."
           }
         }
       }
@@ -533,13 +533,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A Place Where You Feel Safe"
+            "value" : "Zipper Breath"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Güvende Hissettiğin Yer"
+            "value" : "Fermuar Nefesi"
           }
         }
       }
@@ -607,6 +607,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sıradaki dönemin"
+          }
+        }
+      }
+    },
+    "common.cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vazgeç"
           }
         }
       }
@@ -8926,6 +8942,86 @@
         }
       }
     },
+    "settings.data.reset.confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset Data"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verileri Sıfırla"
+          }
+        }
+      }
+    },
+    "settings.data.reset.confirmation.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your progress, personal details, preferences, reminders, and downloaded meditations will be removed from this device. Your App Store purchases will not be affected."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlerlemen, kişisel bilgilerin, tercihlerin, hatırlatıcıların ve indirilen meditasyonların bu cihazdan silinecek. App Store satın alımların etkilenmeyecek."
+          }
+        }
+      }
+    },
+    "settings.data.reset.confirmation.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset all data on this device?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu cihazdaki tüm veriler sıfırlansın mı?"
+          }
+        }
+      }
+    },
+    "settings.data.reset.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset my progress and data"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlerlememi ve verilerimi sıfırla"
+          }
+        }
+      }
+    },
+    "settings.data.section" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Data"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verilerim"
+          }
+        }
+      }
+    },
     "settings.how_hesia_works" : {
       "localizations" : {
         "en" : {
@@ -9050,6 +9146,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bugünü ve sonraki iki mevcut günü çevrimdışı tut"
+          }
+        }
+      }
+    },
+    "settings.offline.remove.confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn Off and Remove"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapat ve Sil"
+          }
+        }
+      }
+    },
+    "settings.offline.remove.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turning off offline listening removes downloaded meditation files from this device."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı dinlemeyi kapatmak, indirilen meditasyon dosyalarını bu cihazdan siler."
+          }
+        }
+      }
+    },
+    "settings.offline.remove.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Offline Meditations?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Meditasyonlar Silinsin mi?"
           }
         }
       }

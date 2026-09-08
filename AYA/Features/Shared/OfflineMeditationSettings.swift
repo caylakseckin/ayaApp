@@ -703,6 +703,7 @@ actor OfflineMeditationStore {
 struct OfflineMeditationSettings: View {
     @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isEnabled = false
     @ObservedObject private var manager = OfflineMeditationManager.shared
+    @State private var showsRemovalConfirmation = false
 
     var body: some View {
         SettingsGroup("settings.offline.section") {
@@ -710,15 +711,36 @@ struct OfflineMeditationSettings: View {
                 icon: SettingsRowIcon(.headphones),
                 titleKey: "settings.offline.title",
                 value: SettingsRowValue(statusKey),
-                isOn: $isEnabled
+                isOn: offlineToggleBinding
             )
             .accessibilityIdentifier("settings.offline.toggle")
         }
-        .onChange(of: isEnabled) { _, enabled in
-            if !enabled {
+        .confirmationDialog(
+            "settings.offline.remove.title",
+            isPresented: $showsRemovalConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("settings.offline.remove.confirm", role: .destructive) {
+                isEnabled = false
                 manager.removeDownloads()
             }
+            Button("common.cancel", role: .cancel) {}
+        } message: {
+            Text("settings.offline.remove.message")
         }
+    }
+
+    private var offlineToggleBinding: Binding<Bool> {
+        Binding(
+            get: { isEnabled },
+            set: { newValue in
+                if newValue {
+                    isEnabled = true
+                } else {
+                    showsRemovalConfirmation = true
+                }
+            }
+        )
     }
 
     private var statusKey: LocalizedStringKey {

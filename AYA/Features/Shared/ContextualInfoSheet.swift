@@ -46,8 +46,8 @@ struct ContextualInfoSheet: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: AYASpacing.xl) {
+                VStack(alignment: .leading, spacing: AYASpacing.md) {
                     Text(verbatim: title)
                         .ayaTypography(.screenTitle)
                         .foregroundStyle(AYAColors.textPrimary)
@@ -68,14 +68,14 @@ struct ContextualInfoSheet: View {
                 }
 
                 ForEach(content.sections) { section in
-                    VStack(alignment: .leading, spacing: 11) {
+                    VStack(alignment: .leading, spacing: AYASpacing.md) {
                         Text(verbatim: localized(section.titleKey))
                             .ayaTypography(.sectionTitle)
                             .foregroundStyle(AYAColors.textPrimary)
                             .accessibilityAddTraits(.isHeader)
 
                         ForEach(section.itemKeys, id: \.self) { key in
-                            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            HStack(alignment: .firstTextBaseline, spacing: AYASpacing.md) {
                                 Circle()
                                     .fill(AYAColors.primary.opacity(0.55))
                                     .frame(width: 5, height: 5)
@@ -90,7 +90,7 @@ struct ContextualInfoSheet: View {
                     }
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: AYASpacing.sm) {
                     Text(verbatim: localized("info.common.in_hesia"))
                         .ayaTypography(.sectionTitle)
                         .foregroundStyle(AYAColors.textPrimary)
@@ -102,7 +102,7 @@ struct ContextualInfoSheet: View {
                         .lineSpacing(3)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(16)
+                .padding(AYASpacing.lg)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(AYAColors.softPink.opacity(0.18), in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
 
@@ -115,8 +115,8 @@ struct ContextualInfoSheet: View {
                 }
             }
             .hesiaScreenPadding()
-            .padding(.top, 12)
-            .padding(.bottom, 28)
+            .padding(.top, AYASpacing.md)
+            .padding(.bottom, AYASpacing.xxl)
         }
         .scrollIndicators(.hidden)
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())

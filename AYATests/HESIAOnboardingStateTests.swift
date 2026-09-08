@@ -131,4 +131,23 @@ final class HESIAOnboardingStateTests: XCTestCase {
         XCTAssertFalse(HESIATutorialPresentationContext.replayFromSettings.completesFirstLaunch)
         XCTAssertTrue(HESIATutorialPresentationContext.firstLaunch.completesFirstLaunch)
     }
+
+    func testDeviceDataResetClearsTheApplicationDefaultsDomain() throws {
+        let suiteName = "DeviceDataResetServiceTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set("Beril", forKey: "user.name")
+        defaults.set(true, forKey: HESIAOnboardingPersistenceKeys.completed)
+        defaults.set(30, forKey: PregnancyPersistenceKeys.referenceWeek)
+
+        DeviceDataResetService.reset(
+            defaults: defaults,
+            bundleIdentifier: suiteName
+        )
+
+        XCTAssertNil(defaults.object(forKey: "user.name"))
+        XCTAssertNil(defaults.object(forKey: HESIAOnboardingPersistenceKeys.completed))
+        XCTAssertNil(defaults.object(forKey: PregnancyPersistenceKeys.referenceWeek))
+    }
 }

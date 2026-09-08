@@ -324,18 +324,16 @@ private struct TutorialThemePreview: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
         }
-        .onAppear {
+        .task {
             if reduceMotion {
                 revealedCardCount = surfaces.count
             } else {
-                Task {
-                    for count in 1...surfaces.count {
-                        guard !Task.isCancelled else { return }
-                        withAnimation(.easeInOut(duration: 0.30)) {
-                            revealedCardCount = count
-                        }
-                        try? await Task.sleep(for: .milliseconds(180))
+                for count in 1...surfaces.count {
+                    guard !Task.isCancelled else { return }
+                    withAnimation(.easeInOut(duration: 0.30)) {
+                        revealedCardCount = count
                     }
+                    try? await Task.sleep(for: .milliseconds(180))
                 }
             }
         }
@@ -662,16 +660,14 @@ private struct TutorialSettingsPreview: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
         }
-        .onAppear {
+        .task {
             if reduceMotion {
                 showsPanel = true
             } else {
-                Task {
-                    try? await Task.sleep(for: .milliseconds(500))
-                    guard !Task.isCancelled else { return }
-                    withAnimation(.easeOut(duration: 0.22)) {
-                        showsPanel = true
-                    }
+                try? await Task.sleep(for: .milliseconds(500))
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeOut(duration: 0.22)) {
+                    showsPanel = true
                 }
             }
         }

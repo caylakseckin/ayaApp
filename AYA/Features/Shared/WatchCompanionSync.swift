@@ -9,7 +9,7 @@ final class WatchPlaybackCoordinator: ObservableObject {
     @Published var isPlayerPresented = false
     private(set) var playbackSession: MeditationPlaybackSession?
 
-    private var statePublishingTask: Task<Void, Never>?
+    private var statePublishingCancellable: AnyCancellable?
 
     private init() {}
 
@@ -57,11 +57,29 @@ final class WatchPlaybackCoordinator: ObservableObject {
     }
 
     private func startPublishingState() {
-        statePublishingTask?.cancel()
-        statePublishingTask = Task { @MainActor [weak self] in
-            while !Task.isCancelled {
-                self?.publishCurrentState()
-                try? await Task.sleep(for: .seconds(1))
+        statePublishingCancellable?.cancel()
+        guard let playbackSession else { return }
+
+        let sessionID = playbackSession.meditation.id
+        let viewModel = playbackSession.viewModel
+        statePublishingCancellable = Publishers.CombineLatest3(
+            viewModel.$isPlaying,
+            viewModel.$currentTime,
+            viewModel.$duration
+        )
+        .map { isPlaying, position, duration in
+            WatchPlaybackState(
+                sessionID: sessionID,
+                isPlaying: isPlaying,
+                position: position,
+                duration: duration
+            )
+        }
+        .removeDuplicates()
+        .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
+        .sink { state in
+            Task { @MainActor in
+                WatchCompanionSync.shared.sendPlaybackState(state)
             }
         }
     }
@@ -77,6 +95,14 @@ final class WatchPlaybackCoordinator: ObservableObject {
                 duration: viewModel.duration
             )
         )
+    }
+
+    func resetForLocalDataReset() {
+        playbackSession?.viewModel.stop()
+        playbackSession = nil
+        isPlayerPresented = false
+        statePublishingCancellable?.cancel()
+        statePublishingCancellable = nil
     }
 }
 
@@ -110,6 +136,11 @@ final class WatchCompanionSync: NSObject {
 
     func activate() {
         connectivitySession?.activate()
+    }
+
+    @MainActor
+    func resetForLocalDataReset() {
+        clearCurrentPractice()
     }
 
     func sendPlaybackState(_ state: WatchPlaybackState) {

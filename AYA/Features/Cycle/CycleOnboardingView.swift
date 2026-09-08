@@ -552,7 +552,7 @@ private struct CycleInputGuidance: View {
             if let validationKey {
                 guidanceRow(
                     text: validationKey,
-                    foreground: AYAColors.warning
+                    foreground: AYAColors.error
                 )
                 .accessibilityAddTraits(.isStaticText)
             }

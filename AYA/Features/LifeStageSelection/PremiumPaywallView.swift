@@ -275,7 +275,7 @@ struct PremiumPaywallView: View {
                 Task { await premiumStore.loadProducts() }
             }
             .ayaTypography(.button)
-            .foregroundStyle(AYAColors.accent)
+            .foregroundStyle(AYAColors.emphasis)
             .frame(minHeight: 44)
         }
     }
@@ -319,25 +319,46 @@ struct PremiumPaywallView: View {
     }
 
     private var legalLinks: some View {
-        HStack(spacing: AYASpacing.sm) {
-            Button("premium.restore") {
-                Task { await restorePurchases() }
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: AYASpacing.sm) {
+                legalActions(includeSeparators: true)
             }
-            .disabled(isWorking)
 
-            Text(verbatim: "•")
-                .accessibilityHidden(true)
-
-            Link("premium.terms", destination: termsURL)
-
-            Text(verbatim: "•")
-                .accessibilityHidden(true)
-
-            Link("premium.privacy", destination: privacyURL)
+            VStack(spacing: 0) {
+                legalActions(includeSeparators: false)
+            }
         }
         .buttonStyle(.plain)
         .ayaTypography(.metadata)
         .foregroundStyle(AYAColors.textTertiary)
+    }
+
+    @ViewBuilder
+    private func legalActions(includeSeparators: Bool) -> some View {
+        Button("premium.restore") {
+            Task { await restorePurchases() }
+        }
+        .disabled(isWorking)
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
+
+        if includeSeparators {
+            Text(verbatim: "•")
+                .accessibilityHidden(true)
+        }
+
+        Link("premium.terms", destination: termsURL)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+
+        if includeSeparators {
+            Text(verbatim: "•")
+                .accessibilityHidden(true)
+        }
+
+        Link("premium.privacy", destination: privacyURL)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
     }
 
     private func detailKey(for plan: PremiumPlan) -> LocalizedStringKey {

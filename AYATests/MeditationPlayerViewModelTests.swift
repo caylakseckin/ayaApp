@@ -185,6 +185,30 @@ final class MeditationPlayerViewModelTests: XCTestCase {
         XCTAssertNil(metadata.audioFileName(for: .english))
     }
 
+    func testBirthListFallbackContentMatchesPublishedMetadata() {
+        let expected: [(id: String, title: String, duration: Int)] = [
+            ("flower_breath", "Çiçek Nefesi", 5),
+            ("arrow_breath", "Ok Nefesi", 6),
+            ("zipper_breath", "Fermuar Nefesi", 3),
+            ("curtain_breath", "Perde Nefesi", 5)
+        ]
+
+        XCTAssertEqual(BirthMomentMeditationProvider.practices.count, expected.count)
+        for (practice, expectedPractice) in zip(
+            BirthMomentMeditationProvider.practices,
+            expected
+        ) {
+            XCTAssertEqual(practice.id, expectedPractice.id)
+            XCTAssertEqual(
+                AppLanguage.turkish.localizedString(
+                    forKey: practice.meditation.titleLocalizationKey
+                ),
+                expectedPractice.title
+            )
+            XCTAssertEqual(practice.meditation.durationMinutes, expectedPractice.duration)
+        }
+    }
+
     func testPostpartumMeditationUsesDailyRemoteContent() {
         let calculation = PostpartumCalculation(
             currentDay: 18,

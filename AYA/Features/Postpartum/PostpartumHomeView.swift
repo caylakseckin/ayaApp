@@ -65,7 +65,7 @@ struct PostpartumHomeView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $isEditingBirthDate) {
+        .sheet(isPresented: $isEditingBirthDate) {
             NavigationStack {
                 PostpartumPersonalizationView(mode: .edit) {
                     isEditingBirthDate = false
@@ -73,6 +73,8 @@ struct PostpartumHomeView: View {
             }
             .environment(\.locale, locale)
             .tint(AYAColors.primary)
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $infoContent) { content in
             ContextualInfoSheet(content: content)

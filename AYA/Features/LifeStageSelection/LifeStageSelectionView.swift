@@ -6,6 +6,7 @@ struct LifeStageSelectionView: View {
     @ObservedObject private var premiumStore = PremiumStore.shared
     @State private var navigationPath: [LifeStage] = []
     @State private var premiumStage: LifeStage?
+    @State private var pendingEntitlementStage: LifeStage?
     @State private var selectionFeedbackTrigger = 0
     private let onStageSelected: ((LifeStage) -> Void)?
 
@@ -82,17 +83,26 @@ struct LifeStageSelectionView: View {
         .task {
             await premiumStore.prepare()
         }
+        .task(id: pendingEntitlementStage) {
+            guard let stage = pendingEntitlementStage else { return }
+            await premiumStore.prepare()
+            guard !Task.isCancelled, pendingEntitlementStage == stage else { return }
+            pendingEntitlementStage = nil
+            selectResolved(stage)
+        }
     }
 
     private func select(_ stage: LifeStage) {
         if stage.isPremium, !premiumStore.hasResolvedEntitlements {
-            Task {
-                await premiumStore.refreshEntitlements()
-                select(stage)
-            }
+            guard pendingEntitlementStage == nil else { return }
+            pendingEntitlementStage = stage
             return
         }
 
+        selectResolved(stage)
+    }
+
+    private func selectResolved(_ stage: LifeStage) {
         if !PremiumAccessPolicy.hasAccess(
             to: stage,
             entitlementsResolved: premiumStore.hasResolvedEntitlements,

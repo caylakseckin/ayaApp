@@ -52,7 +52,6 @@ struct HeroMetricColumn<Footer: View>: View {
                 .ayaTypography(.heroMetricValue)
                 .foregroundStyle(AYAColors.accent)
                 .contentTransition(.numericText())
-                .minimumScaleFactor(0.9)
                 .lineLimit(1)
 
             Text(unitKey)
@@ -66,7 +65,6 @@ struct HeroMetricColumn<Footer: View>: View {
             idealWidth: LifeStageHeroMetrics.metricColumnMinWidth,
             maxWidth: LifeStageHeroMetrics.metricColumnMaxWidth
         )
-        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabelKey)
         .accessibilityValue(accessibilityValue)
@@ -127,11 +125,22 @@ struct HeroAdaptiveRow<Leading: View, Trailing: View>: View {
     @ViewBuilder var leading: Leading
     @ViewBuilder var trailing: Trailing
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        HStack(alignment: .center, spacing: spacing) {
-            leading
-            trailing
-                .layoutPriority(1)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: spacing) {
+                    leading
+                    trailing
+                }
+            } else {
+                HStack(alignment: .center, spacing: spacing) {
+                    leading
+                    trailing
+                        .layoutPriority(1)
+                }
+            }
         }
     }
 }
