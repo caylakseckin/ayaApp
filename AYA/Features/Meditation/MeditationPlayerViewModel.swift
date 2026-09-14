@@ -1,4 +1,5 @@
 import AVFoundation
+import Combine
 import Foundation
 import MediaPlayer
 import UIKit
@@ -18,6 +19,9 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     @Published private(set) var displayDurationMinutes: Int
 
     private var audioPlayer: AVAudioPlayer?
+    private let requiresPremiumAccess: Bool
+    private let premiumStore: PremiumStore
+    private var premiumAccessCancellable: AnyCancellable?
     private let requiresRemoteAudio: Bool
     private let remoteAudioSource: RemoteMeditationAudioSource?
     private let language: AppLanguage
@@ -40,15 +44,27 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     init(
         meditation: DailyMeditation,
         language: AppLanguage = AppLanguage.defaultExplicitLanguage,
-        autoPlay: Bool = false
+        autoPlay: Bool = false,
+        premiumStore: PremiumStore = .shared
     ) {
         duration = TimeInterval(meditation.durationMinutes * 60)
         displayDurationMinutes = meditation.durationMinutes
         requiresRemoteAudio = meditation.remoteAudioSource != nil
         remoteAudioSource = meditation.remoteAudioSource
         self.language = language
+        self.premiumStore = premiumStore
+        requiresPremiumAccess = meditation.requiresPremiumAccess
         shouldAutoPlay = autoPlay
         super.init()
+
+        if requiresPremiumAccess {
+            premiumAccessCancellable = premiumStore.$hasPremiumAccess
+                .dropFirst()
+                .sink { [weak self] allowed in
+                    if !allowed { self?.stop() }
+                }
+            guard premiumStore.canUsePremiumNow else { return }
+        }
 
         if let remoteAudioSource = meditation.remoteAudioSource {
             isLoadingAudio = true
@@ -66,6 +82,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     /// Retries remote audio preparation after a failure (backs the player's
     /// "Retry" button). No-op for bundled meditations.
     func retry() {
+        guard !requiresPremiumAccess || premiumStore.canUsePremiumNow else { stop(); return }
         guard let remoteAudioSource else { return }
         let language = self.language
         audioPreparationTask?.cancel()
@@ -105,6 +122,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     }
 
     func play() {
+        guard !requiresPremiumAccess || premiumStore.canUsePremiumNow else { stop(); return }
         // A play request may arrive from the Watch while remote audio is still
         // loading. Keep that intent so preparation can start playback when ready.
         shouldAutoPlay = true
@@ -170,6 +188,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     }
 
     func stop() {
+        shouldAutoPlay = false
         audioPreparationTask?.cancel()
         audioPreparationTask = nil
         stopProgressTimer()
@@ -425,6 +444,7 @@ final class MeditationPlayerViewModel: NSObject, ObservableObject {
     }
 
     private func updateProgress() {
+        guard !requiresPremiumAccess || premiumStore.canUsePremiumNow else { stop(); return }
         guard isPlaying else { return }
 
         if let audioPlayer {

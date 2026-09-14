@@ -2,22 +2,27 @@ import Foundation
 
 struct PregnancyContentProvider {
     func meditation(for calculation: PregnancyCalculation) -> DailyMeditation {
+        meditation(forWeek: calculation.currentWeek)
+    }
+
+    func meditation(forWeek week: Int) -> DailyMeditation {
+        let trimester = PregnancyTrimester(week: week)
         let fallbackResourceName = "aya-demo-meditation-9m.m4a"
         let remoteAudioSource = RemoteMeditationAudioSource.supportedPregnancyWeeks
-            .contains(calculation.currentWeek)
+            .contains(week)
             ? RemoteMeditationAudioSource(
-                pregnancyWeek: calculation.currentWeek,
+                pregnancyWeek: week,
                 fallbackResourceName: fallbackResourceName
             )
             : nil
 
         return DailyMeditation(
-            id: "pregnancy-week-\(calculation.currentWeek)",
-            titleLocalizationKey: "pregnancy.meditation.\(calculation.trimester.rawValue).title",
-            descriptionLocalizationKey: "pregnancy.meditation.\(calculation.trimester.rawValue).description",
-            contextNameLocalizationKey: calculation.trimester.nameLocalizationKey,
+            id: "pregnancy-week-\(week)",
+            titleLocalizationKey: "pregnancy.meditation.\(trimester.rawValue).title",
+            descriptionLocalizationKey: "pregnancy.meditation.\(trimester.rawValue).description",
+            contextNameLocalizationKey: trimester.nameLocalizationKey,
             contextFormatLocalizationKey: "pregnancy.meditation.metadata",
-            contextValue: calculation.currentWeek,
+            contextValue: week,
             durationMinutes: 9,
             voiceLocalizationKey: "meditation.voice.yaren",
             audioResourceName: fallbackResourceName,

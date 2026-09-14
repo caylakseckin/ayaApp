@@ -160,7 +160,9 @@ struct HESIAApp: App {
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     guard newPhase == .active else { return }
+                    premiumStore.enforceExpiration()
                     Task {
+                        await premiumStore.refreshEntitlements()
                         await synchronizeWatchPractice()
                     }
                 }
@@ -168,6 +170,9 @@ struct HESIAApp: App {
                     Task {
                         await synchronizeWatchPractice()
                     }
+                }
+                .onChange(of: premiumStore.hasPremiumAccess) { _, allowed in
+                    if !allowed { WatchCompanionSync.shared.invalidatePremiumAccess() }
                 }
         }
     }

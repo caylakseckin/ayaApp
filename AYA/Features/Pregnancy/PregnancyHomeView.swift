@@ -14,6 +14,7 @@ struct PregnancyHomeView: View {
     @State private var isSettingsPresented = false
     @State private var isWeekEditorPresented = false
     @State private var isCalendarPresented = false
+    @State private var isMeditationBrowserPresented = false
     @State private var playbackSession: MeditationPlaybackSession?
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
@@ -67,11 +68,18 @@ struct PregnancyHomeView: View {
             }
         }
         .sheet(isPresented: $isWeekEditorPresented) {
-            PregnancyWeekEditorView(initialWeek: currentWeek) { newWeek in
-                updatePregnancyWeek(newWeek)
+            PregnancyWeekEditorView(
+                initialWeek: currentWeek,
+                initialWeekStartDay: currentWeekStartDay
+            ) { newWeek, newWeekStartDay in
+                updatePregnancyWeek(newWeek, weekStartDay: newWeekStartDay)
                 isWeekEditorPresented = false
             }
             .environment(\.locale, locale)
+        }
+        .sheet(isPresented: $isMeditationBrowserPresented) {
+            JourneyMeditationBrowser(journey: .pregnancy, currentValue: currentWeek)
+                .environment(\.locale, locale)
         }
         .sheet(item: $weekInfoPresentation) { presentation in
             PregnancyWeekInfoSheet(presentation: presentation)
@@ -98,6 +106,11 @@ struct PregnancyHomeView: View {
             )
         }
         return tracker.calculate(profile: profile).currentWeek
+    }
+
+    private var currentWeekStartDay: PregnancyWeekStartDay {
+        guard let profile else { return .monday }
+        return tracker.weekStartDay(for: profile.referenceDate)
     }
 
     private func homeContent(profile: PregnancyProfile) -> some View {
@@ -136,6 +149,12 @@ struct PregnancyHomeView: View {
                 ) {
                     startMeditation(meditation)
                 }
+                JourneyMeditationBrowseLink {
+                    stopPlaybackSession()
+                    isPlaybackContinuationToastPresented = false
+                    isMeditationBrowserPresented = true
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             LifeStageOverviewSection(
@@ -356,13 +375,15 @@ struct PregnancyHomeView: View {
         isWeekEditorPresented = true
     }
 
-    private func updatePregnancyWeek(_ week: Int) {
-        let normalizedToday = Calendar.current.startOfDay(for: Date())
+    private func updatePregnancyWeek(
+        _ week: Int,
+        weekStartDay: PregnancyWeekStartDay
+    ) {
         referenceWeek = min(
             max(week, PregnancyTracker.supportedWeekRange.lowerBound),
             PregnancyTracker.supportedWeekRange.upperBound
         )
-        referenceTimestamp = normalizedToday.timeIntervalSince1970
+        referenceTimestamp = tracker.referenceDate(for: weekStartDay).timeIntervalSince1970
         isOnboardingCompleted = true
     }
 
@@ -677,15 +698,22 @@ private struct PregnancyOverviewJourney: View {
 
 struct PregnancyWeekEditorView: View {
     let initialWeek: Int
-    let save: (Int) -> Void
+    let initialWeekStartDay: PregnancyWeekStartDay
+    let save: (Int, PregnancyWeekStartDay) -> Void
 
     @State private var selectedWeek: Int
+    @State private var selectedWeekStartDay: PregnancyWeekStartDay?
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
 
-    init(initialWeek: Int, save: @escaping (Int) -> Void) {
+    init(
+        initialWeek: Int,
+        initialWeekStartDay: PregnancyWeekStartDay,
+        save: @escaping (Int, PregnancyWeekStartDay) -> Void
+    ) {
         self.initialWeek = initialWeek
+        self.initialWeekStartDay = initialWeekStartDay
         self.save = save
         _selectedWeek = State(
             initialValue: min(
@@ -693,45 +721,53 @@ struct PregnancyWeekEditorView: View {
                 PregnancyTracker.supportedWeekRange.upperBound
             )
         )
+        _selectedWeekStartDay = State(initialValue: initialWeekStartDay)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AYASpacing.lg) {
-            HStack {
-                Text("pregnancy.settings.title")
-                    .ayaTypography(.screenTitle)
-                    .foregroundStyle(AYAColors.textPrimary)
-                Spacer()
-                Button(action: { dismiss() }) {
-                    HesiaIcon.close.view(size: HesiaIconSize.sm)
+        ScrollView {
+            VStack(alignment: .leading, spacing: AYASpacing.lg) {
+                HStack {
+                    Text("pregnancy.settings.title")
+                        .ayaTypography(.screenTitle)
                         .foregroundStyle(AYAColors.textPrimary)
-                        .frame(width: 44, height: 44)
-                        .background(AYAColors.surfaceElevated, in: Circle())
-                        .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        HesiaIcon.close.view(size: HesiaIconSize.sm)
+                            .foregroundStyle(AYAColors.textPrimary)
+                            .frame(width: 44, height: 44)
+                            .background(AYAColors.surfaceElevated, in: Circle())
+                            .overlay { Circle().stroke(AYAColors.separator, lineWidth: 1) }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("common.close")
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("common.close")
-            }
 
-            Picker("pregnancy.settings.title", selection: $selectedWeek) {
-                ForEach(PregnancyTracker.supportedWeekRange, id: \.self) { week in
-                    Text(verbatim: formattedWeek(week)).tag(week)
+                Picker("pregnancy.settings.title", selection: $selectedWeek) {
+                    ForEach(PregnancyTracker.supportedWeekRange, id: \.self) { week in
+                        Text(verbatim: formattedWeek(week)).tag(week)
+                    }
                 }
-            }
-            .pickerStyle(.wheel)
+                .pickerStyle(.wheel)
 
-            Button {
-                save(selectedWeek)
-            } label: {
-                Text("pregnancy.settings.update")
+                PregnancyWeekStartDayPicker(selection: $selectedWeekStartDay)
+
+                Button {
+                    guard let selectedWeekStartDay else { return }
+                    save(selectedWeek, selectedWeekStartDay)
+                } label: {
+                    Text("pregnancy.settings.update")
+                }
+                .buttonStyle(.appPrimary)
+                .disabled(selectedWeekStartDay == nil)
+                .accessibilityIdentifier("pregnancy.settings.update")
             }
-            .buttonStyle(.appPrimary)
-            .accessibilityIdentifier("pregnancy.settings.update")
+            .hesiaScreenPadding()
+            .padding(.vertical, AYASpacing.xl)
         }
-        .hesiaScreenPadding()
-        .padding(.vertical, AYASpacing.xl)
+        .scrollIndicators(.hidden)
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())
-        .presentationDetents([.medium])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
     }
 

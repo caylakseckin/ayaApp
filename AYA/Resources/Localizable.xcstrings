@@ -2985,13 +2985,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explore"
+            "value" : "Select"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keşfet"
+            "value" : "Seç"
           }
         }
       }
@@ -3017,13 +3017,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Make space as birth approaches"
+            "value" : "Make space for your breath and yourself as birth approaches"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Doğuma hazırlanırken kendine alan aç"
+            "value" : "Doğuma hazırlanırken nefesine ve kendine alan aç"
           }
         }
       }
@@ -3049,13 +3049,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose this stage"
+            "value" : "Select"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bu alanı seç"
+            "value" : "Seç"
           }
         }
       }
@@ -3081,13 +3081,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Daily meditations for your cycle"
+            "value" : "Daily meditations that adapt to every phase of your cycle"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fazına göre günlük meditasyonlar"
+            "value" : "Döngünün her fazına uyumlanan günlük meditasyonlar"
           }
         }
       }
@@ -3130,13 +3130,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explore"
+            "value" : "Select"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keşfet"
+            "value" : "Seç"
           }
         }
       }
@@ -3162,13 +3162,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Small pauses for busy days"
+            "value" : "Small moments of your own between busy days"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yoğun günlerde kendine küçük molalar"
+            "value" : "Yoğun günlerin arasında kendine ait küçük molalar"
           }
         }
       }
@@ -3194,13 +3194,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explore"
+            "value" : "Select"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keşfet"
+            "value" : "Seç"
           }
         }
       }
@@ -3226,13 +3226,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Care for yourself as life changes"
+            "value" : "Care for yourself gently through changing days with your baby"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bebeğinle değişirken kendini de gözet"
+            "value" : "Bebeğinle değişen günlerde kendini de şefkatle gözet"
           }
         }
       }
@@ -3258,13 +3258,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explore"
+            "value" : "Select"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keşfet"
+            "value" : "Seç"
           }
         }
       }
@@ -3290,13 +3290,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calm practices for your week"
+            "value" : "Calm practices for your week and changing needs"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haftana eşlik eden sakin pratikler"
+            "value" : "Haftana ve değişen ihtiyaçlarına eşlik eden sakin pratikler"
           }
         }
       }
@@ -3335,18 +3335,17 @@
       }
     },
     "life_stage.subtitle" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your daily meditations, colors, and suggestions will be personalized based on your choice."
+            "value" : "Let’s tailor your meditations and daily support to the stage you’re in."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seçimine göre günlük meditasyonların, renklerin ve önerilerin kişiselleşecek."
+            "value" : "Bulunduğun döneme göre meditasyonlarını ve günlük desteğini sana uyarlayalım."
           }
         }
       }
@@ -3363,6 +3362,120 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HESIA hangi döneminde yanında olsun?"
+          }
+        }
+      }
+    },
+    "meditation.browse.day" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day %d"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d. gün"
+          }
+        }
+      }
+    },
+    "meditation.browse.explanation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listen to a meditation from another week or day. This is a temporary choice; your tracking and automatic progress stay unchanged."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başka bir hafta veya günün meditasyonunu dinleyebilirsin. Bu geçici bir seçimdir; takip bilgilerin ve otomatik ilerlemen değişmez."
+          }
+        }
+      }
+    },
+    "meditation.browse.link" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other meditations"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diğer meditasyonlar"
+          }
+        }
+      }
+    },
+    "meditation.browse.return_day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Return to my current day"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut günüme dön"
+          }
+        }
+      }
+    },
+    "meditation.browse.return_week" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Return to my current week"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut haftama dön"
+          }
+        }
+      }
+    },
+    "meditation.browse.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore meditations"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditasyonları keşfet"
+          }
+        }
+      }
+    },
+    "meditation.browse.week" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %d"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d. hafta"
           }
         }
       }
@@ -5366,6 +5479,7 @@
       }
     },
     "onboarding.tutorial.continue" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5429,6 +5543,22 @@
         }
       }
     },
+    "onboarding.tutorial.eyebrow" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meet HESIA"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HESIA’yı tanı"
+          }
+        }
+      }
+    },
     "onboarding.tutorial.introduction.description" : {
       "localizations" : {
         "en" : {
@@ -5473,6 +5603,55 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "İleri"
+          }
+        }
+      }
+    },
+    "onboarding.tutorial.preview.caption" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Example preview"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Örnek görünüm"
+          }
+        }
+      }
+    },
+    "onboarding.tutorial.preview.current_week" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In this example, you’re in week 20."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu örnekte 20. haftadasın."
+          }
+        }
+      }
+    },
+    "onboarding.tutorial.preview.week" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your weekly journey"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haftalık yolculuğun"
           }
         }
       }
@@ -5617,6 +5796,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Atla"
+          }
+        }
+      }
+    },
+    "onboarding.tutorial.start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let’s begin"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başlayalım"
           }
         }
       }
@@ -7724,13 +7919,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The pregnancy week you enter is stored only on this iPhone and is never shared with anyone or any third party."
+            "value" : "The pregnancy week and start day you enter are stored only on this iPhone and are never shared with anyone or any third party."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Girdiğin gebelik haftası yalnızca bu iPhone’da saklanır ve hiçbir kişi veya üçüncü tarafla paylaşılmaz."
+            "value" : "Girdiğin gebelik haftası ve başlangıç günü yalnızca bu iPhone’da saklanır; hiçbir kişi veya üçüncü tarafla paylaşılmaz."
           }
         }
       }
@@ -7772,13 +7967,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "One quick detail is enough for me to suggest the right meditation for this stage."
+            "value" : "Two quick details help me suggest the right meditation at the right time."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bu döneme uygun meditasyonu önermem için tek bir bilgi yeterli."
+            "value" : "Doğru meditasyonu doğru zamanda önermem için iki kısa bilgi yeterli."
           }
         }
       }
@@ -8147,6 +8342,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bu hafta"
+          }
+        }
+      }
+    },
+    "pregnancy.week_start.helper" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your pregnancy week will update on the day you choose."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hamilelik haftan seçtiğin gün yenilenecek."
+          }
+        }
+      }
+    },
+    "pregnancy.week_start.question" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Which day did your current week begin?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İçinde olduğun hafta hangi gün başladı?"
           }
         }
       }
@@ -8521,6 +8748,22 @@
         }
       }
     },
+    "premium.plan.yearly.trial_detail" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First 2 weeks free"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlk 2 hafta ücretsiz"
+          }
+        }
+      }
+    },
     "premium.privacy" : {
       "localizations" : {
         "en" : {
@@ -8554,6 +8797,7 @@
       }
     },
     "premium.purchase" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8664,6 +8908,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yıllık %@. İptal edilmediği sürece otomatik yenilenir."
+          }
+        }
+      }
+    },
+    "premium.subscription.yearly_trial_disclosure" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free for the first 2 weeks, then %@ per year. Renews automatically unless canceled."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlk 2 hafta ücretsiz, ardından yıllık %@. İptal edilmediği sürece otomatik yenilenir."
           }
         }
       }
@@ -9150,54 +9411,6 @@
         }
       }
     },
-    "settings.offline.remove.confirm" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turn Off and Remove"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kapat ve Sil"
-          }
-        }
-      }
-    },
-    "settings.offline.remove.message" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turning off offline listening removes downloaded meditation files from this device."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çevrimdışı dinlemeyi kapatmak, indirilen meditasyon dosyalarını bu cihazdan siler."
-          }
-        }
-      }
-    },
-    "settings.offline.remove.title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove Offline Meditations?"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çevrimdışı Meditasyonlar Silinsin mi?"
-          }
-        }
-      }
-    },
     "settings.offline.downloading" : {
       "localizations" : {
         "en" : {
@@ -9274,6 +9487,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mevcut çevrimdışı meditasyonların hazır"
+          }
+        }
+      }
+    },
+    "settings.offline.remove.confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn Off and Remove"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapat ve Sil"
+          }
+        }
+      }
+    },
+    "settings.offline.remove.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turning off offline listening removes downloaded meditation files from this device."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı dinlemeyi kapatmak, indirilen meditasyon dosyalarını bu cihazdan siler."
+          }
+        }
+      }
+    },
+    "settings.offline.remove.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Offline Meditations?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çevrimdışı Meditasyonlar Silinsin mi?"
           }
         }
       }

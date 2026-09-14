@@ -139,6 +139,9 @@ struct PregnancySetupView: View {
             .accessibilityLabel("pregnancy.setup.question")
             .accessibilityValue(weekFieldText)
             .accessibilityIdentifier("pregnancy.setup.week.field")
+
+            PregnancyWeekStartDayPicker(selection: $viewModel.selectedWeekStartDay)
+                .padding(.top, AYASpacing.xl)
         }
     }
 
@@ -197,6 +200,74 @@ struct PregnancySetupView: View {
     private func formattedWeek(_ week: Int) -> String {
         let format = selectedLanguage.localizedString(forKey: "pregnancy.week.value")
         return String(format: format, locale: locale, week)
+    }
+
+    private var selectedLanguage: AppLanguage {
+        AppLanguage(rawValue: languageCode) ?? .system
+    }
+}
+
+struct PregnancyWeekStartDayPicker: View {
+    @Binding var selection: PregnancyWeekStartDay?
+
+    @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var columns: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: AYASpacing.xs),
+            count: dynamicTypeSize.isAccessibilitySize ? 4 : 7
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("pregnancy.week_start.question")
+                .ayaTypography(.sectionTitle)
+                .foregroundStyle(AYAColors.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("pregnancy.week_start.helper")
+                .ayaTypography(.body)
+                .foregroundStyle(AYAColors.textSecondary)
+                .padding(.top, AYASpacing.sm)
+                .fixedSize(horizontal: false, vertical: true)
+
+            LazyVGrid(columns: columns, spacing: AYASpacing.xs) {
+                ForEach(PregnancyWeekStartDay.allCases) { day in
+                    dayButton(day)
+                }
+            }
+            .padding(.top, AYASpacing.lg)
+        }
+    }
+
+    private func dayButton(_ day: PregnancyWeekStartDay) -> some View {
+        let isSelected = selection == day
+
+        return Button {
+            selection = day
+        } label: {
+            Text(verbatim: day.shortName(locale: selectedLanguage.locale))
+                .ayaTypography(.metadata)
+                .foregroundStyle(isSelected ? AYAColors.onAccent : AYAColors.textPrimary)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(
+                    isSelected ? AYAColors.emphasis : AYAColors.surface,
+                    in: RoundedRectangle(cornerRadius: AYARadius.chip, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: AYARadius.chip, style: .continuous)
+                        .stroke(isSelected ? .clear : AYAColors.border, lineWidth: 1)
+                }
+                .contentShape(
+                    RoundedRectangle(cornerRadius: AYARadius.chip, style: .continuous)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(verbatim: day.fullName(locale: selectedLanguage.locale)))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("pregnancy.week_start.day.\(day.id)")
     }
 
     private var selectedLanguage: AppLanguage {

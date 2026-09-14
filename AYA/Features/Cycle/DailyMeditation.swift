@@ -12,6 +12,11 @@ struct DailyMeditation: Identifiable {
     let audioResourceName: String?
     let remoteAudioSource: RemoteMeditationAudioSource?
 
+    var requiresPremiumAccess: Bool {
+        id.hasPrefix("pregnancy-") || id.hasPrefix("postpartum-") ||
+        id.hasPrefix("birth-moment-") || id.hasPrefix("motherhood-")
+    }
+
     var titleKey: LocalizedStringKey { LocalizedStringKey(titleLocalizationKey) }
     var descriptionKey: LocalizedStringKey { LocalizedStringKey(descriptionLocalizationKey) }
     var voiceKey: LocalizedStringKey { LocalizedStringKey(voiceLocalizationKey) }

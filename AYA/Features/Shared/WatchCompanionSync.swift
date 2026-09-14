@@ -29,6 +29,10 @@ final class WatchPlaybackCoordinator: ObservableObject {
         language: AppLanguage
     ) -> Bool {
         guard meditation.id == command.sessionID else { return false }
+        guard !meditation.requiresPremiumAccess || PremiumStore.shared.canUsePremiumNow else {
+            resetForLocalDataReset()
+            return false
+        }
 
         if playbackSession?.meditation.id != meditation.id {
             playbackSession?.viewModel.stop()
@@ -182,6 +186,14 @@ final class WatchCompanionSync: NSObject {
         }
 
         synchronizeCurrentPractice()
+    }
+
+    @MainActor
+    func invalidatePremiumAccess() {
+        if WatchPlaybackCoordinator.shared.playbackSession?.meditation.requiresPremiumAccess == true {
+            WatchPlaybackCoordinator.shared.resetForLocalDataReset()
+        }
+        if activeStage?.isPremium == true { clearCurrentPractice() }
     }
 
     @MainActor
@@ -419,6 +431,13 @@ final class WatchCompanionSync: NSObject {
 
         Task { @MainActor [weak self] in
             guard let self else {
+                replyHandler([WatchConnectivityPayload.playbackAcceptedKey: false])
+                return
+            }
+            await PremiumStore.shared.refreshEntitlements()
+            if self.activeStage?.isPremium == true, !PremiumStore.shared.canUsePremiumNow {
+                self.clearCurrentPractice()
+                WatchPlaybackCoordinator.shared.resetForLocalDataReset()
                 replyHandler([WatchConnectivityPayload.playbackAcceptedKey: false])
                 return
             }

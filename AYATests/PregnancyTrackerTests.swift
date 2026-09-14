@@ -2,6 +2,28 @@ import XCTest
 @testable import HESIA
 
 final class PregnancyTrackerTests: XCTestCase {
+    func testTemporaryPregnancyMeditationsMatchEverySupportedWeek() {
+        XCTAssertEqual(MeditationJourney.pregnancy.range, 4...42)
+        for week in MeditationJourney.pregnancy.range {
+            let meditation = MeditationJourney.pregnancy.meditation(at: week)
+            XCTAssertEqual(meditation.id, "pregnancy-week-\(week)")
+            XCTAssertEqual(meditation.contextValue, week)
+            XCTAssertEqual(meditation.remoteAudioSource?.pregnancyWeek, week)
+            XCTAssertEqual(meditation.contextNameLocalizationKey, PregnancyTrimester(week: week).nameLocalizationKey)
+        }
+    }
+
+    func testTemporaryPostpartumMeditationsMatchEverySupportedDay() {
+        XCTAssertEqual(MeditationJourney.postpartum.range, 1...90)
+        for day in MeditationJourney.postpartum.range {
+            let meditation = MeditationJourney.postpartum.meditation(at: day)
+            XCTAssertEqual(meditation.id, "postpartum-day-\(day)")
+            XCTAssertEqual(meditation.contextValue, day)
+            XCTAssertEqual(meditation.remoteAudioSource?.postpartumDay, day)
+            XCTAssertEqual(meditation.titleLocalizationKey, PostpartumStage(day: day).meditationTitleLocalizationKey)
+        }
+    }
+
     func testCurrentWeekAdvancesFromReferenceDateByCalendarWeeks() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
@@ -75,7 +97,29 @@ final class PregnancyTrackerTests: XCTestCase {
         )
     }
 
-    func testStorePersistsWeekAndNormalizedReferenceDate() throws {
+    func testSelectedWeekStartDayUsesItsMostRecentOccurrence() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let friday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 11, hour: 18))
+        )
+        let tracker = PregnancyTracker(calendar: calendar)
+
+        XCTAssertEqual(
+            tracker.referenceDate(for: .monday, on: friday),
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 7))
+        )
+        XCTAssertEqual(
+            tracker.referenceDate(for: .friday, on: friday),
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 11))
+        )
+        XCTAssertEqual(
+            tracker.referenceDate(for: .sunday, on: friday),
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 6))
+        )
+    }
+
+    func testStorePersistsWeekAndSelectedStartDate() throws {
         let defaults = makeDefaults()
         defer { clear(defaults) }
         var calendar = Calendar(identifier: .gregorian)
@@ -85,10 +129,15 @@ final class PregnancyTrackerTests: XCTestCase {
         )
         let store = PregnancyStore(defaults: defaults, calendar: calendar, now: { now })
 
-        let profile = try XCTUnwrap(store.save(referenceWeek: 18))
+        let profile = try XCTUnwrap(
+            store.save(referenceWeek: 18, weekStartDay: .monday)
+        )
+        let expectedMonday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 3))
+        )
 
         XCTAssertEqual(profile.referenceWeek, 18)
-        XCTAssertEqual(profile.referenceDate, calendar.startOfDay(for: now))
+        XCTAssertEqual(profile.referenceDate, expectedMonday)
         XCTAssertEqual(defaults.integer(forKey: PregnancyPersistenceKeys.referenceWeek), 18)
         XCTAssertTrue(defaults.bool(forKey: PregnancyPersistenceKeys.onboardingCompleted))
         XCTAssertEqual(store.profile, profile)
@@ -119,12 +168,17 @@ final class PregnancyTrackerTests: XCTestCase {
         let updateDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 8, day: 15, hour: 20)))
 
         _ = PregnancyStore(defaults: defaults, calendar: calendar, now: { firstDate })
-            .save(referenceWeek: 18)
+            .save(referenceWeek: 18, weekStartDay: .saturday)
         let updatedStore = PregnancyStore(defaults: defaults, calendar: calendar, now: { updateDate })
-        let updatedProfile = try XCTUnwrap(updatedStore.save(referenceWeek: 24))
+        let updatedProfile = try XCTUnwrap(
+            updatedStore.save(referenceWeek: 24, weekStartDay: .monday)
+        )
+        let expectedMonday = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 10))
+        )
 
         XCTAssertEqual(updatedProfile.referenceWeek, 24)
-        XCTAssertEqual(updatedProfile.referenceDate, calendar.startOfDay(for: updateDate))
+        XCTAssertEqual(updatedProfile.referenceDate, expectedMonday)
         XCTAssertTrue(defaults.bool(forKey: PregnancyPersistenceKeys.onboardingCompleted))
     }
 
@@ -145,12 +199,21 @@ final class PregnancyTrackerTests: XCTestCase {
         XCTAssertFalse(viewModel.save())
 
         viewModel.selectedWeek = 4
+        XCTAssertFalse(viewModel.canContinue)
+
+        viewModel.selectedWeekStartDay = .monday
         XCTAssertTrue(viewModel.canContinue)
 
         viewModel.selectedWeek = 18
         XCTAssertTrue(viewModel.canContinue)
         XCTAssertTrue(viewModel.save())
         XCTAssertEqual(defaults.integer(forKey: PregnancyPersistenceKeys.referenceWeek), 18)
+        XCTAssertEqual(
+            PregnancyStore(defaults: defaults).profile.map {
+                PregnancyTracker().weekStartDay(for: $0.referenceDate)
+            },
+            .monday
+        )
     }
 
     private func makeDefaults() -> UserDefaults {

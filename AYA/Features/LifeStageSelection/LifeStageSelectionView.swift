@@ -7,7 +7,11 @@ struct LifeStageSelectionView: View {
     @State private var navigationPath: [LifeStage] = []
     @State private var premiumStage: LifeStage?
     @State private var pendingEntitlementStage: LifeStage?
+    @State private var focusedStage: LifeStage?
     @State private var selectionFeedbackTrigger = 0
+    @State private var carouselNudgeOffset: CGFloat = 0
+    @AppStorage("life_stage.selection.hasShownSwipeNudge") private var hasShownSwipeNudge = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let onStageSelected: ((LifeStage) -> Void)?
 
     init(
@@ -17,6 +21,7 @@ struct LifeStageSelectionView: View {
         _viewModel = StateObject(
             wrappedValue: LifeStageSelectionViewModel(selectedStage: initialSelection)
         )
+        _focusedStage = State(initialValue: initialSelection)
         self.onStageSelected = onStageSelected
     }
 
@@ -46,31 +51,70 @@ struct LifeStageSelectionView: View {
     private var selectionContent: some View {
         GeometryReader { geometry in
             let usesCompactMetrics = geometry.size.height < 730
-            let horizontalPadding = AYALayout.screenHorizontalPadding
-            let contentWidth = max(0, geometry.size.width - (horizontalPadding * 2))
+            VStack(spacing: 0) {
+                header(usesCompactMetrics: usesCompactMetrics)
+                    .padding(.horizontal, AYALayout.screenHorizontalPadding)
+                    .padding(.top, usesCompactMetrics ? AYASpacing.md : AYASpacing.lg)
+                    .padding(.bottom, usesCompactMetrics ? AYASpacing.md : AYASpacing.xl)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    header(usesCompactMetrics: usesCompactMetrics, width: contentWidth)
-                        .padding(.bottom, usesCompactMetrics ? AYASpacing.lg : AYASpacing.xl)
+                GeometryReader { carouselGeometry in
+                    let stages = LifeStage.availableCases
+                    let cardWidth = min(
+                        AYALayout.readableContentMaxWidth - (AYASpacing.xl * 2),
+                        carouselGeometry.size.width * 0.78
+                    )
+                    let cardHeight = min(
+                        AYALayout.readableContentMaxWidth * 0.66,
+                        carouselGeometry.size.height * 0.78
+                    )
+                    let leadingInset = (carouselGeometry.size.width - cardWidth) / 2
 
-                    LazyVStack(spacing: usesCompactMetrics ? AYASpacing.sm : AYASpacing.md) {
-                        ForEach(LifeStage.availableCases) { stage in
-                            LifeStageCardView(
-                                stage: stage,
-                                isSelected: viewModel.selectedStage == stage,
-                                isPremiumUnlocked: premiumStore.hasPremiumAccess,
-                                usesCompactMetrics: usesCompactMetrics,
-                                action: { select(stage) }
-                            )
+                    VStack(spacing: AYASpacing.xl) {
+                        ScrollView(.horizontal) {
+                            LazyHStack(spacing: AYASpacing.md) {
+                                ForEach(stages) { stage in
+                                    LifeStageCarouselCard(
+                                        stage: stage,
+                                        isFocused: focusedStage == stage,
+                                        isPremiumUnlocked: premiumStore.hasPremiumAccess,
+                                        usesCompactMetrics: usesCompactMetrics,
+                                        action: { select(stage) }
+                                    )
+                                    .frame(width: cardWidth, height: cardHeight)
+                                    .id(stage)
+                                    .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                                        content
+                                            .scaleEffect(reduceMotion || phase.isIdentity ? 1 : 0.965)
+                                            .opacity(reduceMotion || phase.isIdentity ? 1 : 0.78)
+                                    }
+                                }
+                            }
+                            .scrollTargetLayout()
+                            .offset(x: carouselNudgeOffset)
                         }
+                        .frame(height: cardHeight)
+                        .contentMargins(.horizontal, leadingInset, for: .scrollContent)
+                        .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+                        .scrollPosition(id: $focusedStage, anchor: .center)
+                        .scrollIndicators(.hidden)
+                        .animation(
+                            reduceMotion ? nil : .spring(response: 0.58, dampingFraction: 0.9),
+                            value: focusedStage
+                        )
+                        .accessibilityAdjustableAction { direction in
+                            let focusedIndex = stages.firstIndex(of: focusedStage ?? viewModel.selectedStage) ?? 0
+                            focusStage(at: focusedIndex + (direction == .increment ? 1 : -1))
+                        }
+
+                        LifeStagePageIndicator(
+                            stages: stages,
+                            focusedStage: focusedStage ?? viewModel.selectedStage
+                        )
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
-                .padding(.horizontal, horizontalPadding)
-                .padding(.vertical, usesCompactMetrics ? AYASpacing.md : AYASpacing.lg)
-                .frame(minHeight: geometry.size.height, alignment: .center)
             }
-            .scrollIndicators(.hidden)
+            .padding(.bottom, usesCompactMetrics ? AYASpacing.sm : AYASpacing.lg)
             .background(AYAColors.backgroundPrimary.ignoresSafeArea())
         }
         .sheet(item: $premiumStage) { stage in
@@ -80,8 +124,12 @@ struct LifeStageSelectionView: View {
             }
         }
         .sensoryFeedback(.selection, trigger: selectionFeedbackTrigger)
+        .sensoryFeedback(.selection, trigger: focusedStage)
         .task {
             await premiumStore.prepare()
+        }
+        .task {
+            await playSwipeNudgeIfNeeded()
         }
         .task(id: pendingEntitlementStage) {
             guard let stage = pendingEntitlementStage else { return }
@@ -100,6 +148,38 @@ struct LifeStageSelectionView: View {
         }
 
         selectResolved(stage)
+    }
+
+    private func focusStage(at index: Int) {
+        let stages = LifeStage.availableCases
+        guard !stages.isEmpty else { return }
+        focusedStage = stages[min(max(index, 0), stages.count - 1)]
+    }
+
+    @MainActor
+    private func playSwipeNudgeIfNeeded() async {
+        guard !hasShownSwipeNudge else { return }
+
+        if reduceMotion {
+            hasShownSwipeNudge = true
+            return
+        }
+
+        try? await Task.sleep(for: .milliseconds(500))
+        guard !Task.isCancelled, !hasShownSwipeNudge else { return }
+        hasShownSwipeNudge = true
+
+        withAnimation(.easeOut(duration: 0.16)) {
+            carouselNudgeOffset = -26
+        }
+        try? await Task.sleep(for: .milliseconds(160))
+        guard !Task.isCancelled else {
+            carouselNudgeOffset = 0
+            return
+        }
+        withAnimation(.easeInOut(duration: 0.20)) {
+            carouselNudgeOffset = 0
+        }
     }
 
     private func selectResolved(_ stage: LifeStage) {
@@ -125,19 +205,220 @@ struct LifeStageSelectionView: View {
         }
     }
 
-    private func header(usesCompactMetrics: Bool, width: CGFloat) -> some View {
-        Text("life_stage.title")
-            .ayaTypography(.screenTitle)
-            .foregroundStyle(AYAColors.textPrimary)
-            .tracking(-0.5)
-            .lineSpacing(-4)
-            .multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(width: width, alignment: .center)
-            .offset(y: 2)
-            .accessibilityAddTraits(.isHeader)
+    private func header(usesCompactMetrics: Bool) -> some View {
+        VStack(spacing: AYASpacing.sm) {
+            Text("life_stage.title")
+                .ayaTypography(.screenTitle)
+                .foregroundStyle(AYAColors.textPrimary)
+                .tracking(-0.5)
+                .lineSpacing(-4)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+
+            if !usesCompactMetrics {
+                Text("life_stage.subtitle")
+                    .ayaTypography(.body)
+                    .foregroundStyle(AYAColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: AYALayout.readableContentMaxWidth)
+        .frame(maxWidth: .infinity)
     }
 
+}
+
+private struct LifeStageCarouselCard: View {
+    let stage: LifeStage
+    let isFocused: Bool
+    let isPremiumUnlocked: Bool
+    let usesCompactMetrics: Bool
+    let action: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var theme: LifeStageTheme { .theme(for: stage) }
+    private var showsPremiumBadge: Bool { stage.isPremium && !isPremiumUnlocked }
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                LifeStagePatternHeader(
+                    stage: stage,
+                    showsPremiumBadge: showsPremiumBadge,
+                    usesCompactMetrics: usesCompactMetrics
+                )
+                .frame(height: geometry.size.height * (usesCompactMetrics ? 0.36 : 0.40))
+
+                VStack(spacing: AYASpacing.md) {
+                    VStack(spacing: AYASpacing.sm) {
+                        Text(stage.titleKey)
+                            .ayaTypography(.stageCardTitle)
+                            .foregroundStyle(AYAColors.textPrimary)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                            .minimumScaleFactor(0.9)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text(stage.descriptionKey)
+                            .ayaTypography(.body)
+                            .foregroundStyle(AYAColors.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: 300)
+
+                    Spacer(minLength: AYASpacing.sm)
+
+                    Button(action: action) {
+                        Text(stage.actionKey)
+                            .ayaTypography(.button)
+                            .foregroundStyle(
+                                stage == .cycle && colorScheme == .light
+                                    ? AYAColors.secondary
+                                    : AYAColors.onAccent
+                            )
+                            .frame(maxWidth: .infinity, minHeight: 52)
+                            .background(
+                                theme.accentColor(for: colorScheme),
+                                in: RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous)
+                            )
+                            .contentShape(RoundedRectangle(cornerRadius: AYARadius.control, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("life_stage.card.\(stage.rawValue)")
+                    .accessibilityLabel(stage.titleKey)
+                    .accessibilityHint(stage.descriptionKey)
+                    .accessibilityAddTraits(isFocused ? .isSelected : [])
+                }
+                .padding(usesCompactMetrics ? AYASpacing.lg : AYASpacing.xl)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AYAColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
+                .stroke(
+                    isFocused
+                        ? theme.accentColor(for: colorScheme).opacity(0.24)
+                        : theme.borderColor(for: colorScheme).opacity(0.72),
+                    lineWidth: 1
+                )
+        }
+        .ayaCardShadow()
+    }
+
+}
+
+private struct LifeStagePatternHeader: View {
+    let stage: LifeStage
+    let showsPremiumBadge: Bool
+    let usesCompactMetrics: Bool
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            patternBackground
+
+            Image(assetName)
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: usesCompactMetrics ? 94 : 112,
+                    height: usesCompactMetrics ? 94 : 112
+                )
+                // The supplied files include outer canvas; compensate without
+                // changing the card's established illustration frame.
+                .scaleEffect(1.36)
+                .clipShape(
+                    RoundedRectangle(
+                        cornerRadius: usesCompactMetrics ? 24 : 28,
+                        style: .continuous
+                    )
+                )
+                .accessibilityHidden(true)
+        }
+        .overlay(alignment: .topTrailing) {
+            if showsPremiumBadge {
+                Text(stage.badgeKey)
+                    .ayaTypography(.badge)
+                    .foregroundStyle(patternForeground)
+                    .padding(.horizontal, AYASpacing.md)
+                    .frame(height: 28)
+                    .background(patternForeground.opacity(0.16), in: Capsule())
+                    .padding(usesCompactMetrics ? AYASpacing.md : AYASpacing.lg)
+            }
+        }
+    }
+
+    private var patternBackground: Color {
+        switch stage {
+        case .cycle: AYAColors.softPink
+        case .pregnancy: AYAColors.pregnancySurface
+        case .birthMoment: AYAColors.secondary
+        case .postpartum: AYAColors.postpartumSurface
+        case .motherhood03: AYAColors.motherhoodSurface
+        }
+    }
+
+    private var patternForeground: Color {
+        switch stage {
+        case .birthMoment:
+            return colorScheme == .dark ? AYAColors.onAccent : AYAColors.surface
+        case .cycle, .pregnancy, .postpartum, .motherhood03:
+            return colorScheme == .dark ? AYAColors.textPrimary : AYAColors.secondary
+        }
+    }
+
+    private var assetName: String {
+        switch stage {
+        case .cycle: "LifeStageIconCycle"
+        case .pregnancy: "LifeStageIconPregnancy"
+        case .birthMoment: "LifeStageIconBirthMoment"
+        case .postpartum: "LifeStageIconPostpartum"
+        case .motherhood03: "LifeStageIconPostpartum"
+        }
+    }
+}
+
+private struct LifeStagePageIndicator: View {
+    let stages: [LifeStage]
+    let focusedStage: LifeStage
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        HStack(spacing: AYASpacing.sm) {
+            ForEach(stages) { stage in
+                Capsule()
+                    .fill(stage == focusedStage ? activeColor : AYAColors.textTertiary.opacity(0.28))
+                    .frame(width: stage == focusedStage ? 18 : 6, height: 6)
+            }
+        }
+        .frame(height: 18)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: focusedStage)
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("life_stage.page_indicator")
+        .accessibilityLabel(focusedStage.titleKey)
+        .accessibilityValue(pageValue)
+    }
+
+    private var activeColor: Color {
+        LifeStageTheme.theme(for: focusedStage).accentColor(for: colorScheme)
+    }
+
+    private var pageValue: Text {
+        let index = stages.firstIndex(of: focusedStage).map { $0 + 1 } ?? 1
+        return Text(verbatim: "\(index) / \(stages.count)")
+    }
 }
 
 struct CycleDestinationView: View {
@@ -342,12 +623,27 @@ struct LifeStagePlaceholderView: View {
 }
 
 
-#Preview("Türkçe") {
+#Preview("TR · iPhone 16 Pro") {
     LifeStageSelectionView()
         .environment(\.locale, Locale(identifier: "tr"))
+        .previewDevice("iPhone 16 Pro")
 }
 
-#Preview("English") {
+#Preview("EN · iPhone 16 Pro") {
     LifeStageSelectionView()
         .environment(\.locale, Locale(identifier: "en"))
+        .previewDevice("iPhone 16 Pro")
+}
+
+#Preview("TR · Compact iPhone") {
+    LifeStageSelectionView()
+        .environment(\.locale, Locale(identifier: "tr"))
+        .previewDevice("iPhone SE (3rd generation)")
+}
+
+#Preview("EN · Compact · XXL") {
+    LifeStageSelectionView()
+        .environment(\.locale, Locale(identifier: "en"))
+        .environment(\.dynamicTypeSize, .xxLarge)
+        .previewDevice("iPhone SE (3rd generation)")
 }

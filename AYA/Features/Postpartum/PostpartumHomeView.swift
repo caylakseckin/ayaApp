@@ -13,6 +13,7 @@ struct PostpartumHomeView: View {
     @State private var isSettingsPresented = false
     @State private var isEditingBirthDate = false
     @State private var isTimelinePresented = false
+    @State private var isMeditationBrowserPresented = false
     @State private var playbackSession: MeditationPlaybackSession?
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
@@ -76,6 +77,15 @@ struct PostpartumHomeView: View {
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $isMeditationBrowserPresented) {
+            if let profile {
+                JourneyMeditationBrowser(
+                    journey: .postpartum,
+                    currentValue: tracker.calculate(profile: profile).currentDay
+                )
+                .environment(\.locale, locale)
+            }
+        }
         .sheet(item: $infoContent) { content in
             ContextualInfoSheet(content: content)
                 .environment(\.locale, locale)
@@ -134,6 +144,12 @@ struct PostpartumHomeView: View {
                 ) {
                     startMeditation(meditation)
                 }
+                JourneyMeditationBrowseLink {
+                    stopPlaybackSession()
+                    isPlaybackContinuationToastPresented = false
+                    isMeditationBrowserPresented = true
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
 
             LifeStageOverviewSection(

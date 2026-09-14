@@ -1,4 +1,90 @@
 import XCTest
+import StoreKitTest
+
+@MainActor
+final class PremiumExpirationTests: XCTestCase {
+    func testMonthlyCancellationKeepsRemainingTimeThenExpires() async throws {
+        try await verifyCancellationAndExpiration(productID: PremiumProductIdentifiers.monthly)
+    }
+
+    func testYearlyCancellationKeepsRemainingTimeThenExpires() async throws {
+        try await verifyCancellationAndExpiration(productID: PremiumProductIdentifiers.yearly)
+    }
+
+    private func verifyCancellationAndExpiration(productID: String) async throws {
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "HESIA", withExtension: "storekit"))
+        let session = try SKTestSession(contentsOf: url)
+        session.disableDialogs = true
+        session.clearTransactions()
+        defer { session.clearTransactions() }
+        let transaction = try await session.buyProduct(identifier: productID)
+        let store = PremiumStore(automaticallyStarts: false, allowsTestUnlock: false)
+        await store.refreshEntitlements()
+        XCTAssertTrue(store.hasPremiumAccess)
+        try session.disableAutoRenewForTransaction(identifier: UInt(transaction.id))
+        await store.refreshEntitlements()
+        XCTAssertTrue(store.hasPremiumAccess, "Cancelling renewal must preserve paid time")
+        try session.expireSubscription(productIdentifier: productID)
+        await waitForRevocation(store)
+        XCTAssertFalse(store.hasPremiumAccess, "Expired purchase must not survive through an old session record")
+        XCTAssertFalse(store.canUsePremiumNow)
+        let relaunchedStore = PremiumStore(automaticallyStarts: false, allowsTestUnlock: false)
+        await relaunchedStore.refreshEntitlements()
+        XCTAssertFalse(relaunchedStore.hasPremiumAccess)
+    }
+
+    func testRefundRemovesPreviouslyGrantedAccess() async throws {
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "HESIA", withExtension: "storekit"))
+        let session = try SKTestSession(contentsOf: url)
+        session.disableDialogs = true
+        session.clearTransactions()
+        defer { session.clearTransactions() }
+        let transaction = try await session.buyProduct(identifier: PremiumProductIdentifiers.yearly)
+        let store = PremiumStore(automaticallyStarts: false, allowsTestUnlock: false)
+        await store.refreshEntitlements()
+        XCTAssertTrue(store.hasPremiumAccess)
+        try session.refundTransaction(identifier: UInt(transaction.id))
+        await waitForRevocation(store)
+        XCTAssertFalse(store.hasPremiumAccess)
+    }
+
+    func testDeadlineStopsPlaybackAndPreventsReplayWithoutStoreResponse() async throws {
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "HESIA", withExtension: "storekit"))
+        let session = try SKTestSession(contentsOf: url)
+        session.clearTransactions()
+        defer { session.clearTransactions() }
+        let store = PremiumStore(automaticallyStarts: false, allowsTestUnlock: false)
+        store.applyEntitlements([PremiumEntitlementRecord(
+            productID: PremiumProductIdentifiers.yearly, revocationDate: nil,
+            expirationDate: Date().addingTimeInterval(1)
+        )])
+        let meditation = DailyMeditation(
+            id: "motherhood-expiration-test", titleLocalizationKey: "", descriptionLocalizationKey: "",
+            contextNameLocalizationKey: "", contextFormatLocalizationKey: "", contextValue: 0,
+            durationMinutes: 1, voiceLocalizationKey: "", audioResourceName: "aya-demo-meditation-8m.m4a"
+        )
+        let player = MeditationPlayerViewModel(meditation: meditation, premiumStore: store)
+        player.play()
+        XCTAssertTrue(player.isPlaying)
+        try await Task.sleep(for: .seconds(1.3))
+        XCTAssertFalse(store.hasPremiumAccess)
+        XCTAssertFalse(player.isPlaying)
+        player.play()
+        XCTAssertFalse(player.isPlaying)
+        for stage in LifeStage.allCases where stage.isPremium {
+            XCTAssertFalse(PremiumAccessPolicy.hasAccess(to: stage, entitlementsResolved: true, hasPremiumAccess: store.hasPremiumAccess))
+        }
+    }
+
+    private func waitForRevocation(_ store: PremiumStore) async {
+        // StoreKitTest mutations propagate asynchronously to StoreKit 2.
+        for _ in 0..<30 {
+            await store.refreshEntitlements()
+            if !store.hasPremiumAccess { return }
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+    }
+}
 @testable import HESIA
 
 final class LifeStageTests: XCTestCase {

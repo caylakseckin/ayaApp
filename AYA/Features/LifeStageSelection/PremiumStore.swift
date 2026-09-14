@@ -101,6 +101,7 @@ final class PremiumStore: ObservableObject {
     private var preparationTask: Task<Void, Never>?
     private var entitlementStateRevision = 0
     private var sessionEntitlements: [String: PremiumEntitlementRecord] = [:]
+    private let allowsTestUnlock: Bool
 
     /// UI-test override. The suite has always passed
     /// `-premium.isUnlockedForTesting YES`, but nothing read it — so whether a
@@ -115,10 +116,12 @@ final class PremiumStore: ObservableObject {
         #endif
     }
 
-    private init() {
+    init(automaticallyStarts: Bool = true, allowsTestUnlock: Bool = true) {
+        self.allowsTestUnlock = allowsTestUnlock
+        guard automaticallyStarts else { return }
         transactionUpdatesTask = listenForTransactionUpdates()
 
-        if Self.isUnlockedForTesting {
+        if allowsTestUnlock && Self.isUnlockedForTesting {
             hasPremiumAccess = true
             hasResolvedEntitlements = true
         }
@@ -178,69 +181,71 @@ final class PremiumStore: ObservableObject {
         }
     }
 
-    func refreshEntitlements(showLoadingState: Bool = false) async {
-        let revisionAtStart = entitlementStateRevision
-        let sessionEntitlementsAtStart = Array(sessionEntitlements.values)
-
-        if showLoadingState {
-            hasResolvedEntitlements = false
-        }
-
-        var entitledProductIDs = Set<String>()
-        var subscriptionTransaction: StoreKit.Transaction?
-
-        for await result in StoreKit.Transaction.currentEntitlements {
-            do {
-                let transaction = try verified(result)
-                if PremiumAccessPolicy.isActiveEntitlement(
-                    productID: transaction.productID,
-                    revocationDate: transaction.revocationDate,
-                    expirationDate: transaction.expirationDate
-                ) {
-                    entitledProductIDs.insert(transaction.productID)
-                    if PremiumProductIdentifiers.all.contains(transaction.productID) {
-                        if let current = subscriptionTransaction {
-                            let currentExpiration = current.expirationDate ?? .distantPast
-                            let candidateExpiration = transaction.expirationDate ?? .distantPast
-                            if candidateExpiration > currentExpiration {
-                                subscriptionTransaction = transaction
-                            }
-                        } else {
-                            subscriptionTransaction = transaction
-                        }
-                    }
-                }
-            } catch {
-                log("Ignoring an unverified entitlement: \(error)")
-            }
-        }
-
-        let effectiveProductIDs = PremiumAccessPolicy.effectiveProductIDs(
-            storeProductIDs: entitledProductIDs,
-            sessionEntitlements: sessionEntitlementsAtStart
-        )
-        let hasSessionSubscriptionAccess = !effectiveProductIDs.intersection(PremiumProductIdentifiers.all).isEmpty
-            && subscriptionTransaction == nil
-        let resolvedSubscription = if hasSessionSubscriptionAccess {
-            subscription
-        } else {
-            await subscriptionDetails(for: subscriptionTransaction)
-        }
-        guard revisionAtStart == entitlementStateRevision else { return }
-
-        sessionEntitlements = Dictionary(
-            uniqueKeysWithValues: sessionEntitlementsAtStart.compactMap { entitlement in
+    /// Also used synchronously before playback and on foreground entry.
+    var canUsePremiumNow: Bool {
+        (allowsTestUnlock && Self.isUnlockedForTesting) ||
+            sessionEntitlements.values.contains {
                 PremiumAccessPolicy.isActiveEntitlement(
-                    productID: entitlement.productID,
-                    revocationDate: entitlement.revocationDate,
-                    expirationDate: entitlement.expirationDate
-                ) ? (entitlement.productID, entitlement) : nil
+                    productID: $0.productID, revocationDate: $0.revocationDate,
+                    expirationDate: $0.expirationDate
+                )
             }
-        )
-        subscription = resolvedSubscription
-        hasPremiumAccess = Self.isUnlockedForTesting || !effectiveProductIDs.isEmpty
+    }
+
+    func enforceExpiration() {
+        let allowed = canUsePremiumNow
+        if hasPremiumAccess != allowed { hasPremiumAccess = allowed }
+    }
+
+    func refreshEntitlements(showLoadingState: Bool = false) async {
+        enforceExpiration()
+        entitlementStateRevision += 1
+        let revision = entitlementStateRevision
+        if showLoadingState { hasResolvedEntitlements = false }
+
+        var records: [String: PremiumEntitlementRecord] = [:]
+        var latestTransaction: StoreKit.Transaction?
+        for await result in StoreKit.Transaction.currentEntitlements {
+            guard let transaction = try? verified(result),
+                  PremiumProductIdentifiers.all.contains(transaction.productID),
+                  transaction.revocationDate == nil, !transaction.isUpgraded else { continue }
+            var expiration = transaction.expirationDate
+            // Apple-authorized billing grace is an entitlement, not a free extension.
+            if let status = await transaction.subscriptionStatus,
+               status.state == .inGracePeriod,
+               case .verified(let renewal) = status.renewalInfo {
+                expiration = renewal.gracePeriodExpirationDate ?? expiration
+            }
+            records[transaction.productID] = PremiumEntitlementRecord(
+                productID: transaction.productID, revocationDate: transaction.revocationDate,
+                expirationDate: expiration
+            )
+            if latestTransaction == nil ||
+                (transaction.expirationDate ?? .distantPast) > (latestTransaction?.expirationDate ?? .distantPast) {
+                latestTransaction = transaction
+            }
+        }
+        guard revision == entitlementStateRevision else { return }
+        // A complete verified StoreKit snapshot is authoritative. Old session
+        // purchases must not resurrect an expired or refunded entitlement.
+        applyEntitlements(Array(records.values))
+        let details = await subscriptionDetails(for: latestTransaction)
+        guard revision == entitlementStateRevision else { return }
+        enforceExpiration()
+        subscription = canUsePremiumNow ? details : nil
+    }
+
+    func applyEntitlements(_ records: [PremiumEntitlementRecord]) {
+        sessionEntitlements = Dictionary(uniqueKeysWithValues: records
+            .filter { PremiumAccessPolicy.isActiveEntitlement(
+                productID: $0.productID, revocationDate: $0.revocationDate,
+                expirationDate: $0.expirationDate
+            ) }
+            .map { ($0.productID, $0) })
+        enforceExpiration()
         hasResolvedEntitlements = true
-        scheduleEntitlementRefresh(at: subscription?.renewalDate)
+        if !hasPremiumAccess { subscription = nil }
+        scheduleEntitlementRefresh(at: sessionEntitlements.values.compactMap(\.expirationDate).max())
     }
 
     func purchase(_ plan: PremiumPlan) async -> PremiumPurchaseOutcome {
@@ -323,43 +328,27 @@ final class PremiumStore: ObservableObject {
     }
 
     private func grantPremiumAccess(for transaction: StoreKit.Transaction) async -> Bool {
-        let entitlement = PremiumEntitlementRecord(
-            productID: transaction.productID,
-            revocationDate: transaction.revocationDate,
-            expirationDate: transaction.expirationDate
-        )
-        guard PremiumAccessPolicy.isActiveEntitlement(
-            productID: entitlement.productID,
-            revocationDate: entitlement.revocationDate,
-            expirationDate: entitlement.expirationDate
-        ) else {
+        entitlementStateRevision += 1
+        let revision = entitlementStateRevision
+        guard !transaction.isUpgraded,
+              PremiumAccessPolicy.isActiveEntitlement(
+                productID: transaction.productID, revocationDate: transaction.revocationDate,
+                expirationDate: transaction.expirationDate
+              ) else {
             sessionEntitlements.removeValue(forKey: transaction.productID)
-            entitlementStateRevision += 1
+            applyEntitlements(Array(sessionEntitlements.values))
             return false
         }
-
-        // Invalidate entitlement reads that began before this verified purchase.
-        entitlementStateRevision += 1
-        sessionEntitlements[transaction.productID] = entitlement
-
-        let resolvedSubscription: PremiumSubscription?
-        if PremiumProductIdentifiers.all.contains(transaction.productID) {
-            resolvedSubscription = await subscriptionDetails(for: transaction)
-        } else {
-            resolvedSubscription = nil
-        }
-
-        // Also invalidate any refresh that began while subscription details loaded.
-        entitlementStateRevision += 1
-        hasPremiumAccess = true
-        hasResolvedEntitlements = true
-
-        if PremiumProductIdentifiers.all.contains(transaction.productID) {
-            subscription = resolvedSubscription
-            scheduleEntitlementRefresh(at: subscription?.renewalDate)
-        }
-
-        return true
+        sessionEntitlements[transaction.productID] = PremiumEntitlementRecord(
+            productID: transaction.productID, revocationDate: transaction.revocationDate,
+            expirationDate: transaction.expirationDate
+        )
+        applyEntitlements(Array(sessionEntitlements.values))
+        let details = await subscriptionDetails(for: transaction)
+        guard revision == entitlementStateRevision else { return canUsePremiumNow }
+        enforceExpiration()
+        subscription = canUsePremiumNow ? details : nil
+        return canUsePremiumNow
     }
 
     private func subscriptionDetails(
@@ -412,7 +401,7 @@ final class PremiumStore: ObservableObject {
 
         guard let date, date > Date() else { return }
 
-        let delay = date.timeIntervalSinceNow + 2
+        let delay = max(date.timeIntervalSinceNow, 0)
         entitlementExpirationTask = Task { [weak self] in
             do {
                 try await Task.sleep(for: .seconds(delay))
@@ -421,6 +410,7 @@ final class PremiumStore: ObservableObject {
             }
 
             guard let self else { return }
+            self.enforceExpiration()
             await self.refreshEntitlements()
         }
     }

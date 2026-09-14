@@ -6,6 +6,34 @@ enum PregnancyPersistenceKeys {
     static let onboardingCompleted = "pregnancy.onboardingCompleted"
 }
 
+enum PregnancyWeekStartDay: Int, CaseIterable, Identifiable, Sendable {
+    case monday = 2
+    case tuesday = 3
+    case wednesday = 4
+    case thursday = 5
+    case friday = 6
+    case saturday = 7
+    case sunday = 1
+
+    var id: Int { rawValue }
+
+    func shortName(locale: Locale) -> String {
+        symbols(locale: locale, abbreviated: true)[rawValue - 1]
+    }
+
+    func fullName(locale: Locale) -> String {
+        symbols(locale: locale, abbreviated: false)[rawValue - 1]
+    }
+
+    private func symbols(locale: Locale, abbreviated: Bool) -> [String] {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = locale
+        return abbreviated
+            ? calendar.shortStandaloneWeekdaySymbols
+            : calendar.standaloneWeekdaySymbols
+    }
+}
+
 enum PregnancyTrimester: Int, CaseIterable, Sendable {
     case first = 1
     case second
@@ -122,6 +150,22 @@ struct PregnancyTracker {
         )
     }
 
+    func referenceDate(
+        for weekStartDay: PregnancyWeekStartDay,
+        on date: Date = Date()
+    ) -> Date {
+        let today = calendar.startOfDay(for: date)
+        let currentWeekday = calendar.component(.weekday, from: today)
+        let elapsedDaysSinceStart = (currentWeekday - weekStartDay.rawValue + 7) % 7
+        return calendar.date(byAdding: .day, value: -elapsedDaysSinceStart, to: today) ?? today
+    }
+
+    func weekStartDay(for referenceDate: Date) -> PregnancyWeekStartDay {
+        PregnancyWeekStartDay(
+            rawValue: calendar.component(.weekday, from: referenceDate)
+        ) ?? .monday
+    }
+
     func overviewWeeks(around currentWeek: Int) -> [Int] {
         let clampedWeek = min(
             max(currentWeek, Self.supportedWeekRange.lowerBound),
@@ -166,11 +210,18 @@ struct PregnancyStore {
     }
 
     @discardableResult
-    func save(referenceWeek: Int) -> PregnancyProfile? {
+    func save(
+        referenceWeek: Int,
+        weekStartDay: PregnancyWeekStartDay
+    ) -> PregnancyProfile? {
         guard PregnancyTracker.supportedWeekRange.contains(referenceWeek) else { return nil }
+        let referenceDate = PregnancyTracker(calendar: calendar).referenceDate(
+            for: weekStartDay,
+            on: now()
+        )
         guard let profile = PregnancyProfile(
             referenceWeek: referenceWeek,
-            referenceDate: now(),
+            referenceDate: referenceDate,
             calendar: calendar
         ) else { return nil }
 

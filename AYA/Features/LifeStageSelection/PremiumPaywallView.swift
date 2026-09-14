@@ -362,33 +362,22 @@ struct PremiumPaywallView: View {
     }
 
     private func detailKey(for plan: PremiumPlan) -> LocalizedStringKey {
-        if plan == .monthly,
-           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
-            return "premium.plan.monthly.trial_detail"
+        switch plan {
+        case .monthly: "premium.plan.monthly.trial_detail"
+        case .yearly: "premium.plan.yearly.trial_detail"
         }
-        return plan.detailKey
     }
 
     private var purchaseButtonKey: LocalizedStringKey {
-        if selectedPlan == .monthly,
-           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
-            return "premium.purchase.start_trial"
-        }
-        return "premium.purchase"
+        "premium.purchase.start_trial"
     }
 
     private var subscriptionDisclosure: String? {
         guard let product = premiumStore.product(for: selectedPlan) else { return nil }
 
-        let key: String
-        if selectedPlan == .monthly,
-           premiumStore.eligibleIntroductoryOfferPlans.contains(.monthly) {
-            key = "premium.subscription.monthly_trial_disclosure"
-        } else {
-            key = switch selectedPlan {
-            case .monthly: "premium.subscription.monthly_disclosure"
-            case .yearly: "premium.subscription.yearly_disclosure"
-            }
+        let key = switch selectedPlan {
+        case .monthly: "premium.subscription.monthly_trial_disclosure"
+        case .yearly: "premium.subscription.yearly_trial_disclosure"
         }
 
         let language = AppLanguage.resolved(from: languageCode)

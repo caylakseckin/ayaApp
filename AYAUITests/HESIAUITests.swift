@@ -1,6 +1,103 @@
 import XCTest
 
 final class HESIAUITests: XCTestCase {
+    func testThemeCarouselSwipesToNextFullScreenThemeAndSelectsIt() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-onboarding.completed", "YES",
+            "-life_stage.active", "invalid",
+            "-life_stage.selection.hasShownSwipeNudge", "YES",
+            "-premium.isUnlockedForTesting", "YES",
+            "-app.language", "tr",
+            "-pregnancy.onboardingCompleted", "NO"
+        ]
+        app.launch()
+
+        let cycleCard = app.buttons["life_stage.card.cycle"]
+        XCTAssertTrue(cycleCard.waitForExistence(timeout: 5))
+        let swipeStart = app.coordinate(withNormalizedOffset: CGVector(dx: 0.82, dy: 0.58))
+        let swipeEnd = app.coordinate(withNormalizedOffset: CGVector(dx: 0.18, dy: 0.58))
+        swipeStart.press(forDuration: 0.05, thenDragTo: swipeEnd)
+
+        let pregnancyCard = app.buttons["life_stage.card.pregnancy"]
+        XCTAssertTrue(pregnancyCard.waitForExistence(timeout: 3))
+        XCTAssertTrue(pregnancyCard.isSelected)
+        let pageIndicator = app.descendants(matching: .any)["life_stage.page_indicator"]
+        XCTAssertTrue(pageIndicator.waitForExistence(timeout: 2))
+        XCTAssertEqual(pageIndicator.value as? String, "2 / 4")
+    }
+
+    func testPregnancyMeditationBrowsingIsTemporary() {
+        verifyTemporaryMeditationBrowsing(
+            stage: "pregnancy",
+            profileArguments: [
+                "-pregnancy.referenceWeek", "18",
+                "-pregnancy.referenceDate", String(Date().timeIntervalSince1970),
+                "-pregnancy.onboardingCompleted", "YES"
+            ],
+            currentLabel: "18. hafta",
+            alternateLabel: "20. hafta"
+        )
+    }
+
+    func testPostpartumMeditationBrowsingIsTemporary() {
+        verifyTemporaryMeditationBrowsing(
+            stage: "postpartum",
+            profileArguments: [
+                "-postpartum.birthDate", String(Date().timeIntervalSince1970),
+                "-postpartum.onboardingCompleted", "YES"
+            ],
+            currentLabel: "1. gün",
+            alternateLabel: "7. gün"
+        )
+    }
+
+    private func verifyTemporaryMeditationBrowsing(
+        stage: String,
+        profileArguments: [String],
+        currentLabel: String,
+        alternateLabel: String
+    ) {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-onboarding.completed", "YES",
+            "-life_stage.active", stage,
+            "-premium.isUnlockedForTesting", "YES",
+            "-app.language", "tr"
+        ] + profileArguments
+        app.launch()
+        let browse = app.buttons["meditation.browse.open"]
+        XCTAssertTrue(browse.waitForExistence(timeout: 5))
+        if !browse.isHittable { app.swipeUp() }
+        browse.tap()
+        let wheel = app.pickerWheels.firstMatch
+        XCTAssertTrue(wheel.waitForExistence(timeout: 3))
+        XCTAssertEqual(wheel.value as? String, currentLabel)
+        wheel.adjust(toPickerWheelValue: alternateLabel)
+        XCTAssertEqual(wheel.value as? String, alternateLabel)
+
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "\(stage)-temporary-meditation"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        let meditation = app.buttons["cycle.home.meditation.start"]
+        XCTAssertTrue(meditation.waitForExistence(timeout: 3))
+        if !meditation.isHittable { app.swipeUp() }
+        meditation.tap()
+        let closePlayer = app.buttons["meditation.player.close"]
+        XCTAssertTrue(closePlayer.waitForExistence(timeout: 5))
+        closePlayer.tap()
+        let returnButton = app.buttons["meditation.browse.return"]
+        XCTAssertTrue(returnButton.waitForExistence(timeout: 3))
+        returnButton.tap()
+        XCTAssertTrue(browse.waitForExistence(timeout: 3))
+        if !browse.isHittable { app.swipeUp() }
+        browse.tap()
+        XCTAssertTrue(wheel.waitForExistence(timeout: 3))
+        XCTAssertEqual(wheel.value as? String, currentLabel)
+    }
+
     func testThemeRootLeadingEdgeSwipeReturnsWithoutStartingMeditation() {
         let app = XCUIApplication()
         app.launchArguments += [
