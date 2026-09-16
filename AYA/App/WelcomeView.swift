@@ -15,22 +15,14 @@ struct WelcomeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                Color.clear
-                    .frame(height: 104)
-                    .accessibilityHidden(true)
-
                 brand
-                    .padding(.bottom, 24)
+                    .padding(.bottom, AYASpacing.xl)
 
                 form
-
-                Spacer(minLength: 96)
             }
             .hesiaScreenPadding()
+            .padding(.vertical, AYASpacing.xl)
             .frame(maxWidth: AYALayout.readableContentMaxWidth)
-            // Fills the scroll viewport without reading UIScreen, which is
-            // wrong under multi-scene and on iPad.
-            .containerRelativeFrame(.vertical, alignment: .top) { height, _ in height }
             .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
@@ -82,11 +74,11 @@ struct WelcomeView: View {
             }
             .offset(y: 18)
         }
-        .frame(height: 250)
+        .frame(minHeight: 250)
     }
 
     private var form: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: AYASpacing.xl) {
             VStack(alignment: .leading, spacing: 10) {
                 Text("welcome.name.prompt")
                     .ayaTypography(.body)
@@ -187,4 +179,16 @@ struct WelcomeView: View {
 #Preview("Welcome — English") {
     WelcomeView(completion: {})
         .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Welcome — Small TR", traits: .fixedLayout(width: 375, height: 667)) {
+    WelcomeView(completion: {})
+        .environment(\.locale, Locale(identifier: "tr"))
+}
+
+#Preview("Welcome — Large text EN", traits: .fixedLayout(width: 375, height: 667)) {
+    WelcomeView(completion: {})
+        .environment(\.locale, Locale(identifier: "en"))
+        .environment(\.dynamicTypeSize, .accessibility3)
+        .preferredColorScheme(.dark)
 }

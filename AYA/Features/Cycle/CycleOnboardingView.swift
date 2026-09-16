@@ -60,14 +60,14 @@ struct CycleOnboardingView: View {
                     topBar
 
                     introduction
-                        .padding(.top, 22)
+                        .padding(.top, AYASpacing.xl)
 
                     stepContent
                         .id(viewModel.currentStep)
-                        .padding(.top, 38)
+                        .padding(.top, AYASpacing.xxl)
                         .transition(stepTransition)
 
-                    Spacer(minLength: 34)
+                    Spacer(minLength: AYASpacing.xxl)
 
                     if mode == .initial {
                         OnboardingPrivacyNotice(
@@ -76,7 +76,7 @@ struct CycleOnboardingView: View {
                     }
                 }
                 .hesiaScreenPadding()
-                .padding(.bottom, 28)
+                .padding(.bottom, AYASpacing.xl)
             }
             .scrollDismissesKeyboard(.interactively)
             .scrollIndicators(.hidden)

@@ -14,6 +14,10 @@ struct CycleHomeView: View {
     @State private var isSettingsPresented = false
     @State private var isEditingCycle = false
     @State private var isCalendarPresented = false
+    @State private var isPeriodStartPickerPresented = false
+    @State private var periodStartDraft = Date()
+    @State private var periodStartDates: [Date] = []
+    @State private var periodHistoryMutation: CyclePeriodHistoryMutation?
     @State private var playbackSession: MeditationPlaybackSession?
     @State private var isPlayerPresented = false
     @State private var isPlaybackContinuationToastPresented = false
@@ -47,7 +51,11 @@ struct CycleHomeView: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(isPresented: $isCalendarPresented) {
             if let profile {
-                CycleCalendarView(profile: profile)
+                CycleCalendarView(
+                    profile: profile,
+                    periodStartDates: periodStartDates,
+                    onRecordPeriodStart: recordPeriodStart
+                )
             }
         }
         .fullScreenCover(
@@ -70,6 +78,7 @@ struct CycleHomeView: View {
             NavigationStack {
                 CycleOnboardingView(mode: .edit) {
                     isEditingCycle = false
+                    preparePeriodHistory()
                 }
             }
             .environment(\.locale, locale)
@@ -79,9 +88,13 @@ struct CycleHomeView: View {
             ContextualInfoSheet(content: content)
                 .environment(\.locale, locale)
         }
+        .sheet(isPresented: $isPeriodStartPickerPresented) {
+            periodStartPicker
+        }
         .meditationPlaybackContinuationToast(
             isPresented: $isPlaybackContinuationToastPresented
         )
+        .onAppear(perform: preparePeriodHistory)
     }
 
     private var profile: CycleProfile? {
@@ -137,6 +150,8 @@ struct CycleHomeView: View {
                 )
             }
 
+            periodStartAction
+
             VStack(alignment: .leading, spacing: AYASpacing.md) {
                 SectionHeader("cycle.home.today_meditation")
 
@@ -188,6 +203,156 @@ struct CycleHomeView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: isSettingsPresented)
+        .task(id: periodHistoryMutation?.id) {
+            guard periodHistoryMutation != nil else { return }
+            try? await Task.sleep(for: .seconds(6))
+            guard !Task.isCancelled else { return }
+            periodHistoryMutation = nil
+        }
+    }
+
+    @ViewBuilder private var periodStartAction: some View {
+        if periodHistoryMutation != nil {
+            periodStartRecordedRow("cycle.period_log.saved", showsUndo: true)
+        } else if hasRecordedToday {
+            periodStartRecordedRow("cycle.period_log.today_recorded", showsUndo: false)
+        } else {
+            Button {
+                periodStartDraft = Calendar.autoupdatingCurrent.startOfDay(for: Date())
+                isPeriodStartPickerPresented = true
+            } label: {
+                HStack(spacing: AYASpacing.md) {
+                    HesiaIcon.calendar.view(size: HesiaIconSize.md)
+                        .foregroundStyle(AYAColors.emphasis)
+                        .frame(width: 32, height: 32)
+                        .background(AYAColors.accentSoft, in: Circle())
+
+                    Text("cycle.period_log.today_action")
+                        .ayaTypography(.metadata)
+                        .foregroundStyle(AYAColors.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    HesiaIcon.caretRight.view(size: HesiaIconSize.sm)
+                        .foregroundStyle(AYAColors.textTertiary)
+                }
+                .padding(.horizontal, AYASpacing.md)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .background(AYAColors.surfaceElevated, in: RoundedRectangle(cornerRadius: AYARadius.control))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AYARadius.control)
+                        .stroke(AYAColors.border, lineWidth: 1)
+                }
+                .contentShape(RoundedRectangle(cornerRadius: AYARadius.control))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("cycle.period_log.open")
+        }
+    }
+
+    private func periodStartRecordedRow(
+        _ titleKey: LocalizedStringKey,
+        showsUndo: Bool
+    ) -> some View {
+        HStack(spacing: AYASpacing.md) {
+            HesiaIcon.check.view(size: HesiaIconSize.sm)
+                .foregroundStyle(AYAColors.emphasis)
+                .frame(width: 32, height: 32)
+                .background(AYAColors.accentSoft, in: Circle())
+
+            Text(titleKey)
+                .ayaTypography(.metadata)
+                .foregroundStyle(AYAColors.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            if showsUndo {
+                Button("cycle.period_log.undo", action: undoPeriodStart)
+                    .buttonStyle(.plain)
+                    .ayaTypography(.metadata)
+                    .foregroundStyle(AYAColors.emphasis)
+                    .frame(minHeight: 44)
+            }
+        }
+        .padding(.horizontal, AYASpacing.md)
+        .padding(.vertical, AYASpacing.xs)
+        .background(AYAColors.backgroundSecondary, in: RoundedRectangle(cornerRadius: AYARadius.control))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("cycle.period_log.recorded")
+    }
+
+    private var periodStartPicker: some View {
+        VStack(alignment: .leading, spacing: AYASpacing.xl) {
+            VStack(alignment: .leading, spacing: AYASpacing.sm) {
+                Text("cycle.period_log.sheet.title")
+                    .ayaTypography(.sectionTitle)
+                    .foregroundStyle(AYAColors.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
+
+                Text("cycle.period_log.sheet.description")
+                    .ayaTypography(.body)
+                    .foregroundStyle(AYAColors.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            DatePicker(
+                "cycle.period_log.sheet.date",
+                selection: $periodStartDraft,
+                in: periodStartPickerRange,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            .labelsHidden()
+            .tint(AYAColors.primary)
+
+            Button {
+                recordPeriodStart(periodStartDraft)
+                isPeriodStartPickerPresented = false
+            } label: {
+                Text("cycle.period_log.save")
+            }
+            .buttonStyle(.appPrimary)
+            .accessibilityIdentifier("cycle.period_log.save")
+        }
+        .padding(AYASpacing.xl)
+        .background(AYAColors.backgroundPrimary.ignoresSafeArea())
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var periodStartPickerRange: ClosedRange<Date> {
+        let calendar = Calendar.autoupdatingCurrent
+        let today = calendar.startOfDay(for: Date())
+        let storedStart = calendar.startOfDay(
+            for: Date(timeIntervalSince1970: lastPeriodTimestamp)
+        )
+        return min(storedStart, today)...today
+    }
+
+    private var hasRecordedToday: Bool {
+        let calendar = Calendar.autoupdatingCurrent
+        return periodStartDates.contains(where: calendar.isDateInToday)
+    }
+
+    private func preparePeriodHistory() {
+        CyclePeriodHistoryStore.migrateLegacyStartDate()
+        refreshPeriodHistory()
+    }
+
+    private func refreshPeriodHistory() {
+        periodStartDates = CyclePeriodHistoryStore.dates()
+    }
+
+    private func recordPeriodStart(_ date: Date) {
+        periodHistoryMutation = CyclePeriodHistoryStore.record(date)
+        refreshPeriodHistory()
+        WatchCompanionSync.shared.synchronizeCurrentPractice()
+    }
+
+    private func undoPeriodStart() {
+        guard let periodHistoryMutation else { return }
+        CyclePeriodHistoryStore.restore(periodHistoryMutation)
+        self.periodHistoryMutation = nil
+        refreshPeriodHistory()
+        WatchCompanionSync.shared.synchronizeCurrentPractice()
     }
 
     private func phaseInfo(for calculation: CycleCalculation) -> ContextualInfoContent {

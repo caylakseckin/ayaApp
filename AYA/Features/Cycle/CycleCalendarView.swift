@@ -8,9 +8,12 @@ enum CycleCalendarPresentation: Equatable {
 struct CycleCalendarView: View {
     let profile: CycleProfile
     let presentation: CycleCalendarPresentation
+    let periodStartDates: [Date]
+    let onRecordPeriodStart: ((Date) -> Void)?
 
     @State private var displayedMonth: Date
     @State private var selectedDate: Date
+    @State private var pendingPeriodStartDate: Date?
 
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
     @Environment(\.calendar) private var environmentCalendar
@@ -20,10 +23,14 @@ struct CycleCalendarView: View {
 
     init(
         profile: CycleProfile,
-        presentation: CycleCalendarPresentation = .standard
+        presentation: CycleCalendarPresentation = .standard,
+        periodStartDates: [Date] = [],
+        onRecordPeriodStart: ((Date) -> Void)? = nil
     ) {
         self.profile = profile
         self.presentation = presentation
+        self.periodStartDates = periodStartDates
+        self.onRecordPeriodStart = onRecordPeriodStart
         let calendar = Calendar.autoupdatingCurrent
         let today = calendar.startOfDay(for: Date())
         _displayedMonth = State(initialValue: calendar.dateInterval(of: .month, for: today)?.start ?? today)
@@ -59,6 +66,23 @@ struct CycleCalendarView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .hesiaInteractivePopGesture()
+        .confirmationDialog(
+            "cycle.period_log.confirm.title",
+            isPresented: periodStartConfirmationBinding,
+            titleVisibility: .visible
+        ) {
+            Button("cycle.period_log.confirm.action") {
+                guard let pendingPeriodStartDate else { return }
+                onRecordPeriodStart?(pendingPeriodStartDate)
+                self.pendingPeriodStartDate = nil
+                dismiss()
+            }
+            Button("common.cancel", role: .cancel) {
+                pendingPeriodStartDate = nil
+            }
+        } message: {
+            Text("cycle.period_log.confirm.message")
+        }
         .task {
             guard presentation == .tutorialPreview, !reduceMotion else { return }
             try? await Task.sleep(for: .milliseconds(1_050))
@@ -169,6 +193,7 @@ struct CycleCalendarView: View {
         let calculation = calculator.calculate(profile: profile, on: date)
         let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
         let isToday = calendar.isDateInToday(date)
+        let isPeriodStart = isRecordedPeriodStart(date)
 
         return Button {
             if reduceMotion {
@@ -191,9 +216,9 @@ struct CycleCalendarView: View {
                     .ayaTypography(.metadata)
                     .foregroundStyle(isSelected ? AYAColors.onAccent : AYAColors.textPrimary)
 
-                if isToday && isSelected {
+                if isPeriodStart || (isToday && isSelected) {
                     Circle()
-                        .fill(AYAColors.onAccent)
+                        .fill(isSelected ? AYAColors.onAccent : AYAColors.emphasis)
                         .frame(width: 4, height: 4)
                         .offset(y: 14)
                         .accessibilityHidden(true)
@@ -240,6 +265,8 @@ struct CycleCalendarView: View {
                 .foregroundStyle(AYAColors.textSecondary)
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
+
+            periodStartCalendarAction
         }
         .padding(AYASpacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -247,6 +274,40 @@ struct CycleCalendarView: View {
         .overlay {
             RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
                 .stroke(AYAColors.border, lineWidth: 1)
+        }
+    }
+
+    @ViewBuilder private var periodStartCalendarAction: some View {
+        if isRecordedPeriodStart(selectedDate) {
+            HStack(spacing: AYASpacing.sm) {
+                HesiaIcon.check.view(size: HesiaIconSize.sm)
+                    .foregroundStyle(AYAColors.emphasis)
+                Text("cycle.period_log.recorded_date")
+                    .ayaTypography(.metadata)
+                    .foregroundStyle(AYAColors.textSecondary)
+            }
+            .frame(minHeight: 44)
+            .accessibilityElement(children: .combine)
+        } else if onRecordPeriodStart != nil,
+                  calendar.startOfDay(for: selectedDate) <= calendar.startOfDay(for: Date()) {
+            Button {
+                pendingPeriodStartDate = selectedDate
+            } label: {
+                HStack(spacing: AYASpacing.sm) {
+                    HesiaIcon.calendar.view(size: HesiaIconSize.md)
+                        .foregroundStyle(AYAColors.emphasis)
+                    Text("cycle.period_log.calendar_action")
+                        .ayaTypography(.metadata)
+                        .foregroundStyle(AYAColors.textPrimary)
+                    Spacer(minLength: AYASpacing.sm)
+                    HesiaIcon.caretRight.view(size: HesiaIconSize.sm)
+                        .foregroundStyle(AYAColors.textTertiary)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("cycle.period_log.calendar_action")
         }
     }
 
@@ -420,8 +481,24 @@ struct CycleCalendarView: View {
         if calendar.isDateInToday(date) {
             components.append(localized("cycle.calendar.today"))
         }
+        if isRecordedPeriodStart(date) {
+            components.append(localized("cycle.period_log.recorded_date"))
+        }
 
         return components.joined(separator: ", ")
+    }
+
+    private func isRecordedPeriodStart(_ date: Date) -> Bool {
+        periodStartDates.contains { calendar.isDate($0, inSameDayAs: date) }
+    }
+
+    private var periodStartConfirmationBinding: Binding<Bool> {
+        Binding(
+            get: { pendingPeriodStartDate != nil },
+            set: { isPresented in
+                if !isPresented { pendingPeriodStartDate = nil }
+            }
+        )
     }
 }
 

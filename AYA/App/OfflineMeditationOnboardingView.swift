@@ -6,9 +6,8 @@ struct OfflineMeditationOnboardingView: View {
     @AppStorage(OfflineMeditationPreferenceKeys.isEnabled) private var isEnabled = false
 
     var body: some View {
-        ScrollView {
+        HesiaCenteredScrollView {
             VStack(spacing: AYASpacing.xl) {
-                Spacer(minLength: AYASpacing.xxxl)
 
                 HesiaIcon.headphones.view(size: 48)
                     .foregroundStyle(AYAColors.accent)
@@ -53,7 +52,6 @@ struct OfflineMeditationOnboardingView: View {
                 }
                 .ayaElevation(.card)
 
-                Spacer(minLength: AYASpacing.xxl)
             }
             .hesiaScreenPadding()
             .frame(maxWidth: 560)

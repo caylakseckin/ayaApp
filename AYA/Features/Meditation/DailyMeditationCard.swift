@@ -274,7 +274,7 @@ private struct DailyMeditationCardContent: View {
 
     private var durationText: String {
         String(
-            format: String(localized: "meditation.duration.minutes", locale: locale),
+            format: selectedLanguage.localizedString(forKey: "meditation.duration.minutes"),
             locale: locale,
             remoteMetadata?.durationMinutes ?? meditation.durationMinutes
         )

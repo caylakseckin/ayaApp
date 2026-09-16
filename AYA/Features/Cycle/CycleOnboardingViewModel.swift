@@ -167,9 +167,11 @@ final class CycleOnboardingViewModel: ObservableObject {
             let averagePeriodDuration
         else { return false }
 
-        defaults.set(
-            lastPeriodStartDate.timeIntervalSince1970,
-            forKey: CyclePersistenceKeys.lastPeriodStartDate
+        CyclePeriodHistoryStore.setCurrentStart(
+            lastPeriodStartDate,
+            defaults: defaults,
+            calendar: calendar,
+            now: now()
         )
         defaults.set(averageLength, forKey: CyclePersistenceKeys.averageLength)
         defaults.set(averagePeriodDuration, forKey: CyclePersistenceKeys.averagePeriodDuration)

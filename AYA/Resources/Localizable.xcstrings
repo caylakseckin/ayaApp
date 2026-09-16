@@ -1074,6 +1074,214 @@
         }
       }
     },
+    "cycle.period_log.calendar_action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark as period start"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcı olarak işaretle"
+          }
+        }
+      }
+    },
+    "cycle.period_log.confirm.action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaydet"
+          }
+        }
+      }
+    },
+    "cycle.period_log.confirm.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected day will be added to your period history. If it is your latest start, your cycle will update from this date."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçtiğin gün adet geçmişine eklenecek. En yeni başlangıç tarihinse döngü hesabın bu tarihten güncellenecek."
+          }
+        }
+      }
+    },
+    "cycle.period_log.confirm.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save period start?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcını kaydet?"
+          }
+        }
+      }
+    },
+    "cycle.period_log.recorded_date" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period start"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcı"
+          }
+        }
+      }
+    },
+    "cycle.period_log.saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period start saved"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcın kaydedildi"
+          }
+        }
+      }
+    },
+    "cycle.period_log.save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Start Date"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başlangıcı Kaydet"
+          }
+        }
+      }
+    },
+    "cycle.period_log.sheet.date" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period start date"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıç tarihi"
+          }
+        }
+      }
+    },
+    "cycle.period_log.sheet.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the first day you consider your period to have started. Your cycle will update from this date."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adetinin başladığını kabul ettiğin ilk günü seç. Döngü hesabın bu tarihten güncellenecek."
+          }
+        }
+      }
+    },
+    "cycle.period_log.sheet.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log Period Start"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcını kaydet"
+          }
+        }
+      }
+    },
+    "cycle.period_log.today_action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log Period Start"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adet başlangıcını kaydet"
+          }
+        }
+      }
+    },
+    "cycle.period_log.today_recorded" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today’s period start is saved"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugünkü adet başlangıcın kaydedildi"
+          }
+        }
+      }
+    },
+    "cycle.period_log.undo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geri Al"
+          }
+        }
+      }
+    },
     "cycle.onboarding.advisory.confirm" : {
       "localizations" : {
         "en" : {
@@ -3290,13 +3498,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calm practices for your week and changing needs"
+            "value" : "Practices tailored to your week and changing needs, supporting you as you prepare for a more comfortable birth"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haftana ve değişen ihtiyaçlarına eşlik eden sakin pratikler"
+            "value" : "Daha rahat bir doğuma hazırlanmanı destekleyen, haftana ve değişen ihtiyaçlarına eşlik eden pratikler"
           }
         }
       }
@@ -3638,6 +3846,7 @@
       }
     },
     "meditation.duration.minutes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5500,13 +5709,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA offers a daily meditation and brief insights shaped around your current stage."
+            "value" : "HESIA will shape your daily meditation and brief insights around the stage you’re in."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA, bulunduğun döneme göre her gün bir meditasyon ve sana eşlik eden kısa bilgiler sunar."
+            "value" : "HESIA, bulunduğun döneme göre günlük meditasyonunu ve sana eşlik eden kısa bilgileri şekillendirecek."
           }
         }
       }
@@ -5516,13 +5725,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A meditation for each day."
+            "value" : "You’ll see a meditation made for your day."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Her gün sana uygun bir meditasyon."
+            "value" : "Ana ekranında sana uygun günlük meditasyonu göreceksin."
           }
         }
       }
@@ -5548,13 +5757,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meet HESIA"
+            "value" : "Quick HESIA tour"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA’yı tanı"
+            "value" : "Kısa HESIA turu"
           }
         }
       }
@@ -5564,13 +5773,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA offers meditations and helpful context shaped around where you are in your menstrual cycle, pregnancy, birth journey or postpartum period."
+            "value" : "First, take a quick look at how HESIA will support you. You’ll make your choices when the tour is complete."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA; adet döngüsü, hamilelik, doğum yolculuğu ve lohusalık döneminde bulunduğun noktaya uygun meditasyonlar ve yardımcı bilgiler sunar."
+            "value" : "Önce HESIA’nın sana nasıl eşlik edeceğine kısaca bakalım. Seçimlerini turun sonunda yapacaksın."
           }
         }
       }
@@ -5602,24 +5811,23 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "İleri"
+            "value" : "Sonraki"
           }
         }
       }
     },
     "onboarding.tutorial.preview.caption" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Example preview"
+            "value" : "App preview"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Örnek görünüm"
+            "value" : "Uygulama önizlemesi"
           }
         }
       }
@@ -5725,13 +5933,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose your stage next and let HESIA meet you where you are."
+            "value" : "On the next screen, you’ll choose the stage you’re in."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sırada dönemini seçmek var; HESIA bulunduğun yerde sana eşlik etsin."
+            "value" : "Bir sonraki ekranda bulunduğun dönemi seçeceksin."
           }
         }
       }
@@ -5741,13 +5949,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA is ready."
+            "value" : "Now let’s tailor HESIA to you."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA hazır."
+            "value" : "Şimdi HESIA’yı sana göre hazırlayalım."
           }
         }
       }
@@ -5757,13 +5965,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Update your name, language, theme and other preferences whenever you like."
+            "value" : "You’ll be able to update your name, language, theme and other preferences anytime in Settings."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adını, dilini, tema seçimini ve diğer tercihlerini dilediğin zaman güncelleyebilirsin."
+            "value" : "Adını, dilini, tema seçimini ve diğer tercihlerini daha sonra Ayarlar’dan değiştirebileceksin."
           }
         }
       }
@@ -5773,13 +5981,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An experience shaped around you."
+            "value" : "You’ll always be able to update your preferences."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deneyim sana göre şekillenir."
+            "value" : "Tercihlerini dilediğin zaman değiştirebileceksin."
           }
         }
       }
@@ -5789,13 +5997,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skip"
+            "value" : "Skip tour"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Atla"
+            "value" : "Turu atla"
           }
         }
       }
@@ -5805,13 +6013,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Let’s begin"
+            "value" : "Choose My Stage"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Başlayalım"
+            "value" : "Dönemimi Seç"
           }
         }
       }
@@ -5821,13 +6029,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose the experience that fits your current life stage, and update it whenever your needs change."
+            "value" : "You’ll choose the stage that fits you when the tour ends, and you can update it whenever your needs change."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yaşamındaki döneme uygun deneyimi seçebilir, ihtiyaçların değiştiğinde seçimini yenileyebilirsin."
+            "value" : "Turun sonunda sana uygun dönemi seçecek, ihtiyaçların değiştiğinde seçimini yenileyebileceksin."
           }
         }
       }
@@ -5837,13 +6045,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA changes with you."
+            "value" : "You’ll choose your stage after the tour."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HESIA seninle değişir."
+            "value" : "Dönemini turdan sonra seçeceksin."
           }
         }
       }
@@ -5853,13 +6061,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simple calendars and timelines help you understand where you are within your current stage."
+            "value" : "Your calendars and timelines will make it easier to understand where you are and how you’re progressing."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Takvim ve zaman çizelgeleri, bulunduğun dönemde nerede olduğunu ve ilerleyişini anlamanı kolaylaştırır."
+            "value" : "Takvim ve zaman çizelgelerinde bulunduğun noktayı ve ilerleyişini kolayca takip edebileceksin."
           }
         }
       }
@@ -5869,13 +6077,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "See your journey at a glance."
+            "value" : "You’ll see your journey at a glance."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sürecini bir bakışta gör."
+            "value" : "Sürecini bir bakışta göreceksin."
           }
         }
       }

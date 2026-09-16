@@ -1,5 +1,22 @@
 import SwiftUI
 
+/// Centers short onboarding content while allowing long translations and
+/// accessibility text to grow beyond the viewport and scroll naturally.
+struct HesiaCenteredScrollView<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                content
+                    .padding(.vertical, AYASpacing.xl)
+                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+            }
+            .scrollIndicators(.hidden)
+        }
+    }
+}
+
 extension AYALayout {
     /// The one horizontal gutter for screen-level content.
     ///
@@ -88,6 +105,8 @@ struct ScreenHeader: View {
             Text(titleKey)
                 .ayaTypography(.screenTitle)
                 .foregroundStyle(AYAColors.textPrimary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity)
                 .accessibilityAddTraits(.isHeader)
 

@@ -1,6 +1,110 @@
 import XCTest
 
 final class HESIAUITests: XCTestCase {
+    func testLightAppearancePremiumAndPlayerReview() {
+        let app = XCUIApplication()
+        func capture(_ name: String) {
+            let attachment = XCTAttachment(screenshot: app.screenshot())
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        app.launchArguments = ["-onboarding.completed", "YES", "-life_stage.active", "pregnancy",
+                               "-pregnancy.referenceWeek", "18", "-pregnancy.referenceDate", String(Date().timeIntervalSince1970),
+                               "-pregnancy.onboardingCompleted", "YES", "-premium.isUnlockedForTesting", "YES",
+                               "-app.language", "tr", "-app.appearance", "light"]
+        app.launch()
+        let play = app.buttons["cycle.home.meditation.start"]
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        if !play.isHittable { app.swipeUp() }
+        play.tap()
+        XCTAssertTrue(app.buttons["meditation.player.close"].waitForExistence(timeout: 5))
+        capture("player-light")
+
+        app.launchArguments = ["-onboarding.completed", "YES", "-life_stage.active", "invalid",
+                               "-premium.isUnlockedForTesting", "NO", "-app.language", "tr", "-app.appearance", "light",
+                               "-life_stage.selection.hasShownSwipeNudge", "YES"]
+        app.launch()
+        app.swipeLeft()
+        let pregnancy = app.buttons["life_stage.card.pregnancy"]
+        XCTAssertTrue(pregnancy.waitForExistence(timeout: 5))
+        pregnancy.tap()
+        XCTAssertTrue(app.buttons["premium.purchase.button"].waitForExistence(timeout: 10))
+        capture("premium-light")
+        app.swipeUp()
+        capture("premium-light-lower")
+    }
+
+    func testLightAppearanceVisualReview() {
+        let app = XCUIApplication()
+        let now = String(Date().timeIntervalSince1970)
+        let base = ["-app.language", "tr", "-app.appearance", "light",
+                    "-user.name", "Deniz", "-premium.isUnlockedForTesting", "YES",
+                    "-life_stage.selection.hasShownSwipeNudge", "YES"]
+        func launch(_ arguments: [String], _ name: String) {
+            app.launchArguments = base + arguments
+            app.launch()
+            capture(name)
+        }
+        func capture(_ name: String) {
+            Thread.sleep(forTimeInterval: 1)
+            let attachment = XCTAttachment(screenshot: app.screenshot())
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        launch(["-onboarding.completed", "NO", "-onboarding.welcomeCompleted", "NO"], "01-welcome")
+        launch(["-onboarding.completed", "NO", "-onboarding.welcomeCompleted", "YES",
+                "-onboarding.tutorialCompleted", "NO"], "02-tutorial-intro")
+        for index in 1...5 {
+            let next = app.buttons["onboarding.tutorial.primary.button"]
+            XCTAssertTrue(next.waitForExistence(timeout: 5))
+            next.tap()
+            capture("03-tutorial-\(index)")
+        }
+        launch(["-onboarding.completed", "NO", "-onboarding.welcomeCompleted", "YES",
+                "-onboarding.tutorialCompleted", "YES", "-onboarding.offlineSetupCompleted", "NO"], "04-offline")
+        launch(["-onboarding.completed", "NO", "-onboarding.welcomeCompleted", "YES",
+                "-onboarding.tutorialCompleted", "YES", "-onboarding.offlineSetupCompleted", "YES"], "05-biometric")
+        launch(["-onboarding.completed", "YES", "-life_stage.active", "invalid"], "06-themes-cycle")
+        app.swipeLeft()
+        capture("07-themes-pregnancy")
+        app.swipeLeft()
+        capture("08-themes-birth")
+        app.swipeLeft()
+        capture("09-themes-postpartum")
+        for stage in ["cycle", "pregnancy", "postpartum", "birthMoment"] {
+            let arguments = ["-onboarding.completed", "YES", "-life_stage.active", stage]
+            if stage != "birthMoment" {
+                launch(arguments + ["-\(stage).onboardingCompleted", "NO",
+                                    "-cycle.lastPeriodStartDate", "0",
+                                    "-pregnancy.referenceWeek", "0",
+                                    "-postpartum.birthDate", "0"], "10-setup-\(stage)")
+            }
+            launch(arguments + ["-cycle.lastPeriodStartDate", now,
+                                "-cycle.averageLength", "28", "-cycle.averagePeriodDuration", "5",
+                                "-cycle.onboardingCompleted", "YES",
+                                "-pregnancy.referenceWeek", "18", "-pregnancy.referenceDate", now,
+                                "-pregnancy.onboardingCompleted", "YES",
+                                "-postpartum.birthDate", now, "-postpartum.onboardingCompleted", "YES"], "11-home-\(stage)")
+            let settings = app.buttons["settings.button"]
+            if settings.waitForExistence(timeout: 3) {
+                settings.tap()
+                capture("12-settings-\(stage)")
+                app.buttons["settings.close.button"].tap()
+            }
+            app.swipeUp()
+            capture("13-home-lower-\(stage)")
+            let calendar = app.buttons[stage == "postpartum" ? "Zaman Çizelgesi" : "Takvimi Gör"]
+            if calendar.exists {
+                if !calendar.isHittable { app.swipeUp() }
+                calendar.tap()
+                capture("14-calendar-\(stage)")
+                app.swipeDown()
+            }
+        }
+    }
+
     func testThemeCarouselSwipesToNextFullScreenThemeAndSelectsIt() {
         let app = XCUIApplication()
         app.launchArguments = [
@@ -81,7 +185,9 @@ final class HESIAUITests: XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
 
-        let meditation = app.buttons["cycle.home.meditation.start"]
+        // The home card remains in the accessibility tree beneath the sheet.
+        let meditation = app.buttons.matching(identifier: "cycle.home.meditation.start")
+            .allElementsBoundByIndex.last!
         XCTAssertTrue(meditation.waitForExistence(timeout: 3))
         if !meditation.isHittable { app.swipeUp() }
         meditation.tap()

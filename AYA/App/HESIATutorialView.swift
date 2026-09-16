@@ -212,13 +212,19 @@ private struct TutorialProgress: View {
     let totalSteps: Int
 
     var body: some View {
-        HStack(spacing: AYASpacing.sm) {
-            ForEach(0..<totalSteps, id: \.self) { index in
-                Capsule()
-                    .fill(index == currentStep ? AYAColors.accent : AYAColors.separator)
-                    .frame(width: index == currentStep ? 18 : 6, height: 6)
-                    .accessibilityHidden(true)
+        VStack(spacing: AYASpacing.xs) {
+            HStack(spacing: AYASpacing.sm) {
+                ForEach(0..<totalSteps, id: \.self) { index in
+                    Capsule()
+                        .fill(index == currentStep ? AYAColors.accent : AYAColors.separator)
+                        .frame(width: index == currentStep ? 18 : 6, height: 6)
+                        .accessibilityHidden(true)
+                }
             }
+
+            Text(verbatim: "\(currentStep + 1) / \(totalSteps)")
+                .ayaTypography(.metadata)
+                .foregroundStyle(AYAColors.textTertiary)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
@@ -233,13 +239,27 @@ private struct TutorialFeaturePreview<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        content
-            .padding(AYASpacing.lg)
-            .frame(maxWidth: .infinity)
-            .background(
-                AYAColors.backgroundSecondary,
-                in: RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
-            )
+        VStack(alignment: .leading, spacing: AYASpacing.md) {
+            Text("onboarding.tutorial.preview.caption")
+                .ayaTypography(.metadata)
+                .foregroundStyle(AYAColors.textTertiary)
+                .textCase(.uppercase)
+                .tracking(0.7)
+
+            content
+                .padding(AYASpacing.lg)
+                .frame(maxWidth: .infinity)
+                .background(
+                    AYAColors.surfaceElevated,
+                    in: RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: AYARadius.card, style: .continuous))
+        }
+        .padding(AYASpacing.md)
+        .background(
+            AYAColors.backgroundSecondary,
+            in: RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
+        )
             .overlay {
                 RoundedRectangle(cornerRadius: AYARadius.hero, style: .continuous)
                     .stroke(AYAColors.border, lineWidth: 1)

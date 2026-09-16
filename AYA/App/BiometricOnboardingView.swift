@@ -15,9 +15,8 @@ struct BiometricOnboardingView: View {
     }
 
     var body: some View {
-        ScrollView {
+        HesiaCenteredScrollView {
             VStack(spacing: AYASpacing.xl) {
-                Spacer(minLength: AYASpacing.xxxl)
 
                 Image(systemName: "faceid")
                     .font(.system(size: 52, weight: .light))
@@ -63,7 +62,6 @@ struct BiometricOnboardingView: View {
                 }
                 .ayaElevation(.card)
 
-                Spacer(minLength: AYASpacing.xxl)
             }
             .hesiaScreenPadding()
             .frame(maxWidth: 560)

@@ -31,10 +31,10 @@ struct PostpartumPersonalizationView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     topBar
-                    introduction.padding(.top, 22)
-                    question.padding(.top, 38)
+                    introduction.padding(.top, AYASpacing.xl)
+                    question.padding(.top, AYASpacing.xxl)
 
-                    Spacer(minLength: 34)
+                    Spacer(minLength: AYASpacing.xxl)
 
                     if mode == .initial {
                         OnboardingPrivacyNotice(
@@ -44,7 +44,7 @@ struct PostpartumPersonalizationView: View {
                 }
                 .hesiaScreenPadding()
                 .padding(.top, 8)
-                .padding(.bottom, 86)
+                .padding(.bottom, AYASpacing.xl)
                 .frame(minHeight: geometry.size.height, alignment: .top)
             }
             .scrollIndicators(.hidden)

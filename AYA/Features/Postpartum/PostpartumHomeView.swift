@@ -427,7 +427,6 @@ private struct PostpartumStageTimeline: View {
                 .ayaTypography(.homeMetadata)
                 .foregroundStyle(isCurrent ? AYAColors.emphasis : AYAColors.textSecondary)
                 .multilineTextAlignment(.center)
-                .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .ignore)

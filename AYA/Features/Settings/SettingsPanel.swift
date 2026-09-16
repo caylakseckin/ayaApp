@@ -32,6 +32,7 @@ struct AYAProfileButton: View {
 }
 
 struct AYASettingsOverlay: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Binding var languageCode: String
     @Binding var userName: String
     let activeStage: LifeStage?
@@ -74,12 +75,14 @@ struct AYASettingsOverlay: View {
                     bottomSafeAreaInset: geometry.safeAreaInsets.bottom,
                     presentation: presentation
                 )
-                .frame(width: min(336, geometry.size.width * 0.88))
+                .frame(width: dynamicTypeSize.isAccessibilitySize
+                       ? geometry.size.width
+                       : min(336, geometry.size.width * 0.88))
                 .frame(maxHeight: .infinity)
                 .transition(.move(edge: .trailing))
             }
+            .ignoresSafeArea()
         }
-        .ignoresSafeArea()
         // Keeps VoiceOver inside the drawer instead of letting it wander onto
         // the Home screen still rendered behind the scrim.
         .accessibilityAddTraits(.isModal)
@@ -135,7 +138,7 @@ struct SettingsPanel: View {
             .scrollIndicators(.hidden)
         }
         .padding(.horizontal, AYASpacing.lg)
-        .padding(.top, max(topSafeAreaInset + AYASpacing.lg, 72))
+        .padding(.top, topSafeAreaInset + AYASpacing.lg)
         .padding(.bottom, max(bottomSafeAreaInset + AYASpacing.lg, AYASpacing.xl))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(AYAColors.backgroundPrimary)

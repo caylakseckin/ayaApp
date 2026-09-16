@@ -25,11 +25,11 @@ struct PregnancySetupView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     topBar
                     titleBlock
-                        .padding(.top, 22)
+                        .padding(.top, AYASpacing.xl)
                     question
-                        .padding(.top, 38)
+                        .padding(.top, AYASpacing.xxl)
 
-                    Spacer(minLength: 34)
+                    Spacer(minLength: AYASpacing.xxl)
 
                     OnboardingPrivacyNotice(
                         descriptionKey: "pregnancy.setup.privacy.description"
@@ -37,7 +37,7 @@ struct PregnancySetupView: View {
                 }
                 .hesiaScreenPadding()
                 .padding(.top, 8)
-                .padding(.bottom, 92)
+                .padding(.bottom, AYASpacing.xl)
                 .frame(minHeight: geometry.size.height, alignment: .top)
             }
             .scrollDismissesKeyboard(.interactively)

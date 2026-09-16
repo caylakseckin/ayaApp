@@ -75,6 +75,7 @@ struct PremiumPaywallView: View {
     @State private var activeAlert: PremiumPaywallAlert?
     @State private var didGrantAccess = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage("app.language") private var languageCode = AppLanguage.system.rawValue
 
     private let termsURL = URL(string: "https://hesia.app/hesia-legal-site/terms.html")!
@@ -143,6 +144,7 @@ struct PremiumPaywallView: View {
         }
         .hesiaScreenPadding()
         .padding(.vertical, AYASpacing.sm)
+        .background(AYAColors.backgroundPrimary)
     }
 
     private var header: some View {
@@ -203,21 +205,28 @@ struct PremiumPaywallView: View {
         return Button {
             selectedPlan = plan
         } label: {
-            HStack(spacing: AYASpacing.md) {
+            HStack(alignment: .top, spacing: AYASpacing.md) {
                 HesiaSelectionIndicator(isSelected: isSelected)
+                    .padding(.top, AYASpacing.xs)
 
-                VStack(alignment: .leading, spacing: AYASpacing.xs) {
-                    HStack(spacing: AYASpacing.sm) {
+                VStack(alignment: .leading, spacing: AYASpacing.sm) {
+                    (dynamicTypeSize >= .xxxLarge
+                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: AYASpacing.sm))
+                        : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: AYASpacing.md))) {
                         Text(plan.titleKey)
                             .ayaTypography(.sectionTitle)
                             .foregroundStyle(AYAColors.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                        if plan == .yearly {
-                            // `.soft` rather than the warm `tertiary` fill: in
-                            // dark mode tertiary resolves to a muddy brown and
-                            // the plum label loses contrast against it.
-                            HesiaBadge("premium.plan.best_value")
-                        }
+                        price(for: plan)
+                            .ayaTypography(.price)
+                            .foregroundStyle(AYAColors.emphasis)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    if plan == .yearly {
+                        HesiaBadge("premium.plan.best_value")
                     }
 
                     Text(detailKey(for: plan))
@@ -225,12 +234,6 @@ struct PremiumPaywallView: View {
                         .foregroundStyle(AYAColors.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-
-                Spacer(minLength: AYASpacing.sm)
-
-                price(for: plan)
-                    .ayaTypography(.price)
-                    .foregroundStyle(AYAColors.emphasis)
             }
             .padding(.horizontal, AYASpacing.lg)
             .padding(.vertical, AYASpacing.md)
@@ -424,4 +427,11 @@ struct PremiumPaywallView: View {
 #Preview("Premium Paywall — English") {
     PremiumPaywallView(stage: .motherhood03, onAccessGranted: {})
         .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Premium — Large text TR", traits: .fixedLayout(width: 393, height: 852)) {
+    PremiumPaywallView(stage: .pregnancy, onAccessGranted: {})
+        .environment(\.locale, Locale(identifier: "tr"))
+        .environment(\.dynamicTypeSize, .xxxLarge)
+        .preferredColorScheme(.dark)
 }

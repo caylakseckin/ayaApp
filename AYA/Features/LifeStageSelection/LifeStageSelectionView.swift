@@ -267,7 +267,6 @@ private struct LifeStageCarouselCard: View {
                             .ayaTypography(.body)
                             .foregroundStyle(AYAColors.textSecondary)
                             .multilineTextAlignment(.center)
-                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: 300)

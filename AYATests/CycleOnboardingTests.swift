@@ -140,6 +140,7 @@ final class CycleOnboardingTests: XCTestCase {
         XCTAssertEqual(defaults.integer(forKey: CyclePersistenceKeys.averagePeriodDuration), 5)
         XCTAssertTrue(defaults.bool(forKey: CyclePersistenceKeys.onboardingCompleted))
         XCTAssertNotNil(defaults.object(forKey: CyclePersistenceKeys.lastPeriodStartDate))
+        XCTAssertEqual(CyclePeriodHistoryStore.dates(defaults: defaults).count, 1)
     }
 
     @MainActor
@@ -279,6 +280,167 @@ final class CycleOnboardingTests: XCTestCase {
         XCTAssertEqual(calculation.currentPhase, .luteal)
     }
 
+    func testLegacyStartDateMigratesWithoutChangingExistingProfile() throws {
+        let defaults = makeDefaults()
+        defer { clear(defaults) }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let legacyDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 4, hour: 19))
+        )
+        defaults.set(
+            legacyDate.timeIntervalSince1970,
+            forKey: CyclePersistenceKeys.lastPeriodStartDate
+        )
+        defaults.set(true, forKey: CyclePersistenceKeys.onboardingCompleted)
+
+        CyclePeriodHistoryStore.migrateLegacyStartDate(
+            defaults: defaults,
+            calendar: calendar
+        )
+
+        let migratedDate = try XCTUnwrap(
+            CyclePeriodHistoryStore.dates(defaults: defaults, calendar: calendar).first
+        )
+        XCTAssertTrue(calendar.isDate(migratedDate, inSameDayAs: legacyDate))
+        XCTAssertEqual(
+            defaults.double(forKey: CyclePersistenceKeys.lastPeriodStartDate),
+            legacyDate.timeIntervalSince1970,
+            accuracy: 0.001
+        )
+        XCTAssertTrue(defaults.bool(forKey: CyclePersistenceKeys.onboardingCompleted))
+    }
+
+    func testRecordingNewStartUpdatesCycleAndUndoRestoresPreviousData() throws {
+        let defaults = makeDefaults()
+        defer { clear(defaults) }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let previousDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))
+        )
+        let newDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 29))
+        )
+        defaults.set(
+            previousDate.timeIntervalSince1970,
+            forKey: CyclePersistenceKeys.lastPeriodStartDate
+        )
+        CyclePeriodHistoryStore.migrateLegacyStartDate(defaults: defaults, calendar: calendar)
+
+        let mutation = try XCTUnwrap(
+            CyclePeriodHistoryStore.record(
+                newDate,
+                defaults: defaults,
+                calendar: calendar,
+                now: newDate
+            )
+        )
+
+        XCTAssertEqual(CyclePeriodHistoryStore.dates(defaults: defaults, calendar: calendar).count, 2)
+        XCTAssertEqual(
+            defaults.double(forKey: CyclePersistenceKeys.lastPeriodStartDate),
+            newDate.timeIntervalSince1970,
+            accuracy: 0.001
+        )
+
+        CyclePeriodHistoryStore.restore(mutation, defaults: defaults)
+
+        XCTAssertEqual(CyclePeriodHistoryStore.dates(defaults: defaults, calendar: calendar).count, 1)
+        XCTAssertEqual(
+            defaults.double(forKey: CyclePersistenceKeys.lastPeriodStartDate),
+            previousDate.timeIntervalSince1970,
+            accuracy: 0.001
+        )
+    }
+
+    func testHistoricalStartIsStoredWithoutMovingCurrentCycleBackwards() throws {
+        let defaults = makeDefaults()
+        defer { clear(defaults) }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let historicalDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 7, day: 4))
+        )
+        let currentDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))
+        )
+        defaults.set(
+            currentDate.timeIntervalSince1970,
+            forKey: CyclePersistenceKeys.lastPeriodStartDate
+        )
+        CyclePeriodHistoryStore.migrateLegacyStartDate(defaults: defaults, calendar: calendar)
+
+        XCTAssertNotNil(
+            CyclePeriodHistoryStore.record(
+                historicalDate,
+                defaults: defaults,
+                calendar: calendar,
+                now: currentDate
+            )
+        )
+
+        XCTAssertEqual(CyclePeriodHistoryStore.dates(defaults: defaults, calendar: calendar).count, 2)
+        XCTAssertEqual(
+            defaults.double(forKey: CyclePersistenceKeys.lastPeriodStartDate),
+            currentDate.timeIntervalSince1970,
+            accuracy: 0.001
+        )
+    }
+
+    func testEditingCurrentStartReplacesPreviousCurrentHistoryEntry() throws {
+        let defaults = makeDefaults()
+        defer { clear(defaults) }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let historicalDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 7, day: 4))
+        )
+        let previousCurrentDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))
+        )
+        let correctedCurrentDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 8, day: 3))
+        )
+        defaults.set(
+            [historicalDate.timeIntervalSince1970, previousCurrentDate.timeIntervalSince1970],
+            forKey: CyclePersistenceKeys.periodStartHistory
+        )
+        defaults.set(
+            previousCurrentDate.timeIntervalSince1970,
+            forKey: CyclePersistenceKeys.lastPeriodStartDate
+        )
+
+        CyclePeriodHistoryStore.setCurrentStart(
+            correctedCurrentDate,
+            defaults: defaults,
+            calendar: calendar,
+            now: correctedCurrentDate
+        )
+
+        let history = CyclePeriodHistoryStore.dates(defaults: defaults, calendar: calendar)
+        XCTAssertEqual(history.count, 2)
+        XCTAssertTrue(history.contains { calendar.isDate($0, inSameDayAs: historicalDate) })
+        XCTAssertTrue(history.contains { calendar.isDate($0, inSameDayAs: correctedCurrentDate) })
+        XCTAssertFalse(history.contains { calendar.isDate($0, inSameDayAs: previousCurrentDate) })
+    }
+
+    func testFutureStartDateIsNotRecorded() throws {
+        let defaults = makeDefaults()
+        defer { clear(defaults) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+
+        XCTAssertNil(
+            CyclePeriodHistoryStore.record(
+                now.addingTimeInterval(86_400),
+                defaults: defaults,
+                now: now
+            )
+        )
+        XCTAssertTrue(CyclePeriodHistoryStore.dates(defaults: defaults).isEmpty)
+        XCTAssertNil(defaults.object(forKey: CyclePersistenceKeys.lastPeriodStartDate))
+    }
+
     private func makeDefaults() -> UserDefaults {
         let suiteName = "CycleOnboardingTests.\(UUID().uuidString)"
         return UserDefaults(suiteName: suiteName)!
@@ -287,6 +449,7 @@ final class CycleOnboardingTests: XCTestCase {
     private func clear(_ defaults: UserDefaults) {
         for key in [
             CyclePersistenceKeys.lastPeriodStartDate,
+            CyclePersistenceKeys.periodStartHistory,
             CyclePersistenceKeys.averageLength,
             CyclePersistenceKeys.averagePeriodDuration,
             CyclePersistenceKeys.onboardingCompleted

@@ -115,8 +115,10 @@ struct ContextualInfoSheet: View {
                 }
             }
             .hesiaScreenPadding()
-            .padding(.top, AYASpacing.md)
+            .padding(.top, AYASpacing.xl)
             .padding(.bottom, AYASpacing.xxl)
+            .frame(maxWidth: AYALayout.readableContentMaxWidth)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
         .scrollIndicators(.hidden)
         .background(AYAColors.backgroundPrimary.ignoresSafeArea())

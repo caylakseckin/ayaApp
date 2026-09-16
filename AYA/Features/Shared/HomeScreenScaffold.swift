@@ -92,6 +92,7 @@ struct HomeHeaderDetail: View {
         Text(verbatim: text)
             .ayaTypography(.homeSupporting)
             .foregroundStyle(AYAColors.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
             .contentTransition(.numericText())
     }
 }

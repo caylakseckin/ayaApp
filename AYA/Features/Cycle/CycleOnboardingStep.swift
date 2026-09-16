@@ -23,6 +23,7 @@ enum CycleOnboardingMode: Sendable {
 
 enum CyclePersistenceKeys {
     static let lastPeriodStartDate = "cycle.lastPeriodStartDate"
+    static let periodStartHistory = "cycle.periodStartHistory"
     static let averageLength = "cycle.averageLength"
     static let averagePeriodDuration = "cycle.averagePeriodDuration"
     static let onboardingCompleted = "cycle.onboardingCompleted"
