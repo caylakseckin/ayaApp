@@ -1,3 +1,4 @@
+import SafariServices
 import SwiftUI
 
 /// Shared building blocks for the HESIA settings drawer.
@@ -277,14 +278,17 @@ struct SettingsRowAccessory: View {
     }
 }
 
-/// Settings row that opens an external URL.
+/// Settings row that opens a web page in an in-app Safari sheet.
 struct SettingsLinkRow: View {
     let icon: SettingsRowIcon
     let titleKey: LocalizedStringKey
     let url: URL
+    @State private var isBrowserPresented = false
 
     var body: some View {
-        Link(destination: url) {
+        Button {
+            isBrowserPresented = true
+        } label: {
             HStack(spacing: AYASpacing.md) {
                 SettingsRowLabel(icon: icon, titleKey: titleKey)
                 SettingsRowAccessory.externalLink
@@ -294,7 +298,23 @@ struct SettingsLinkRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .sheet(isPresented: $isBrowserPresented) {
+            HESIAInAppBrowser(url: url)
+                .ignoresSafeArea()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
     }
+}
+
+private struct HESIAInAppBrowser: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
 
 /// Settings row carrying a trailing toggle.

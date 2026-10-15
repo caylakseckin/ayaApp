@@ -1,9 +1,9 @@
+import StoreKit
 import SwiftUI
 
 enum HESIAFeatureFlags {
-    /// Keep English resources and code paths complete while the first release is Turkish-only.
-    /// Set to `true` to restore language selection throughout the app.
-    static let supportsMultipleLanguages = false
+    /// Enables Turkish and English selection throughout the app.
+    static let supportsMultipleLanguages = true
     /// Keep the completed Motherhood experience available in code while it is hidden at launch.
     static let supportsMotherhood = false
 }
@@ -251,10 +251,13 @@ private struct HESIALaunchRootView: View {
 
 private struct AuthenticatedRootView: View {
     @AppStorage(LifeStagePersistenceKeys.activeStage) private var activeStageRawValue = ""
+    @AppStorage("app.reviewRequest.hasBeenRequested") private var hasRequestedReview = false
+    @AppStorage("app.reviewRequest.isPendingAfterInitialThemeSelection") private var isReviewRequestPending = false
     @State private var isChoosingTheme = false
     @StateObject private var watchPlaybackCoordinator = WatchPlaybackCoordinator.shared
     @EnvironmentObject private var premiumStore: PremiumStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.requestReview) private var requestReview
 
     private var activeStage: LifeStage? {
         guard let stage = LifeStage(rawValue: activeStageRawValue), stage.isAvailable else {
@@ -296,14 +299,19 @@ private struct AuthenticatedRootView: View {
                     .hesiaScreenTransition(reduceMotion: reduceMotion)
             } else if showsThemeSelection {
                 LifeStageSelectionView(initialSelection: themeSelectionInitialStage) { stage in
+                    if activeStageRawValue.isEmpty, !hasRequestedReview {
+                        isReviewRequestPending = true
+                    }
                     activeStageRawValue = stage.rawValue
                     isChoosingTheme = false
                 }
                 .hesiaScreenTransition(reduceMotion: reduceMotion)
             } else if let activeStage {
-                ActiveLifeStageView(stage: activeStage) {
-                    isChoosingTheme = true
-                }
+                ActiveLifeStageView(
+                    stage: activeStage,
+                    showThemes: { isChoosingTheme = true },
+                    requestReviewIfNeeded: requestReviewIfNeeded
+                )
                 .hesiaScreenTransition(reduceMotion: reduceMotion)
             }
         }
@@ -324,11 +332,20 @@ private struct AuthenticatedRootView: View {
             }
         }
     }
+
+    @MainActor
+    private func requestReviewIfNeeded() {
+        guard isReviewRequestPending, !hasRequestedReview else { return }
+        isReviewRequestPending = false
+        hasRequestedReview = true
+        requestReview()
+    }
 }
 
 private struct ActiveLifeStageView: View {
     let stage: LifeStage
     let showThemes: () -> Void
+    let requestReviewIfNeeded: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -349,5 +366,6 @@ private struct ActiveLifeStageView: View {
             }
             .hesiaRootEdgeBack(action: showThemes)
         }
+        .onAppear(perform: requestReviewIfNeeded)
     }
 }
