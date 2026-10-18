@@ -1,6 +1,43 @@
 import StoreKit
 import SwiftUI
 
+enum InstallAttributionPersistenceKeys {
+    static let registrationCompleted = "attribution.installRegistrationCompleted"
+}
+
+@MainActor
+final class InstallAttributionRegistrar {
+    static let shared = InstallAttributionRegistrar()
+
+    private var isRegistering = false
+
+    func registerIfNeeded(
+        defaults: UserDefaults = .standard,
+        updateConversionValue: () async throws -> Void = {
+            try await SKAdNetwork.updatePostbackConversionValue(
+                0,
+                coarseValue: .low,
+                lockWindow: true
+            )
+        }
+    ) async {
+        guard !defaults.bool(forKey: InstallAttributionPersistenceKeys.registrationCompleted),
+              !isRegistering else { return }
+
+        isRegistering = true
+        defer { isRegistering = false }
+
+        do {
+            try await updateConversionValue()
+            defaults.set(true, forKey: InstallAttributionPersistenceKeys.registrationCompleted)
+        } catch {
+#if DEBUG
+            print("[InstallAttribution] Registration failed: \(error)")
+#endif
+        }
+    }
+}
+
 enum HESIAFeatureFlags {
     /// Enables Turkish and English selection throughout the app.
     static let supportsMultipleLanguages = true
@@ -156,6 +193,7 @@ struct HESIAApp: App {
                 .tint(AYAColors.primary)
                 .preferredColorScheme(selectedAppearance.colorScheme)
                 .task {
+                    await InstallAttributionRegistrar.shared.registerIfNeeded()
                     await synchronizeWatchPractice()
                 }
                 .onChange(of: scenePhase) { _, newPhase in

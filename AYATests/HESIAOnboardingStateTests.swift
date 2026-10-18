@@ -150,4 +150,49 @@ final class HESIAOnboardingStateTests: XCTestCase {
         XCTAssertNil(defaults.object(forKey: HESIAOnboardingPersistenceKeys.completed))
         XCTAssertNil(defaults.object(forKey: PregnancyPersistenceKeys.referenceWeek))
     }
+
+    @MainActor
+    func testInstallAttributionRegistersOnlyOnceAfterSuccess() async throws {
+        let suiteName = "InstallAttributionRegistrarTests.success.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let registrar = InstallAttributionRegistrar()
+        var callCount = 0
+
+        await registrar.registerIfNeeded(defaults: defaults) {
+            callCount += 1
+        }
+        await registrar.registerIfNeeded(defaults: defaults) {
+            callCount += 1
+        }
+
+        XCTAssertEqual(callCount, 1)
+        XCTAssertTrue(
+            defaults.bool(forKey: InstallAttributionPersistenceKeys.registrationCompleted)
+        )
+    }
+
+    @MainActor
+    func testInstallAttributionRetriesAfterFailure() async throws {
+        enum TestError: Error { case failed }
+
+        let suiteName = "InstallAttributionRegistrarTests.retry.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let registrar = InstallAttributionRegistrar()
+        var callCount = 0
+
+        await registrar.registerIfNeeded(defaults: defaults) {
+            callCount += 1
+            throw TestError.failed
+        }
+        await registrar.registerIfNeeded(defaults: defaults) {
+            callCount += 1
+        }
+
+        XCTAssertEqual(callCount, 2)
+        XCTAssertTrue(
+            defaults.bool(forKey: InstallAttributionPersistenceKeys.registrationCompleted)
+        )
+    }
 }
