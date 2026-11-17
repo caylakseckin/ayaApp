@@ -1,3 +1,4 @@
+import FBSDKCoreKit
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -9,7 +10,16 @@ final class HESIANotificationDelegate: NSObject, UIApplicationDelegate, UNUserNo
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
-        return true
+        return ApplicationDelegate.shared.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // activateApp publishes the first-launch install signal. Automatic event logging stays
+        // disabled so Meta does not observe purchases or other implicit in-app events.
+        AppEvents.shared.activateApp()
     }
 
     func userNotificationCenter(
