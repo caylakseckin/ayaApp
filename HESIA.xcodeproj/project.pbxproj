@@ -128,6 +128,7 @@
 		BW0100000000000000000024 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000018 /* Localizable.xcstrings */; };
 		BW0100000000000000000025 /* WatchMeditationSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000011 /* WatchMeditationSession.swift */; };
 		BW0100000000000000000026 /* WatchCompanionSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = FW0100000000000000000022 /* WatchCompanionSync.swift */; };
+		BFB000000000000000000001 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = PFB000000000000000000002 /* FacebookCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -317,6 +318,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFB000000000000000000001 /* FacebookCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -751,6 +753,9 @@
 				DW0100000000000000000001 /* PBXTargetDependency */,
 			);
 			name = HESIA;
+			packageProductDependencies = (
+				PFB000000000000000000002 /* FacebookCore */,
+			);
 			productName = HESIA;
 			productReference = F00100000000000000000012 /* HESIA.app */;
 			productType = "com.apple.product-type.application";
@@ -866,6 +871,9 @@
 				Base,
 			);
 			mainGroup = G00100000000000000000001;
+			packageReferences = (
+				PFB000000000000000000001 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+			);
 			productRefGroup = G00100000000000000000008 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1455,6 +1463,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		PFB000000000000000000001 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/meta/facebook-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 19.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		PFB000000000000000000002 /* FacebookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PFB000000000000000000001 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = P00100000000000000000001 /* Project object */;
 }
