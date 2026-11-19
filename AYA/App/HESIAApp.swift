@@ -2,7 +2,7 @@ import SwiftUI
 
 enum HESIAFeatureFlags {
     /// Enables Turkish and English selection throughout the app.
-    static let supportsMultipleLanguages = true
+    static let supportsMultipleLanguages = false
     /// Keep the completed Motherhood experience available in code while it is hidden at launch.
     static let supportsMotherhood = false
 }
